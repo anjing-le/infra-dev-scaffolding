@@ -1,26 +1,26 @@
-# 🚀 Backend Template 配置文件
+# 🚀 Agent Dev Scaffolding 配置文件
 # 企业级Spring Boot脚手架 - 条件化配置版本
 
 # 基础配置
 server:
-  port: 7777
+  port: 18080
   shutdown: graceful
   servlet:
     context-path: /
 
 spring:
   application:
-    name: backend-template
+    name: agent-dev-scaffolding
   
   # 环境配置
   profiles:
-    active: dev
+    active:
   
   # 数据源配置
   datasource:
-    url: jdbc:mysql://10.5.139.166:3306/agent_x_dev?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false&allowPublicKeyRetrieval=true
-    username: agent_x_dev
-    password: zckWfqM4drM3V@L
+    url: jdbc:mysql://localhost:3306/anjing?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     
@@ -93,19 +93,19 @@ spring:
         generate_statistics: false
   
   # Redis配置
-#  data:
-#    redis:
-#      host: localhost
-#      port: 6379
-#      password:
-#      database: 0
-#      timeout: 5000
-#      lettuce:
-#        pool:
-#          max-active: 8
-#          max-wait: -1ms
-#          max-idle: 8
-#          min-idle: 0
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      database: 0
+      timeout: 5000
+      lettuce:
+        pool:
+          max-active: 8
+          max-wait: -1ms
+          max-idle: 8
+          min-idle: 0
   
   # Jackson配置
   jackson:
@@ -121,7 +121,7 @@ spring:
 logging:
   level:
     root: INFO
-    com.nodesk.backend_template: DEBUG
+    com.anjing: DEBUG
     org.springframework.web: INFO
     # Hibernate SQL日志（开发环境）
     org.hibernate.SQL: DEBUG
@@ -145,7 +145,7 @@ logging:
     file: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{40} - %msg%n"
 
 # 🔥 自定义日志配置
-nodesk:
+anjing:
   logging:
     # 日志文件路径
     path: logs
@@ -178,12 +178,12 @@ app:
   features:
     # Redis功能配置
     redis:
-      enabled: false                    # 是否启用Redis
+      enabled: true                     # 是否启用Redis
       host: localhost                  # Redis主机
       port: 6379                      # Redis端口
       timeout: 5000                   # 连接超时(毫秒)
       cluster: false                  # 是否集群模式
-    
+
     # 缓存功能配置
     cache:
       enabled: true                   # 是否启用缓存
@@ -211,7 +211,7 @@ app:
       kafka:
         enabled: false                # 是否启用Kafka
         bootstrap-servers: localhost:9092
-        group-id: backend-template
+        group-id: agent-dev-scaffolding
       
       # MinIO对象存储
       minio:
@@ -236,3 +236,4 @@ app:
       enable-performance: true        # 是否启用性能监控
       enable-health-check: true       # 是否启用健康检查
       enable-metrics: true            # 是否启用指标收集
+

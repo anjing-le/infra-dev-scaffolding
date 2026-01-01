@@ -8,11 +8,11 @@
         <version>3.4.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.nodesk</groupId>
-    <artifactId>backend-template</artifactId>
+    <groupId>com.anjing</groupId>
+    <artifactId>agent-dev-scaffolding</artifactId>
     <version>1.0.0</version>
-    <name>backend-template</name>
-    <description>Backend Template based on team best practices</description>
+    <name>agent-dev-scaffolding</name>
+    <description>Anjing Agent Dev Scaffolding - 企业级后端开发脚手架</description>
 
     <properties>
         <java.version>17</java.version>

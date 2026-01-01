@@ -46,7 +46,8 @@ import java.util.Arrays;
 public class Application
 {
 
-    public static void main(String[] args) throws UnknownHostException {
+    public static void main(String[] args) throws UnknownHostException
+    {
         
         // 记录启动开始时间
         long startTime = System.currentTimeMillis();
@@ -60,7 +61,7 @@ public class Application
         // 获取环境配置
         Environment env = applicationContext.getEnvironment();
         String ip = InetAddress.getLocalHost().getHostAddress();
-        String applicationName = env.getProperty("spring.application.name", "backend-template");
+        String applicationName = env.getProperty("spring.application.name", "agent-dev-scaffolding");
         String port = env.getProperty("server.port", "8080");
         String contextPath = env.getProperty("server.servlet.context-path", "");
         String profile = String.join(",", env.getActiveProfiles());
@@ -131,7 +132,7 @@ public class Application
                     bean.getClass().getPackage().getName() : "";
                 
                 // 只显示我们项目包下的Bean
-                if (packageName.startsWith("com.nodesk.backend_template"))
+                if (packageName.startsWith("com.anjing"))
                 {
                     customBeanCount++;
                     log.info("📌  Bean名称: {} | Bean类型: {}", 
