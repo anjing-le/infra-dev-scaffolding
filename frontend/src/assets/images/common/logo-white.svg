@@ -1,0 +1,16 @@
+<svg width="110" height="24" viewBox="0 0 110 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- A -->
+  <path d="M6 20L12 4L18 20M8.5 14H15.5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- N -->
+  <path d="M24 20V4L36 20V4" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- J -->
+  <path d="M48 4V16C48 18.2091 46.2091 20 44 20H42" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- I -->
+  <path d="M54 4V20" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <!-- N -->
+  <path d="M60 20V4L72 20V4" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- G -->
+  <path d="M84 8C82.5 5.5 79.5 4 77 4C73 4 70 7.5 70 12C70 16.5 73 20 77 20C80.5 20 83 18 84 15V12H78" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Dot -->
+  <circle cx="96" cy="12" r="4" fill="var(--el-color-primary, #409EFF)"/>
+</svg>
