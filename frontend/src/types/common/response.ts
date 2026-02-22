@@ -19,12 +19,16 @@
  * @author Art Design Pro Team
  */
 
-/** 基础 API 响应结构 */
+/** 基础 API 响应结构（兼容后端 code:"0"/message 和前端 code:200/msg 两种格式） */
 export interface BaseResponse<T = unknown> {
-  /** 状态码 */
-  code: number
-  /** 消息 */
-  msg: string
+  /** 状态码（后端返回字符串 "0"，前端约定数字 200） */
+  code: number | string
+  /** 消息（前端字段名） */
+  msg?: string
+  /** 消息（后端字段名） */
+  message?: string
   /** 数据 */
   data: T
+  /** 时间戳（后端返回） */
+  timestamp?: number
 }

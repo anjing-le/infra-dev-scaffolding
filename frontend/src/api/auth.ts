@@ -21,10 +21,6 @@ export function fetchLogin(params: LoginParams) {
  */
 export function fetchGetUserInfo() {
   return request.get<UserInfo>({
-    url: '/api/user/info'
-    // 自定义请求头
-    // headers: {
-    //   'X-Custom-Header': 'your-custom-value'
-    // }
+    url: '/api/auth/me'
   })
 }

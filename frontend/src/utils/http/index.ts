@@ -80,13 +80,24 @@ axiosInstance.interceptors.request.use(
   }
 )
 
+/** 判断响应码是否表示成功（兼容后端 "0" 和前端 200） */
+function isSuccessCode(code: number | string): boolean {
+  return code === ApiStatus.success || code === '0' || String(code) === '0'
+}
+
+/** 从响应中提取消息（兼容 msg 和 message 两种字段名） */
+function extractMessage(data: BaseResponse): string | undefined {
+  return data.msg || data.message
+}
+
 /** 响应拦截器 */
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse<BaseResponse>) => {
-    const { code, msg } = response.data
-    if (code === ApiStatus.success) return response
-    if (code === ApiStatus.unauthorized) handleUnauthorizedError(msg)
-    throw createHttpError(msg || $t('httpMsg.requestFailed'), code)
+    const { code } = response.data
+    const message = extractMessage(response.data)
+    if (isSuccessCode(code)) return response
+    if (code === ApiStatus.unauthorized) handleUnauthorizedError(message)
+    throw createHttpError(message || $t('httpMsg.requestFailed'), Number(code) || ApiStatus.error)
   },
   (error) => {
     if (error.response?.status === ApiStatus.unauthorized) handleUnauthorizedError()

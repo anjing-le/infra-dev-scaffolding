@@ -6,23 +6,28 @@
 
 /** 登录参数 */
 export interface LoginParams {
-  userName: string
+  username: string
   password: string
 }
 
-/** 登录响应 */
+/** 登录响应（兼容后端 accessToken/refreshToken 字段） */
 export interface LoginResponse {
-  token: string
-  refreshToken: string
+  token?: string
+  accessToken?: string
+  refreshToken?: string
+  tokenType?: string
+  expiresIn?: number
 }
 
 /** 用户信息 */
 export interface UserInfo {
-  buttons: string[]
+  buttons?: string[]
+  permissions?: string[]
   roles: string[]
   userId: number
   userName: string
-  email: string
+  nickName?: string
+  email?: string
   avatar?: string
 }
 

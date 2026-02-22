@@ -234,12 +234,14 @@
       // 登录请求
       const { username, password } = formData
 
-      const { token, refreshToken } = await fetchLogin({
-        userName: username,
+      const loginRes = await fetchLogin({
+        username,
         password
       })
 
-      // 验证token
+      const token = loginRes.token || loginRes.accessToken
+      const refreshToken = loginRes.refreshToken
+
       if (!token) {
         throw new Error('Login failed - no token received')
       }

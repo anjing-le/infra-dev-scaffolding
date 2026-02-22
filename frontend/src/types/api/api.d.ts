@@ -64,23 +64,28 @@ declare namespace Api {
   namespace Auth {
     /** 登录参数 */
     interface LoginParams {
-      userName: string
+      username: string
       password: string
     }
 
-    /** 登录响应 */
+    /** 登录响应（兼容后端 accessToken 字段） */
     interface LoginResponse {
-      token: string
-      refreshToken: string
+      token?: string
+      accessToken?: string
+      refreshToken?: string
+      tokenType?: string
+      expiresIn?: number
     }
 
     /** 用户信息 */
     interface UserInfo {
-      buttons: string[]
-      roles: string[]
       userId: number
       userName: string
-      email: string
+      nickName?: string
+      roles: string[]
+      permissions?: string[]
+      buttons?: string[]
+      email?: string
       avatar?: string
     }
   }
