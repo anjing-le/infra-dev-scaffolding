@@ -1,0 +1,79 @@
+---
+description: RESTful API 设计规范
+globs: **/controller/**/*.java
+alwaysApply: false
+---
+
+# RESTful API 设计规范
+
+## URL 设计
+
+### 基本规则
+- 使用小写字母和连字符（kebab-case）
+- 使用名词复数形式表示资源
+- 层级关系用路径表示
+
+### 示例
+```
+GET    /api/users           # 获取用户列表
+POST   /api/users           # 创建用户
+GET    /api/users/{id}      # 获取单个用户
+PUT    /api/users/{id}      # 更新用户
+DELETE /api/users/{id}      # 删除用户
+```
+
+### API 路径常量
+所有路径在 `ApiConstants` 中统一管理，避免硬编码。
+
+## 请求规范
+
+### HTTP 方法
+| 方法 | 用途 | 是否幂等 |
+|------|------|---------|
+| GET | 查询 | 是 |
+| POST | 创建 | 否 |
+| PUT | 全量更新 | 是 |
+| PATCH | 部分更新 | 否 |
+| DELETE | 删除 | 是 |
+
+### 参数传递
+- **GET**: `@RequestParam` 或 `@PathVariable`
+- **POST/PUT**: `@RequestBody`
+- **路径资源 ID**: `@PathVariable`
+- **认证信息**: `@RequestHeader("Authorization")`
+
+## 响应规范
+
+### 统一格式
+```json
+{
+  "code": "0",
+  "message": "操作成功",
+  "data": {},
+  "timestamp": 1700000000000
+}
+```
+
+### 成功响应
+```java
+APIResponse.success(data);           // 有数据
+APIResponse.success(data, "创建成功"); // 有数据 + 自定义消息
+APIResponse.success();               // 无数据
+```
+
+### 错误响应
+```java
+throw new BizException(XxxErrorCode.SOME_ERROR);  // 业务异常
+APIResponse.error("操作失败");                       // 直接返回错误
+```
+
+### 分页响应
+```java
+PageResponse.of(page);               // 从 Spring Data Page 创建
+PageResponse.of(list, total, size);  // 手动创建
+```
+
+## 版本管理
+
+- 当前使用路径中的 `/api/` 前缀
+- 需要版本化时使用：`/api/v1/`, `/api/v2/`

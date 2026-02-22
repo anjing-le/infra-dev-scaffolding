@@ -1,0 +1,61 @@
+---
+description: Java 代码风格和命名规范
+globs: **/*.java
+alwaysApply: false
+---
+
+# Java 代码风格规范
+
+## 命名规范
+
+### 类命名
+- Controller: `XxxController` (如 `UserController`)
+- Service: `XxxService` / `XxxServiceImpl`
+- Repository: `XxxRepository`
+- Entity: `Xxx` (如 `User`)
+- Request DTO: `XxxRequest` (如 `LoginRequest`)
+- Response VO: `XxxVO` (如 `UserVO`)
+- 枚举: `XxxEnum` 或描述性名称 (如 `UserStatus`)
+- 常量类: `XxxConstants` (如 `ApiConstants`)
+- 异常类: `XxxException` (如 `BizException`)
+- 错误码: `XxxErrorCode` (如 `AuthErrorCode`)
+
+### 方法命名
+- 查询单个: `getXxx` / `findXxx`
+- 查询列表: `listXxx` / `findXxxList`
+- 创建: `createXxx` / `addXxx`
+- 更新: `updateXxx`
+- 删除: `deleteXxx` / `removeXxx`
+- 校验: `checkXxx` / `validateXxx`
+- 转换: `convertToXxx` / `toXxx`
+
+### 包命名
+- 全小写，单数形式
+- 按功能分层：`controller`, `service`, `repository`, `entity`
+
+## 代码风格
+
+### Lombok 使用
+```java
+@Data                    // 实体/DTO
+@Slf4j                   // 日志
+@RequiredArgsConstructor // 构造器注入
+@Builder                 // 构建器模式
+```
+
+### 依赖注入
+- 优先使用构造器注入（`@RequiredArgsConstructor`）
+- 避免使用 `@Autowired` 字段注入
+
+### 日志规范
+```java
+log.info("操作描述: param={}", value);     // 业务操作
+log.warn("警告信息: {}", detail);          // 异常但可恢复
+log.error("错误信息: {}", detail, e);      // 错误需关注
+log.debug("调试信息: {}", detail);         // 调试信息
+```
+
+### 注释规范
+- 类注释：使用 Javadoc，说明类的职责
+- 方法注释：使用 Javadoc，说明参数和返回值
+- 行内注释：解释"为什么"，而非"做了什么"

@@ -1,0 +1,64 @@
+---
+description: Spring Boot 后端开发规范总览
+globs: 
+alwaysApply: true
+---
+
+# Agent Dev Scaffolding - 后端开发规范
+
+## 技术栈
+
+- **框架**: Spring Boot 3.4.5 + JDK 17
+- **ORM**: Spring Data JPA + Hibernate
+- **数据库**: MySQL 8.0 + Druid 连接池
+- **缓存**: Redis + Redisson（可选启用）
+- **构建**: Maven
+- **代码简化**: Lombok
+
+## 项目结构
+
+```
+src/main/java/com/anjing/
+├── controller/     # 控制器层 - 接收请求、参数校验、返回响应
+├── service/        # 服务层 - 业务逻辑（待扩展）
+├── repository/     # 数据层 - JPA Repository（待扩展）
+├── entity/         # 实体层 - JPA Entity（待扩展）
+├── config/         # 配置类 - Spring 配置
+├── model/          # 数据模型
+│   ├── request/    # 请求对象
+│   ├── response/   # 响应对象
+│   ├── constants/  # 常量定义
+│   ├── enums/      # 枚举定义
+│   ├── errorcode/  # 错误码
+│   ├── exception/  # 异常定义
+│   └── validation/ # 自定义校验
+├── aspect/         # AOP 切面
+├── annotation/     # 自定义注解
+├── example/        # 功能示例（学习参考）
+├── util/           # 工具类
+└── Advice/         # 全局异常处理
+```
+
+## 核心规范
+
+1. **统一响应格式**: 所有接口返回 `APIResponse<T>` 
+2. **统一异常处理**: 抛出 `BizException` / `SystemException`，由 `GlobalExceptionHandler` 统一处理
+3. **错误码管理**: 使用枚举实现 `ErrorCode` 接口，按模块分类
+4. **参数校验**: 使用 Jakarta Validation 注解 + 自定义校验注解
+5. **中间件开关**: 通过 `app.features.*` 配置按需启用
+
+## 可用的 Cursor Rules
+
+| 文件 | 说明 |
+|------|------|
+| `java-style.mdc` | Java 代码风格和命名规范 |
+| `spring-boot.mdc` | Spring Boot 开发规范 |
+| `api-design.mdc` | RESTful API 设计规范 |
+| `git-commit.mdc` | Git 提交规范 |
+
+## 可用的 Cursor Prompts
+
+| 文件 | 说明 |
+|------|------|
+| `crud-module.md` | 生成完整 CRUD 模块 |
+| `api-endpoint.md` | 生成单个 API 端点 |

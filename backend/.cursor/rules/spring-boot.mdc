@@ -1,0 +1,111 @@
+---
+description: Spring Boot 开发规范
+globs: **/*.java
+alwaysApply: false
+---
+
+# Spring Boot 开发规范
+
+## 分层架构
+
+```
+Controller → Service → Repository → Database
+    ↓           ↓          ↓
+ Request     Business    Entity
+ Response    Logic       JPA
+ Validation  Exception   Query
+```
+
+### Controller 层
+- 接收和校验请求参数
+- 调用 Service 处理业务
+- 统一返回 `APIResponse<T>`
+- 不包含业务逻辑
+
+```java
+@RestController
+@RequestMapping("/api/xxx")
+@RequiredArgsConstructor
+@Slf4j
+public class XxxController {
+    private final XxxService xxxService;
+    
+    @PostMapping
+    public APIResponse<XxxVO> create(@RequestBody @Validated XxxRequest request) {
+        return APIResponse.success(xxxService.create(request));
+    }
+}
+```
+
+### Service 层
+- 实现业务逻辑
+- 事务管理
+- 异常处理（抛出 BizException）
+
+```java
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class XxxService {
+    private final XxxRepository xxxRepository;
+    
+    @Transactional
+    public XxxVO create(XxxRequest request) {
+        // 业务逻辑
+    }
+}
+```
+
+### Repository 层
+- 继承 `JpaRepository<Entity, ID>`
+- 使用方法名查询或 `@Query` 注解
+
+## 异常处理
+
+### 规范
+- 业务异常抛出 `BizException(ErrorCode)`
+- 系统异常抛出 `SystemException(ErrorCode)`
+- 永远不要在 Controller 中 try-catch（除非有特殊需求）
+
+### 错误码定义
+```java
+public enum XxxErrorCode implements ErrorCode {
+    SOME_ERROR("2xxx", "错误描述");
+    // ... getter 实现
+}
+```
+
+## 参数校验
+
+### 内置校验注解
+- `@NotBlank` - 字符串非空
+- `@NotNull` - 非 null
+- `@Size` - 长度范围
+- `@Min` / `@Max` - 数值范围
+- `@Pattern` - 正则匹配
+- `@Email` - 邮箱格式
+
+### 自定义校验注解
+- `@PhoneNumber` - 手机号格式
+- `@EmailAddress` - 邮箱地址格式
+
+### 分组校验
+使用 `ValidationGroups` 按场景分组：`Register`, `Update`, `Query`, `Batch`
+
+## 配置管理
+
+### 功能开关（Feature Flags）
+```yaml
+app:
+  features:
+    redis:
+      enabled: true    # 按需启用
+    middleware:
+      kafka:
+        enabled: false # 未配置不启动
+```
+
+### 环境分离
+- `application.yml` - 通用配置
+- `application-dev.yml` - 开发环境
+- `application-prod.yml` - 生产环境

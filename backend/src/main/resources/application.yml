@@ -18,9 +18,9 @@ spring:
   
   # 数据源配置
   datasource:
-    url: jdbc:mysql://localhost:3306/anjing?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false&allowPublicKeyRetrieval=true
-    username: root
-    password: root
+    url: ${DB_URL:jdbc:mysql://localhost:3306/anjing?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:your_password_here}
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     
@@ -63,9 +63,9 @@ spring:
         # 设置白名单，不填则允许所有访问
         allow: 127.0.0.1,192.168.0.0/16
         url-pattern: "/druid/*"
-        # 控制台管理用户名和密码
-        login-username: admin
-        login-password: admin123
+        # 控制台管理用户名和密码（建议生产环境通过环境变量配置）
+        login-username: ${DRUID_USERNAME:admin}
+        login-password: ${DRUID_PASSWORD:admin}
       filter:
         stat:
           enabled: true
@@ -216,19 +216,19 @@ app:
       # MinIO对象存储
       minio:
         enabled: false                # 是否启用MinIO
-        endpoint: http://localhost:9000
-        access-key: ""
-        secret-key: ""
-        bucket-name: default
+        endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+        access-key: ${MINIO_ACCESS_KEY:}
+        secret-key: ${MINIO_SECRET_KEY:}
+        bucket-name: ${MINIO_BUCKET:default}
       
       # OSS云存储
       oss:
         enabled: false                # 是否启用OSS
         provider: aliyun              # 提供商: aliyun/tencent/aws
-        endpoint: ""
-        access-key: ""
-        secret-key: ""
-        bucket-name: ""
+        endpoint: ${OSS_ENDPOINT:}
+        access-key: ${OSS_ACCESS_KEY:}
+        secret-key: ${OSS_SECRET_KEY:}
+        bucket-name: ${OSS_BUCKET:}
     
     # 监控功能配置
     monitoring:

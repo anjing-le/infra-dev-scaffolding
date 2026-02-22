@@ -26,8 +26,14 @@ public enum CommonErrorCode implements ErrorCode {
     NETWORK_ERROR("1003", "网络异常"),
     SERVICE_UNAVAILABLE("1004", "服务不可用"),
 
+    // 业务通用 2xxx
+    DATA_NOT_FOUND("2000", "数据不存在"),
+    DATA_ALREADY_EXISTS("2001", "数据已存在"),
+    OPERATION_NOT_ALLOWED("2002", "操作不允许"),
+
     // 参数错误 3xxx
-    PARAM_INVALID("3000", "参数无效"),
+    PARAMETER_ERROR("3000", "参数错误"),
+    PARAM_INVALID("3010", "参数无效"),
     PARAM_MISSING("3001", "缺少必要参数"),
     PARAM_FORMAT_ERROR("3002", "参数格式错误"),
     PARAM_OUT_OF_RANGE("3003", "参数超出范围"),

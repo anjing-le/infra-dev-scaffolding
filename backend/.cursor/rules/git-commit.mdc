@@ -1,0 +1,49 @@
+---
+description: Git 提交规范
+globs: 
+alwaysApply: false
+---
+
+# Git 提交规范
+
+## Commit Message 格式
+
+```
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer]
+```
+
+## Type 类型
+
+| 类型 | 说明 |
+|------|------|
+| feat | 新功能 |
+| fix | 修复 Bug |
+| docs | 文档变更 |
+| style | 代码格式（不影响逻辑） |
+| refactor | 代码重构 |
+| perf | 性能优化 |
+| test | 测试相关 |
+| chore | 构建/工具变更 |
+| ci | CI/CD 配置 |
+
+## Scope 范围
+
+- `controller` - 控制器
+- `service` - 服务层
+- `config` - 配置
+- `model` - 数据模型
+- `util` - 工具类
+- `deps` - 依赖更新
+
+## 示例
+
+```
+feat(controller): 添加用户登录接口
+fix(service): 修复分页查询总数计算错误
+docs(readme): 更新快速开始文档
+refactor(config): 重构 Redis 配置为条件化加载
+```
