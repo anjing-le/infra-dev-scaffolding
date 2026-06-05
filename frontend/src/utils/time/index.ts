@@ -1,3 +1,5 @@
+import { DEFAULT_TIME_ZONE } from '@/contracts/platform-contract'
+
 export type DateInput = Date | string | number | null | undefined
 
 export interface FormatDateTimeOptions extends Intl.DateTimeFormatOptions {
@@ -5,7 +7,7 @@ export interface FormatDateTimeOptions extends Intl.DateTimeFormatOptions {
   timeZone?: string
 }
 
-export const DEFAULT_TIME_ZONE = 'UTC'
+export { DEFAULT_TIME_ZONE }
 
 export const getClientTimeZone = (): string => {
   try {

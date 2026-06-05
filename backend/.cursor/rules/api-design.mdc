@@ -105,11 +105,11 @@ APIResponse.error(XxxErrorCode.SOME_ERROR);        // 直接返回错误
 
 ### 分页响应
 ```java
-APIResponse.success(PageResult.of(page));                  // 从 Spring Data Page 创建
-APIResponse.success(PageResult.of(list, total, current, size)); // 手动创建
+APIResponse.success(PageResult.of(list, total, current, size));
+APIResponse.success(PageResult.of(page.getContent(), page.getTotalElements(), page.getNumber() + 1, page.getSize()));
 ```
 
-分页 payload 字段固定为 `records`、`current`、`size`、`total`。`BaseResponse`、`MultiResponse`、`PageResponse` 是旧远程响应兼容类，新业务接口不要使用。
+分页 payload 字段固定为 `records`、`current`、`size`、`total`。`PageResult` 是共享契约对象，不直接依赖 Spring Data Page；如使用 Spring Page，在 Service/Controller 中展开字段。`BaseResponse`、`MultiResponse`、`PageResponse` 是旧远程响应兼容类，新业务接口不要使用。
 
 ## 版本管理
 

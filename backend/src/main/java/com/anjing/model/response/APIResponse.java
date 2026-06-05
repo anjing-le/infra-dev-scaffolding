@@ -1,7 +1,9 @@
 package com.anjing.model.response;
 
 import com.anjing.context.GlobalRequestContextHolder;
+import com.anjing.model.constants.PlatformContractConstants;
 import com.anjing.model.errorcode.ErrorCode;
+import com.anjing.util.DateUtils;
 import lombok.Data;
 
 /**
@@ -14,7 +16,7 @@ public class APIResponse<T>
     /**
      * 成功状态码
      */
-    public static final String SUCCESS_CODE = "0";
+    public static final String SUCCESS_CODE = PlatformContractConstants.Response.SUCCESS_CODE;
 
     /**
      * 默认成功消息
@@ -52,7 +54,7 @@ public class APIResponse<T>
     private String requestId;
 
     public APIResponse() {
-        this.timestamp = System.currentTimeMillis();
+        this.timestamp = DateUtils.nowEpochMilli();
         this.requestId = GlobalRequestContextHolder.requestIdOrNull();
     }
 
@@ -60,14 +62,14 @@ public class APIResponse<T>
         this.code = code;
         this.message = message;
         this.data = data;
-        this.timestamp = System.currentTimeMillis();
+        this.timestamp = DateUtils.nowEpochMilli();
         this.requestId = GlobalRequestContextHolder.requestIdOrNull();
     }
 
     public APIResponse(String code, String message) {
         this.code = code;
         this.message = message;
-        this.timestamp = System.currentTimeMillis();
+        this.timestamp = DateUtils.nowEpochMilli();
         this.requestId = GlobalRequestContextHolder.requestIdOrNull();
     }
 

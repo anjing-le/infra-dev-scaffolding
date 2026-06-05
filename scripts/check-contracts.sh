@@ -30,6 +30,7 @@ require_absent() {
 }
 
 require_file backend/src/main/java/com/anjing/model/constants/ApiConstants.java
+require_file backend/src/main/java/com/anjing/model/constants/PlatformContractConstants.java
 require_file frontend/src/api/paths.ts
 require_file backend/src/main/java/com/anjing/model/response/APIResponse.java
 require_file backend/src/main/java/com/anjing/model/response/PageResult.java
@@ -39,14 +40,23 @@ require_file backend/src/main/java/com/anjing/config/http/RequestContextFilter.j
 require_file frontend/src/utils/http/context.ts
 require_file backend/src/main/java/com/anjing/client/RemoteHttpClient.java
 require_file backend/src/main/java/com/anjing/util/RemoteCallWrapper.java
+require_file frontend/src/contracts/platform-contract.ts
 require_file frontend/src/utils/time/index.ts
+require_file contracts/platform-contract.json
 require_file project_document/API_CONTRACT_GUIDE.md
 require_file project_document/API_PATH_GUIDE.md
+require_file project_document/PLATFORM_CONTRACT_GUIDE.md
 require_file project_document/REMOTE_CALL_GUIDE.md
 require_file project_document/ENVIRONMENT_PROFILE_GUIDE.md
 require_file project_document/FEATURE_STATUS_GUIDE.md
 require_file project_document/LOCAL_STARTUP_GUIDE.md
+require_file project_document/SHARED_KERNEL_GUIDE.md
+require_file scripts/check-api-constants.js
 require_file scripts/check-api-path-parity.js
+require_file scripts/generate-platform-contract-backend.js
+require_file scripts/generate-platform-contract-frontend.js
+require_file scripts/check-platform-contract.js
+require_file scripts/check-shared-kernel.js
 
 # URL contract: backend Controller mappings use ApiConstants; frontend API modules use ApiPaths.
 require_absent '@(RequestMapping|GetMapping|PostMapping|PutMapping|DeleteMapping|PatchMapping)\(\s*"/api' \
@@ -65,6 +75,15 @@ require_absent 'request\.(get|post|put|del|delete)\([^)]*['"'"'"]/api' \
   --glob '*.vue' \
   --glob '!frontend/src/api/paths.ts'
 
+require_absent 'VITE_API_URL.*\/api' \
+  frontend/src \
+  --glob '*.ts' \
+  --glob '*.vue' \
+  --glob '!frontend/src/api/paths.ts'
+
+require_token frontend/src/api/paths.ts 'resolveApiPath'
+require_token frontend/src/api/paths.ts 'uploadWangEditor'
+
 # Response contract: new code uses message/code/data; msg compatibility is centralized.
 require_absent '\bmsg\??:' \
   frontend/src \
@@ -73,7 +92,8 @@ require_absent '\bmsg\??:' \
   --glob '!frontend/src/utils/http/error.ts' \
   --glob '!frontend/src/types/common/response.ts'
 
-require_token backend/src/main/java/com/anjing/model/response/APIResponse.java 'public static final String SUCCESS_CODE = "0"'
+require_token backend/src/main/java/com/anjing/model/constants/PlatformContractConstants.java 'public static final String SUCCESS_CODE = "0"'
+require_token backend/src/main/java/com/anjing/model/response/APIResponse.java 'PlatformContractConstants.Response.SUCCESS_CODE'
 require_token backend/src/main/java/com/anjing/model/response/APIResponse.java 'private String message'
 require_token backend/src/main/java/com/anjing/model/response/APIResponse.java 'private String requestId'
 require_token backend/src/main/java/com/anjing/model/response/APIResponse.java 'successData'
@@ -82,7 +102,8 @@ require_token backend/src/main/java/com/anjing/model/response/PageResult.java 'p
 require_token backend/src/main/java/com/anjing/model/response/PageResult.java 'current'
 require_token backend/src/main/java/com/anjing/model/response/PageResult.java 'size'
 require_token backend/src/main/java/com/anjing/model/response/PageResult.java 'total'
-require_token frontend/src/utils/http/response.ts "API_SUCCESS_CODE = '0'"
+require_token frontend/src/contracts/platform-contract.ts 'API_SUCCESS_CODE = PLATFORM_CONTRACT.responseEnvelope.successCode'
+require_token frontend/src/utils/http/response.ts 'import { API_SUCCESS_CODE }'
 require_token frontend/src/utils/table/tableConfig.ts 'records'
 
 # Context and remote-call contract: request identity, locale, timezone and caller identity are centralized.
@@ -94,19 +115,26 @@ for header in \
   'X-Time-Zone' \
   'Accept-Language'
 do
-  require_token backend/src/main/java/com/anjing/model/constants/RequestHeaderConstants.java "$header"
+  require_token backend/src/main/java/com/anjing/model/constants/PlatformContractConstants.java "$header"
 done
+require_token backend/src/main/java/com/anjing/model/constants/RequestHeaderConstants.java 'PlatformContractConstants.Headers.REQUEST_ID'
+require_token backend/src/main/java/com/anjing/model/constants/RequestHeaderConstants.java 'PlatformContractConstants.Headers.TRACE_ID'
+require_token backend/src/main/java/com/anjing/model/constants/RequestHeaderConstants.java 'PlatformContractConstants.Headers.TIME_ZONE'
+require_token backend/src/main/java/com/anjing/model/constants/RequestHeaderConstants.java 'PlatformContractConstants.Headers.ACCEPT_LANGUAGE'
 
 require_token backend/src/main/java/com/anjing/config/http/RequestContextFilter.java 'GlobalRequestContextHolder.set(context)'
 require_token backend/src/main/java/com/anjing/config/http/RequestContextFilter.java 'response.setHeader(RequestHeaderConstants.REQUEST_ID'
-require_token frontend/src/utils/http/context.ts 'X-Time-Zone'
-require_token frontend/src/utils/http/context.ts 'Accept-Language'
+require_token frontend/src/contracts/platform-contract.ts '"timeZone": "X-Time-Zone"'
+require_token frontend/src/contracts/platform-contract.ts '"acceptLanguage": "Accept-Language"'
+require_token frontend/src/utils/http/context.ts 'REQUEST_HEADERS.timeZone'
+require_token frontend/src/utils/http/context.ts 'REQUEST_HEADERS.acceptLanguage'
 require_token backend/src/main/java/com/anjing/util/RemoteCallWrapper.java 'serviceCallHeaders'
 require_token backend/src/main/java/com/anjing/util/RemoteCallWrapper.java 'RequestHeaderConstants.CALLER_ID'
 require_token backend/src/main/java/com/anjing/client/RemoteHttpClient.java 'RemoteCallWrapper.callWithRetry'
 
 # Time contract: shared utilities exist; avoid system default timezone in backend business code.
 require_token frontend/src/utils/time/index.ts 'getClientTimeZone'
+require_token frontend/src/utils/time/index.ts 'import { DEFAULT_TIME_ZONE }'
 require_token frontend/src/utils/time/index.ts 'formatDateTime'
 require_token backend/src/main/java/com/anjing/util/DateUtils.java 'nowIso'
 require_token backend/src/main/java/com/anjing/util/DateUtils.java 'nowEpochMilli'
@@ -119,6 +147,11 @@ require_absent '\b(Instant|LocalDateTime|OffsetDateTime|ZonedDateTime)\.now\(' \
   --glob '*.java' \
   --glob '!backend/src/main/java/com/anjing/util/DateUtils.java'
 
+node scripts/check-api-constants.js
 node scripts/check-api-path-parity.js
+node scripts/generate-platform-contract-backend.js --check
+node scripts/generate-platform-contract-frontend.js --check
+node scripts/check-platform-contract.js
+node scripts/check-shared-kernel.js
 
 echo "check-contracts: ok"

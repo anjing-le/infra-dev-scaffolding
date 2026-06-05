@@ -32,11 +32,13 @@
 
 主要缺口：
 
-- 前端 API URL 已开始收口到 `ApiPaths`，后端运行 Controller 已开始引用 `ApiConstants`，路径规则已记录到 `project_document/API_PATH_GUIDE.md`；后续需要继续扩大覆盖面，并评估与 OpenAPI 的生成关系。
+- 前端 API URL 已开始收口到 `ApiPaths`，后端运行 Controller 已开始引用 `ApiConstants`；`ApiConstants` 内部也已收口为 `API_PREFIX`、模块 `BASE`、相对子路径和 `*_FULL`，并由 `scripts/check-api-constants.js` 守护。路径规则已记录到 `project_document/API_PATH_GUIDE.md`；后续需要继续扩大覆盖面，并评估与 OpenAPI 的生成关系。
 - 响应契约已开始收敛到 `APIResponse` + `message` + `PageResult(records/current/size/total)`，并已记录到 `project_document/API_CONTRACT_GUIDE.md`；`msg`、`BaseResponse`、`PageResponse` 仅作为旧接口或远程响应兼容入口。
+- 平台级契约已沉淀为 `contracts/platform-contract.json`，覆盖 API 前缀、响应 envelope、分页字段、请求头、时间策略和错误码分段；后端生成 `PlatformContractConstants.java`，前端生成 `frontend/src/contracts/platform-contract.ts`，供路径、请求头、响应解析和时间工具复用，并由 `scripts/generate-platform-contract-backend.js --check`、`scripts/generate-platform-contract-frontend.js --check`、`scripts/check-platform-contract.js` 校验生成产物、前后端与文档一致性。
 - 时间策略已开始转向 UTC 默认和客户端时区展示，后续需要继续把存量页面时间展示迁移到统一工具。
 - 请求上下文已开始具备 `requestId`、`traceId`、语言和时区透传，并已接入日志格式、远程调用请求头生成和统一 HTTP client adapter；后续需要继续接入权限上下文和真实 RPC client adapter。
 - 错误码已补充分段指南，后续新模块应按 `project_document/ERROR_CODE_GUIDE.md` 分配 code。
+- 共享内核边界已开始收口，`project_document/SHARED_KERNEL_GUIDE.md` 和 `scripts/check-shared-kernel.js` 已约束未来可抽 `anjing-common` 的契约/工具类不依赖 Spring Web、Servlet、JPA 或运行时层。
 - 前端已有统一时间工具层，后续需要让日期控件、文件名、通知时间等存量逻辑逐步迁移。
 - 中间件状态已能区分 `disabled/configured/ready/degraded`，并通过 `/api/test/features` 输出；dev/test/prod profile 矩阵已落地，后续仍需补真实探测开关。
 - 微服务远程调用已有包装工具，但还不是接口驱动的 client contract，没有统一超时、重试、熔断、调用方身份和审计契约。
@@ -51,6 +53,7 @@
 - 统一时间策略：服务端存储 UTC，接口输出 ISO-8601，前端按用户时区格式化展示。
 - 统一环境配置：前端 env、后端 yml、README、复制指南中的端口、API base、应用名、数据库名保持一致。
 - 统一工具层：ID、JSON、校验、时间、URL、存储、错误处理、日志脱敏。
+- 共享内核边界：可抽公共包的契约和工具保持纯净，运行时 adapter 单独留在后端应用层。
 - 统一日志字段：应用名、环境、requestId、traceId、userId、tenantId、耗时、错误码。
 - 统一 AI 生成契约：Rules / Prompts 必须告诉 AI 新模块应使用统一响应、统一 URL、统一时间工具和统一 API client。
 
@@ -112,7 +115,11 @@
 - `application-dev.yml`、`application-test.yml`、`application-prod.yml` 已提供环境矩阵，dev/test 使用 H2 轻启动，生产 MySQL 和外部能力由环境变量显式开启。
 - `project_document/LOCAL_STARTUP_GUIDE.md` 已记录无 MySQL/Redis 的后端本地启动验证方式和当前证据。
 - `scripts/check-contracts.sh` 已把路径、响应、分页、上下文、远程调用和时间工具约束变成可执行守护检查。
+- `scripts/check-api-constants.js` 已把 `ApiConstants` 内部 API 前缀约束纳入自动校验，避免共享路径常量重新散落 `"/api/..."` 字面量。
 - `scripts/check-api-path-parity.js` 已把后端 `ApiConstants.Auth/Test` 与前端 `ApiPaths.auth/test` 的运行路径一致性纳入自动校验。
+- `scripts/generate-platform-contract-backend.js --check` 已确保后端平台契约生成文件与 manifest 一致。
+- `scripts/generate-platform-contract-frontend.js --check` 已确保前端平台契约生成文件与 manifest 一致。
+- `scripts/check-platform-contract.js` 已把 `contracts/platform-contract.json` 与 Java/TypeScript/文档的一致性纳入自动校验。
 
 ### S6: 服务边界与可选适配层
 
@@ -134,6 +141,13 @@
 - 评估 OpenAPI / 类型生成，将后端接口契约生成前端 types 或 API client。
 - 评估抽出 `anjing-common` / `anjing-web-common`，只放稳定工具和类型。
 - AI Prompts 生成模块时可以自动引用统一 URL、统一响应和统一时间工具。
+
+当前已完成：
+
+- `project_document/SHARED_KERNEL_GUIDE.md` 已定义共享内核、运行时适配层和领域代码边界。
+- `scripts/check-shared-kernel.js` 已检查共享内核候选类不能引入 Spring Web、Servlet、JPA 或 Controller/Config/Aspect 等运行时层。
+- `contracts/platform-contract.json` 已成为后续生成基础响应类型、分页类型、请求头常量和 OpenAPI 全局约束的机器可读入口；前后端常量生成链路已落地。
+- `PageResult` 已去除 Spring Data Page 依赖，保持标准分页 payload 可抽取。
 
 ## 近期推荐任务
 

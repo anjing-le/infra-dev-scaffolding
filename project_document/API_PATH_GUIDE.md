@@ -21,6 +21,7 @@ public class AuthController {
 - 每个模块提供 `BASE`。
 - 子路径使用相对路径，例如 `/login`、`/{id}`。
 - 需要给远程调用或文档使用完整路径时，提供 `*_FULL`。
+- `ApiConstants` 内部只允许 `API_PREFIX = "/api"` 一个 API 前缀字面量；模块路径使用 `BASE = API_PREFIX + "/module"`。
 - Controller 注解不要直接写 `"/api/..."`。
 - 新增接口时同步补齐 `ApiConstants`。
 
@@ -42,6 +43,7 @@ export const ApiPaths = {
 - API 模块只引用 `ApiPaths`，不要直接写 `url: '/api/...'`。
 - 路径参数使用函数，并通过 `encodeURIComponent` 处理。
 - 页面组件不直接拼接口路径。
+- 非 Axios 场景需要完整上传地址时，使用 `resolveApiPath(ApiPaths.xxx.yyy)`，不要手动拼 `VITE_API_URL + '/api/...'`。
 - 新增后端接口时同步确认 `ApiConstants` 和 `ApiPaths` 命名一致。
 
 ## Current Runtime Paths
@@ -56,6 +58,8 @@ export const ApiPaths = {
 | 可选能力状态 | `ApiConstants.Test.FEATURES_FULL` | `ApiPaths.test.features` |
 | Ping | `ApiConstants.Test.PING_FULL` | `ApiPaths.test.ping` |
 | 教学 items | `ApiConstants.Test.ITEMS_FULL` | `ApiPaths.test.items` |
+| 通用上传 | `ApiConstants.Common.UPLOAD_FILE_FULL` | `ApiPaths.common.upload` |
+| 富文本上传 | `ApiConstants.Common.UPLOAD_WANG_EDITOR_FULL` | `ApiPaths.common.uploadWangEditor` |
 
 ## Future Direction
 
@@ -69,12 +73,16 @@ export const ApiPaths = {
 ./scripts/check-contracts.sh
 ```
 
-该脚本会阻止运行 Controller 直接写 `"/api/..."`，也会阻止前端 API 模块绕过 `ApiPaths` 直接写接口 URL。
+该脚本会阻止运行 Controller 直接写 `"/api/..."`，也会阻止前端 API 模块绕过 `ApiPaths` 直接写接口 URL；非 Axios 上传等场景不能手动拼 `VITE_API_URL + '/api/...'`。
 
 如果只想验证前后端运行路径是否一致，可以运行：
+
+```bash
+node scripts/check-api-constants.js
+```
 
 ```bash
 node scripts/check-api-path-parity.js
 ```
 
-当前脚本会比对 `ApiConstants.Auth/Test` 和 `ApiPaths.auth/test` 的稳定运行接口。后续新增模块进入运行面时，应同步扩展该脚本的映射表。
+`check-api-constants.js` 会阻止 `ApiConstants` 内部重新散落 `"/api/..."` 字面量。`check-api-path-parity.js` 会比对 `ApiConstants.Auth/Test/Common` 和 `ApiPaths.auth/test/common` 的稳定运行接口。后续新增模块进入运行面时，应同步扩展该脚本的映射表。

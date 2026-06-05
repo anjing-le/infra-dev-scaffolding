@@ -6,6 +6,18 @@
 
 const encodePathValue = (value: string | number): string => encodeURIComponent(String(value))
 
+const normalizeApiBase = (baseUrl: string | undefined): string => {
+  const base = (baseUrl || '').trim()
+  if (!base || base === '/') return ''
+  return base.replace(/\/+$/, '')
+}
+
+export const resolveApiPath = (apiPath: string): string => {
+  const path = apiPath.startsWith('/') ? apiPath : `/${apiPath}`
+  const base = normalizeApiBase(import.meta.env.VITE_API_URL)
+  return base ? `${base}${path}` : path
+}
+
 export const ApiPaths = {
   auth: {
     login: '/api/auth/login',
@@ -38,6 +50,13 @@ export const ApiPaths = {
     systemException: '/api/test/exception/system',
     items: '/api/test/items',
     itemDetail: (id: string | number) => `/api/test/items/${encodePathValue(id)}`
+  },
+  common: {
+    upload: '/api/common/upload',
+    uploadImage: '/api/common/upload/image',
+    uploadWangEditor: '/api/common/upload/wangeditor',
+    download: (fileId: string | number) => `/api/common/download/${encodePathValue(fileId)}`,
+    deleteFile: (fileId: string | number) => `/api/common/files/${encodePathValue(fileId)}`
   }
 } as const
 

@@ -14,6 +14,7 @@
 | S3 后续项目复用验证 | In progress | `infra-skill-hub` 已从本母版接入骨架，完成 H0 / H1 / H2 验证，并推进 H3 HTTP/MCP/INTERNAL 调度层、全局与注册级协议配置、凭据托管与选择体验、权限身份头联动、策略批量管理、默认策略模板、调用治理、审计查询、治理指标与前端治理面 |
 | S4 契约与全球化基线 | In progress | 已落地前端 `ApiPaths`、请求上下文头、统一时间工具、响应解析 helper；后端已落地 `ApiConstants` 运行路径引用、`RequestContextFilter`、UTC 默认时间策略、响应 `requestId`、`PageResult` 和 API 契约指南 |
 | S5 分布式可观测基线 | In progress | 已落地 MDC 日志字段、`RemoteCallWrapper.serviceCallHeaders(callerId)`、`RemoteHttpClient`、错误码分段指南、`/api/test/features` 可选能力状态接口和 dev/test/prod profile 矩阵 |
+| S7 契约生成与共享包 | In progress | 已落地 `project_document/SHARED_KERNEL_GUIDE.md` 和 `scripts/check-shared-kernel.js`，先守住未来可抽 `anjing-common` 的纯契约/工具边界 |
 
 ## 当前证据链
 
@@ -22,7 +23,12 @@
 ```bash
 ./scripts/check-template.sh
 ./scripts/check-contracts.sh
+node scripts/check-api-constants.js
 node scripts/check-api-path-parity.js
+node scripts/generate-platform-contract-backend.js --check
+node scripts/generate-platform-contract-frontend.js --check
+node scripts/check-platform-contract.js
+node scripts/check-shared-kernel.js
 ./scripts/smoke-copy.sh
 ./scripts/probe-backend-dev.sh
 (cd backend && mvn -q -DskipTests package)
@@ -37,10 +43,15 @@ AI 协作验证：
 - 验证后回补的关键契约：
   - 后端列表响应字段为 `records`、`current`、`size`、`total`。
   - 后端运行 Controller 路径引用 `ApiConstants`，前端路径收口到 `ApiPaths`，路径契约记录在 `project_document/API_PATH_GUIDE.md`。
-  - `node scripts/check-api-path-parity.js` 已校验 `ApiConstants.Auth/Test` 与 `ApiPaths.auth/test` 的稳定运行路径一致。
+  - `node scripts/check-api-constants.js` 已校验 `ApiConstants` 内部只保留 `API_PREFIX = "/api"` 一个 API 前缀字面量，模块路径使用 `BASE + 相对路径 + *_FULL`。
+  - `node scripts/check-api-path-parity.js` 已校验 `ApiConstants.Auth/Test/Common` 与 `ApiPaths.auth/test/common` 的稳定运行路径一致。
+  - 非 Axios 上传地址通过 `resolveApiPath(ApiPaths.common.uploadWangEditor)` 生成，避免组件手动拼 `VITE_API_URL + '/api/...'`。
   - 前端删除请求使用项目 HTTP 工具的 `request.del`。
   - 前端标准响应消息使用 `message`，`msg` 兼容集中在 `utils/http/response.ts`。
   - API envelope 契约记录在 `project_document/API_CONTRACT_GUIDE.md`。
+  - `contracts/platform-contract.json` 已记录 API 前缀、响应 envelope、分页字段、请求上下文头、UTC 时间策略和错误码分段，并生成 `backend/src/main/java/com/anjing/model/constants/PlatformContractConstants.java` 与 `frontend/src/contracts/platform-contract.ts` 供前后端基础工具复用；`node scripts/generate-platform-contract-backend.js --check`、`node scripts/generate-platform-contract-frontend.js --check` 和 `node scripts/check-platform-contract.js` 已校验生成产物、Java/TypeScript/文档一致。
+  - `PageResult` 已去除 Spring Data Page 依赖，作为纯分页 payload；Spring Page 需要在业务层展开为 records/total/current/size。
+  - 共享内核边界记录在 `project_document/SHARED_KERNEL_GUIDE.md`，`node scripts/check-shared-kernel.js` 已校验候选共享类不依赖 Spring Web、Servlet、JPA 或运行时层。
   - 业务当前时间统一通过 `DateUtils.nowIso()`、`DateUtils.now(pattern)`、`DateUtils.nowEpochMilli()` 等 UTC 出口获取，自检脚本已禁止业务源码直接调用 `Instant.now()` / `LocalDateTime.now()`。
   - HTTP 服务间调用使用 `RemoteHttpClient`，自定义 adapter 使用 `RemoteCallWrapper.serviceCallHeaders(callerId)` 透传 requestId、traceId、租户、用户、语言和时区。
   - 错误码按 `project_document/ERROR_CODE_GUIDE.md` 分段，远程调用默认只重试 `1800-1899`。

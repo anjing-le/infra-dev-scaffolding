@@ -1,7 +1,8 @@
 import type { BaseResponse } from '@/types'
+import { API_SUCCESS_CODE } from '@/contracts/platform-contract'
 import { ApiStatus } from './status'
 
-export const API_SUCCESS_CODE = '0'
+export { API_SUCCESS_CODE }
 
 const UNAUTHORIZED_CODES = new Set(['401', '4000', '4002', '4003', '4004', '2106'])
 const FORBIDDEN_CODES = new Set(['403', '4001', '2200'])

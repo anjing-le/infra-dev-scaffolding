@@ -58,6 +58,10 @@ function evaluateJavaExpression(expression, constants) {
         return literalMatch[1]
       }
 
+      if (part === 'PlatformContractConstants.API_PREFIX') {
+        return '/api'
+      }
+
       if (Object.prototype.hasOwnProperty.call(constants, part)) {
         return constants[part]
       }
@@ -105,12 +109,14 @@ const tsSource = read(apiPathsPath)
 
 const backend = {
   Auth: extractJavaConstants(javaSource, 'Auth'),
-  Test: extractJavaConstants(javaSource, 'Test')
+  Test: extractJavaConstants(javaSource, 'Test'),
+  Common: extractJavaConstants(javaSource, 'Common')
 }
 
 const frontend = {
   auth: extractTsModule(tsSource, 'auth'),
-  test: extractTsModule(tsSource, 'test')
+  test: extractTsModule(tsSource, 'test'),
+  common: extractTsModule(tsSource, 'common')
 }
 
 const mappings = [
@@ -124,7 +130,12 @@ const mappings = [
   ['Test.EXCEPTION_BIZ_FULL', 'test.bizException'],
   ['Test.EXCEPTION_SYSTEM_FULL', 'test.systemException'],
   ['Test.ITEMS_FULL', 'test.items'],
-  ['Test.ITEM_DETAIL_FULL', 'test.itemDetail']
+  ['Test.ITEM_DETAIL_FULL', 'test.itemDetail'],
+  ['Common.UPLOAD_FILE_FULL', 'common.upload'],
+  ['Common.UPLOAD_IMAGE_FULL', 'common.uploadImage'],
+  ['Common.UPLOAD_WANG_EDITOR_FULL', 'common.uploadWangEditor'],
+  ['Common.DOWNLOAD_FILE_FULL', 'common.download'],
+  ['Common.DELETE_FILE_FULL', 'common.deleteFile']
 ]
 
 function getBackendValue(key) {

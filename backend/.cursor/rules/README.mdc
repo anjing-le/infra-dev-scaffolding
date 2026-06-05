@@ -50,6 +50,7 @@ src/main/java/com/anjing/
 6. **路径集中管理**: API 路径使用 `ApiConstants`，避免 Controller 散落 URL 字符串
 7. **请求上下文**: requestId、traceId、语言、时区、租户、用户信息通过 `RequestContextFilter` / `GlobalRequestContextHolder` 管理
 8. **时间策略**: 默认 UTC，使用 `DateUtils` 和显式时区，不依赖机器本地时区
+9. **共享内核**: 未来可抽 `anjing-common` 的契约/工具类不得依赖 Spring Web、Servlet、JPA 或运行时层，参考 `project_document/SHARED_KERNEL_GUIDE.md`
 
 ## 可用的 Cursor Rules
 

@@ -1,16 +1,12 @@
 import { LanguageEnum } from '@/enums/appEnum'
+import { REQUEST_HEADERS } from '@/contracts/platform-contract'
 import { getClientTimeZone } from '@/utils/time'
 
 interface HeaderWriter {
   set(name: string, value: string): void
 }
 
-export const REQUEST_HEADERS = {
-  requestId: 'X-Request-Id',
-  traceId: 'X-Trace-Id',
-  timeZone: 'X-Time-Zone',
-  acceptLanguage: 'Accept-Language'
-} as const
+export { REQUEST_HEADERS }
 
 const LANGUAGE_TAGS: Record<LanguageEnum, string> = {
   [LanguageEnum.ZH]: 'zh-CN',

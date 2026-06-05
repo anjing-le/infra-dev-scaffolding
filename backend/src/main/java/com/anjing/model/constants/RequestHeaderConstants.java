@@ -5,15 +5,15 @@ package com.anjing.model.constants;
  */
 public final class RequestHeaderConstants {
 
-    public static final String REQUEST_ID = "X-Request-Id";
-    public static final String TRACE_ID = "X-Trace-Id";
-    public static final String TENANT_ID = "X-Tenant-Id";
-    public static final String USER_ID = "X-User-Id";
-    public static final String USER_NAME = "X-User-Name";
-    public static final String USER_ROLES = "X-User-Roles";
-    public static final String CALLER_ID = "X-Caller-Id";
-    public static final String TIME_ZONE = "X-Time-Zone";
-    public static final String ACCEPT_LANGUAGE = "Accept-Language";
+    public static final String REQUEST_ID = PlatformContractConstants.Headers.REQUEST_ID;
+    public static final String TRACE_ID = PlatformContractConstants.Headers.TRACE_ID;
+    public static final String TENANT_ID = PlatformContractConstants.Headers.TENANT_ID;
+    public static final String USER_ID = PlatformContractConstants.Headers.USER_ID;
+    public static final String USER_NAME = PlatformContractConstants.Headers.USER_NAME;
+    public static final String USER_ROLES = PlatformContractConstants.Headers.USER_ROLES;
+    public static final String CALLER_ID = PlatformContractConstants.Headers.CALLER_ID;
+    public static final String TIME_ZONE = PlatformContractConstants.Headers.TIME_ZONE;
+    public static final String ACCEPT_LANGUAGE = PlatformContractConstants.Headers.ACCEPT_LANGUAGE;
 
     private RequestHeaderConstants() {
     }

@@ -66,7 +66,27 @@ mvn spring-boot:run
 ```
 
 ```bash
+node scripts/check-api-constants.js
+```
+
+```bash
 node scripts/check-api-path-parity.js
+```
+
+```bash
+node scripts/generate-platform-contract-backend.js --check
+```
+
+```bash
+node scripts/generate-platform-contract-frontend.js --check
+```
+
+```bash
+node scripts/check-platform-contract.js
+```
+
+```bash
+node scripts/check-shared-kernel.js
 ```
 
 ```bash
@@ -93,6 +113,8 @@ mvn -q -DskipTests package
 - [架构演进蓝图](./project_document/ARCHITECTURE_EVOLUTION.md)
 - [API 契约指南](./project_document/API_CONTRACT_GUIDE.md)
 - [API 路径指南](./project_document/API_PATH_GUIDE.md)
+- [平台契约 Manifest 指南](./project_document/PLATFORM_CONTRACT_GUIDE.md)
+- [共享内核指南](./project_document/SHARED_KERNEL_GUIDE.md)
 - [环境 Profile 指南](./project_document/ENVIRONMENT_PROFILE_GUIDE.md)
 - [本地启动指南](./project_document/LOCAL_STARTUP_GUIDE.md)
 - [可选能力状态指南](./project_document/FEATURE_STATUS_GUIDE.md)

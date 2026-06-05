@@ -2,6 +2,8 @@
 
 本文档定义前后端共同遵守的 API 契约。脚手架未来可以接 OpenAPI / 类型生成，但当前先以稳定字段和生成规则约束所有新增接口。
 
+机器可读版本位于 `contracts/platform-contract.json`，维护方式见 `project_document/PLATFORM_CONTRACT_GUIDE.md`。
+
 ## Response Envelope
 
 所有后端业务接口统一返回 `APIResponse<T>`：
@@ -43,6 +45,12 @@
 }
 ```
 
+`PageResult` 是共享契约对象，不依赖 Spring Data、JPA 或 Web 框架。使用 Spring Data `Page<T>` 时，在业务层展开为：
+
+```java
+PageResult.of(page.getContent(), page.getTotalElements(), page.getNumber() + 1, page.getSize())
+```
+
 旧的 `BaseResponse`、`MultiResponse`、`PageResponse` 只用于兼容外部或历史远程响应，新业务不要使用。
 
 ## Frontend Rules
@@ -77,6 +85,10 @@
 
 ```bash
 ./scripts/check-contracts.sh
+```
+
+```bash
+node scripts/check-platform-contract.js
 ```
 
 该脚本会检查 API path、response envelope、分页字段、请求上下文、远程调用和时间工具的关键契约是否仍然集中管理。

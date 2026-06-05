@@ -104,6 +104,14 @@
 - 评估抽出共享包，只放稳定工具和类型。
 - AI Prompts 生成模块时自动引用统一 URL、统一响应和统一时间工具。
 
+当前进展：
+- `contracts/platform-contract.json` 已记录平台级响应、分页、请求头、时间和错误码分段契约。
+- `backend/src/main/java/com/anjing/model/constants/PlatformContractConstants.java` 已由 manifest 生成并被后端 API 前缀、请求头和响应成功码复用。
+- `frontend/src/contracts/platform-contract.ts` 已由 manifest 生成并被前端 HTTP、响应和时间工具复用。
+- `scripts/generate-platform-contract-backend.js --check`、`scripts/generate-platform-contract-frontend.js --check` 和 `scripts/check-platform-contract.js` 已校验生成产物、前后端代码及文档一致。
+- `project_document/SHARED_KERNEL_GUIDE.md` 已定义共享内核边界。
+- `scripts/check-shared-kernel.js` 已守护可抽取契约/工具类不能依赖 Spring Web、Servlet、JPA 或运行时层。
+
 ## 当前优先级
 
 当前阶段状态见 `project_document/STATUS.md`。

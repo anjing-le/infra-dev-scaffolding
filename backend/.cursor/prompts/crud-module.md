@@ -74,6 +74,7 @@
 - 错误码必须实现 `ErrorCode`，不要复用已有 code；远程/超时类错误不要放进业务模块错误码
 - 日志使用 `@Slf4j`，不要手动拼 requestId/traceId；日志格式会从 MDC 输出
 - 依赖注入使用 `@RequiredArgsConstructor`
+- DTO / VO / ErrorCode 如果属于可复用契约，不能依赖 Spring Web、Servlet、JPA 或运行时层；共享边界参考 `project_document/SHARED_KERNEL_GUIDE.md`
 - 时间字段优先使用 `Instant` / `OffsetDateTime`；需要格式化或当前时间时使用 `DateUtils`
 - 如需读取请求上下文，使用 `GlobalRequestContextHolder.current()`，不要在业务代码中重新生成 requestId
 - 如需 HTTP 调用下游服务，优先使用 `RemoteHttpClient` / `RemoteHttpRequest`
