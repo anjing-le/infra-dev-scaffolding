@@ -13,6 +13,14 @@
   --el-component-custom-height: 36px !important;
 
   --el-component-size: var(--el-component-custom-height) !important;
+  --el-bg-color: var(--default-glass-bg) !important;
+  --el-bg-color-overlay: var(--default-glass-strong-bg) !important;
+  --el-border-color: var(--default-border-dashed) !important;
+  --el-border-color-light: var(--default-border-dashed) !important;
+  --el-border-color-lighter: var(--default-border-dashed) !important;
+  --el-fill-color-blank: transparent !important;
+  --el-fill-color-light: var(--default-glass-subtle-bg) !important;
+  --el-mask-color: rgb(17 24 32 / 24%) !important;
 
   // 边框、按钮圆角...
   --el-border-radius-base: calc(var(--custom-radius) / 3 + 2px) !important;
@@ -37,9 +45,19 @@
   --el-datepicker-inrange-bg-color: var(--art-gray-200) !important;
 }
 
-// el-card 背景色跟系统背景色保持一致
+// el-card 背景色跟系统玻璃面板保持一致
+.el-card,
 html.dark .el-card {
-  --el-card-bg-color: var(--default-box-color) !important;
+  --el-card-bg-color: var(--default-glass-bg) !important;
+  --el-card-border-color: var(--default-glass-border) !important;
+
+  background: var(--default-glass-surface) !important;
+  border: 1px dashed var(--default-glass-border) !important;
+  box-shadow:
+    var(--default-glass-shadow),
+    var(--default-glass-edge-shadow) !important;
+  backdrop-filter: var(--default-glass-filter);
+  -webkit-backdrop-filter: var(--default-glass-filter);
 }
 
 // 修改 el-pagination 大小
@@ -114,12 +132,26 @@ html.dark .el-card {
 
 .el-popover {
   min-width: 80px;
+  background: var(--default-glass-strong-surface) !important;
+  border: 1px dashed var(--default-glass-border) !important;
   border-radius: var(--el-border-radius-small) !important;
+  box-shadow:
+    var(--default-glass-shadow),
+    var(--default-glass-edge-shadow) !important;
+  backdrop-filter: var(--default-glass-filter);
+  -webkit-backdrop-filter: var(--default-glass-filter);
 }
 
 .el-dialog {
+  background: var(--default-glass-strong-surface) !important;
+  border: 1px dashed var(--default-glass-border) !important;
   border-radius: 100px !important;
   border-radius: calc(var(--custom-radius) / 1.2 + 2px) !important;
+  box-shadow:
+    var(--default-glass-shadow),
+    var(--default-glass-edge-shadow) !important;
+  backdrop-filter: var(--default-glass-filter);
+  -webkit-backdrop-filter: var(--default-glass-filter);
   overflow: hidden;
 }
 
@@ -144,8 +176,8 @@ html.dark .el-card {
       position: absolute;
       left: -16px;
       width: calc(100% + 32px);
-      height: 1px;
-      background-color: var(--art-gray-300);
+      height: 0;
+      border-top: 1px dashed var(--default-border-dashed);
     }
 
     &::before {
@@ -160,12 +192,13 @@ html.dark .el-card {
 
 // el-message 样式优化
 .el-message {
-  background-color: var(--default-box-color) !important;
-  border: 0 !important;
+  background: var(--default-glass-strong-surface) !important;
+  border: 1px dashed var(--default-glass-border) !important;
   box-shadow:
-    0 6px 16px 0 rgba(0, 0, 0, 0.08),
-    0 3px 6px -4px rgba(0, 0, 0, 0.12),
-    0 9px 28px 8px rgba(0, 0, 0, 0.05) !important;
+    var(--default-glass-shadow),
+    var(--default-glass-edge-shadow) !important;
+  backdrop-filter: var(--default-glass-filter);
+  -webkit-backdrop-filter: var(--default-glass-filter);
 
   p {
     font-size: 13px;
@@ -175,6 +208,7 @@ html.dark .el-card {
 // 修改 el-dropdown 样式
 .el-dropdown-menu {
   padding: 6px !important;
+  background: transparent !important;
   border-radius: 10px !important;
   border: none !important;
 
@@ -184,12 +218,12 @@ html.dark .el-card {
 
     &:hover:not(.is-disabled) {
       color: var(--art-gray-900) !important;
-      background-color: var(--art-el-active-color) !important;
+      background-color: var(--default-glass-subtle-bg) !important;
     }
 
     &:focus:not(.is-disabled) {
       color: var(--art-gray-900) !important;
-      background-color: var(--art-gray-200) !important;
+      background-color: var(--default-glass-subtle-bg) !important;
     }
   }
 }
@@ -197,6 +231,13 @@ html.dark .el-card {
 // 隐藏 select、dropdown 的三角
 .el-select__popper,
 .el-dropdown__popper {
+  background: var(--default-glass-strong-surface) !important;
+  border: 1px dashed var(--default-glass-border) !important;
+  box-shadow:
+    var(--default-glass-shadow),
+    var(--default-glass-edge-shadow) !important;
+  backdrop-filter: var(--default-glass-filter);
+  -webkit-backdrop-filter: var(--default-glass-filter);
   margin-top: -6px !important;
 
   .el-popper__arrow {
@@ -234,6 +275,53 @@ html.dark .el-card {
 
 // 修改el-button样式
 .el-button {
+  border-style: dashed !important;
+  backdrop-filter: blur(calc(var(--default-glass-blur) / 2)) saturate(175%);
+  -webkit-backdrop-filter: blur(calc(var(--default-glass-blur) / 2)) saturate(175%);
+
+  &:not(.el-button--primary, .is-link, .el-button--text) {
+    background: var(--default-glass-control-bg) !important;
+    border-color: var(--default-glass-border) !important;
+  }
+
+  &:not(.el-button--primary, .is-link, .el-button--text):hover {
+    background: var(--default-glass-strong-bg) !important;
+    border-color: var(--theme-color) !important;
+  }
+
+  &.el-button--success:not(.is-link, .el-button--text) {
+    color: var(--el-color-success) !important;
+    background: color-mix(in srgb, var(--el-color-success) 12%, transparent) !important;
+    border-color: color-mix(in srgb, var(--el-color-success) 36%, transparent) !important;
+  }
+
+  &.el-button--info:not(.is-link, .el-button--text) {
+    color: var(--art-gray-700) !important;
+    background: color-mix(in srgb, var(--art-gray-500) 10%, transparent) !important;
+    border-color: color-mix(in srgb, var(--art-gray-500) 30%, transparent) !important;
+  }
+
+  &.el-button--warning:not(.is-link, .el-button--text) {
+    color: var(--el-color-warning) !important;
+    background: color-mix(in srgb, var(--el-color-warning) 12%, transparent) !important;
+    border-color: color-mix(in srgb, var(--el-color-warning) 36%, transparent) !important;
+  }
+
+  &.el-button--danger:not(.is-link, .el-button--text) {
+    color: var(--el-color-danger) !important;
+    background: color-mix(in srgb, var(--el-color-danger) 12%, transparent) !important;
+    border-color: color-mix(in srgb, var(--el-color-danger) 36%, transparent) !important;
+  }
+
+  &.is-disabled,
+  &.is-disabled:hover,
+  &.is-disabled:focus {
+    color: var(--art-gray-500) !important;
+    background: var(--default-glass-subtle-bg) !important;
+    border-color: var(--default-border-dashed) !important;
+    opacity: 0.72;
+  }
+
   &.el-button--text {
     background-color: transparent !important;
     padding: 0 !important;
@@ -247,11 +335,93 @@ html.dark .el-card {
 // 修改el-tag样式
 .el-tag {
   font-weight: 500;
+  background: var(--default-glass-subtle-bg) !important;
+  border-style: dashed !important;
   transition: all 0s !important;
 
   &.el-tag--default {
     height: 26px !important;
   }
+}
+
+.el-input__wrapper,
+.el-textarea__inner,
+.el-select__wrapper,
+.el-input-number,
+.el-date-editor.el-input__wrapper,
+.el-radio-button__inner,
+.el-checkbox-button__inner {
+  background: var(--default-glass-control-bg) !important;
+  border: 1px dashed var(--default-glass-border) !important;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 42%),
+    inset 0 -1px 0 rgb(255 255 255 / 12%) !important;
+  backdrop-filter: blur(calc(var(--default-glass-blur) / 2)) saturate(175%);
+  -webkit-backdrop-filter: blur(calc(var(--default-glass-blur) / 2)) saturate(175%);
+}
+
+.el-input__wrapper:hover,
+.el-textarea__inner:hover,
+.el-select__wrapper:hover,
+.el-input-number:hover,
+.el-date-editor.el-input__wrapper:hover,
+.el-radio-button__inner:hover,
+.el-checkbox-button__inner:hover {
+  border-color: var(--theme-color) !important;
+}
+
+.el-input__wrapper.is-focus,
+.el-select__wrapper.is-focused,
+.el-textarea__inner:focus {
+  border-color: var(--theme-color) !important;
+}
+
+.el-table {
+  --el-table-bg-color: transparent !important;
+  --el-table-tr-bg-color: transparent !important;
+  --el-table-header-bg-color: transparent !important;
+  --el-table-border-color: var(--default-border-dashed) !important;
+
+  background: transparent !important;
+}
+
+.el-table th.el-table__cell,
+.el-table td.el-table__cell {
+  border-bottom: 1px dashed var(--default-border-dashed) !important;
+}
+
+.el-table--border .el-table__cell {
+  border-right: 1px dashed var(--default-border-dashed) !important;
+}
+
+.el-table__inner-wrapper::before,
+.el-table__border-left-patch,
+.el-table--border::after,
+.el-table--border::before {
+  background-color: transparent !important;
+  border-color: var(--default-border-dashed) !important;
+}
+
+.el-table__row:hover > td.el-table__cell {
+  background: var(--default-glass-subtle-bg) !important;
+}
+
+.el-pagination.is-background .btn-next,
+.el-pagination.is-background .btn-prev,
+.el-pagination.is-background .el-pager li {
+  background: var(--default-glass-control-bg) !important;
+  border: 1px dashed var(--default-glass-border);
+}
+
+.el-drawer,
+.el-message-box {
+  background: var(--default-glass-strong-surface) !important;
+  border: 1px dashed var(--default-glass-border) !important;
+  box-shadow:
+    var(--default-glass-shadow),
+    var(--default-glass-edge-shadow) !important;
+  backdrop-filter: var(--default-glass-filter);
+  -webkit-backdrop-filter: var(--default-glass-filter);
 }
 
 .el-checkbox-group {

@@ -48,6 +48,21 @@
   display: none;
 }
 
+html,
+body,
+#app {
+  min-height: 100%;
+  background: var(--default-bg-color);
+}
+
+body {
+  color: var(--art-gray-900);
+}
+
+:where(.border, .border-t, .border-r, .border-b, .border-l, .border-full-d, .border-t-d, .border-r-d, .border-b-d, .border-l-d) {
+  border-style: dashed !important;
+}
+
 // 语言切换选中样式
 .langDropDownStyle {
   // 选中项背景颜色
@@ -83,41 +98,58 @@
 
 // 盒子默认边框
 .page-content {
-  border: 1px solid var(--art-card-border) !important;
+  background: var(--default-glass-surface) !important;
+  border: 1px dashed var(--default-glass-border) !important;
+  box-shadow:
+    var(--default-glass-shadow),
+    var(--default-glass-edge-shadow) !important;
+  backdrop-filter: var(--default-glass-filter);
+  -webkit-backdrop-filter: var(--default-glass-filter);
 }
 
-@mixin art-card-base($border-color, $shadow: none, $radius-diff: 4px) {
-  background: var(--default-box-color);
-  border: 1px solid #{$border-color} !important;
+@mixin art-card-base($border-color, $shadow: var(--default-glass-shadow), $radius-diff: 4px) {
+  background: var(--default-glass-surface) !important;
+  border: 1px dashed #{$border-color} !important;
   border-radius: calc(var(--custom-radius) + #{$radius-diff}) !important;
-  box-shadow: #{$shadow} !important;
+  box-shadow:
+    #{$shadow},
+    var(--default-glass-edge-shadow) !important;
+  backdrop-filter: var(--default-glass-filter);
+  -webkit-backdrop-filter: var(--default-glass-filter);
 
-  --el-card-border-color: var(--default-border) !important;
+  --el-card-bg-color: var(--default-glass-bg) !important;
+  --el-card-border-color: var(--default-glass-border) !important;
 }
 
 .art-card,
 .art-card-sm,
 .art-card-xs {
-  border: 1px solid var(--art-card-border);
+  background: var(--default-glass-surface);
+  border: 1px dashed var(--default-glass-border);
+  box-shadow:
+    var(--default-glass-shadow),
+    var(--default-glass-edge-shadow);
+  backdrop-filter: var(--default-glass-filter);
+  -webkit-backdrop-filter: var(--default-glass-filter);
 }
 
 // 盒子边框
 [data-box-mode='border-mode'] {
   .page-content,
   .art-table-card {
-    border: 1px solid var(--art-card-border) !important;
+    border: 1px dashed var(--default-glass-border) !important;
   }
 
   .art-card {
-    @include art-card-base(var(--art-card-border), none, 4px);
+    @include art-card-base(var(--default-glass-border), var(--default-glass-shadow), 4px);
   }
 
   .art-card-sm {
-    @include art-card-base(var(--art-card-border), none, 0px);
+    @include art-card-base(var(--default-glass-border), var(--default-glass-shadow), 0px);
   }
 
   .art-card-xs {
-    @include art-card-base(var(--art-card-border), none, -4px);
+    @include art-card-base(var(--default-glass-border), var(--default-glass-shadow), -4px);
   }
 }
 
@@ -125,34 +157,36 @@
 [data-box-mode='shadow-mode'] {
   .page-content,
   .art-table-card {
-    box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.04) !important;
-    border: 1px solid var(--art-gray-200) !important;
+    border: 1px dashed var(--default-glass-border) !important;
+    box-shadow:
+      var(--default-glass-shadow),
+      var(--default-glass-edge-shadow) !important;
   }
 
   .layout-sidebar {
-    border-right: 1px solid var(--art-card-border) !important;
+    border-right: 1px dashed var(--default-glass-border) !important;
   }
 
   .art-card {
     @include art-card-base(
-      var(--art-gray-200),
-      (0 1px 3px 0 rgba(0, 0, 0, 0.03), 0 1px 2px -1px rgba(0, 0, 0, 0.08)),
+      var(--default-glass-border),
+      var(--default-glass-shadow),
       4px
     );
   }
 
   .art-card-sm {
     @include art-card-base(
-      var(--art-gray-200),
-      (0 1px 3px 0 rgba(0, 0, 0, 0.03), 0 1px 2px -1px rgba(0, 0, 0, 0.08)),
+      var(--default-glass-border),
+      var(--default-glass-shadow),
       2px
     );
   }
 
   .art-card-xs {
     @include art-card-base(
-      var(--art-gray-200),
-      (0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 1px -1px rgba(0, 0, 0, 0.08)),
+      var(--default-glass-border),
+      var(--default-glass-shadow),
       -4px
     );
   }
@@ -170,7 +204,9 @@
   margin-top: 0;
   padding: 15px;
   box-sizing: border-box;
-  background-color: var(--default-box-color);
+  background: var(--default-glass-strong-surface);
+  backdrop-filter: var(--default-glass-filter);
+  -webkit-backdrop-filter: var(--default-glass-filter);
   display: flex;
   flex-direction: column;
 }
@@ -181,12 +217,24 @@
   display: flex;
   flex-direction: column;
   margin-top: 12px;
+  background: var(--default-glass-surface) !important;
+  border: 1px dashed var(--default-glass-border) !important;
   border-radius: calc(var(--custom-radius) / 2 + 2px) !important;
+  box-shadow:
+    var(--default-glass-shadow),
+    var(--default-glass-edge-shadow) !important;
+  backdrop-filter: var(--default-glass-filter);
+  -webkit-backdrop-filter: var(--default-glass-filter);
 
   .el-card__body {
     height: 100%;
     overflow: hidden;
   }
+}
+
+.art-card-header {
+  margin-bottom: 12px;
+  border-bottom: 1px dashed var(--default-border-dashed);
 }
 
 // 容器全高

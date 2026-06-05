@@ -30,13 +30,33 @@
   /* Border Colors */
   --art-card-border: rgba(0, 0, 0, 0.08);
 
-  --default-border: #e2e8ee;
-  --default-border-dashed: #dbdfe9;
+  --default-border: rgb(17 24 32 / 12%);
+  --default-border-dashed: rgb(17 24 32 / 18%);
 
   /* Background Colors */
-  /* --default-bg-color: #fafbfc; */
-  --default-bg-color: #f7f5ee;
+  --default-bg-color: #f6f8fa;
   --default-box-color: #ffffff;
+  --default-glass-bg: rgb(255 255 255 / 52%);
+  --default-glass-strong-bg: rgb(255 255 255 / 68%);
+  --default-glass-subtle-bg: rgb(255 255 255 / 34%);
+  --default-glass-control-bg: rgb(255 255 255 / 56%);
+  --default-glass-surface:
+    radial-gradient(circle at 18% 0%, rgb(255 255 255 / 82%), transparent 36%),
+    linear-gradient(135deg, rgb(255 255 255 / 64%), rgb(255 255 255 / 32%) 48%, rgb(255 255 255 / 52%));
+  --default-glass-strong-surface:
+    radial-gradient(circle at 16% 0%, rgb(255 255 255 / 90%), transparent 38%),
+    linear-gradient(135deg, rgb(255 255 255 / 78%), rgb(255 255 255 / 46%) 52%, rgb(255 255 255 / 64%));
+  --default-glass-subtle-surface:
+    linear-gradient(135deg, rgb(255 255 255 / 42%), rgb(255 255 255 / 22%));
+  --default-glass-border: rgb(17 24 32 / 15%);
+  --default-glass-shadow:
+    0 22px 70px rgb(17 24 32 / 10%),
+    0 2px 10px rgb(255 255 255 / 34%) inset;
+  --default-glass-edge-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 78%),
+    inset 0 -1px 0 rgb(255 255 255 / 28%);
+  --default-glass-blur: 26px;
+  --default-glass-filter: blur(var(--default-glass-blur)) saturate(190%) contrast(104%);
 
   /* Hover Color */
   --art-hover-color: #edeff0;
@@ -68,11 +88,32 @@
   --art-card-border: rgba(255, 255, 255, 0.08);
 
   --default-border: rgba(255, 255, 255, 0.1);
-  --default-border-dashed: #363843;
+  --default-border-dashed: rgb(255 255 255 / 18%);
 
   /* Background Colors */
-  --default-bg-color: #070707;
+  --default-bg-color: #0e1012;
   --default-box-color: #161618;
+  --default-glass-bg: rgb(22 24 28 / 54%);
+  --default-glass-strong-bg: rgb(22 24 28 / 72%);
+  --default-glass-subtle-bg: rgb(255 255 255 / 8%);
+  --default-glass-control-bg: rgb(255 255 255 / 9%);
+  --default-glass-surface:
+    radial-gradient(circle at 18% 0%, rgb(255 255 255 / 16%), transparent 38%),
+    linear-gradient(135deg, rgb(38 41 46 / 62%), rgb(18 20 24 / 46%) 52%, rgb(36 39 44 / 54%));
+  --default-glass-strong-surface:
+    radial-gradient(circle at 16% 0%, rgb(255 255 255 / 20%), transparent 40%),
+    linear-gradient(135deg, rgb(42 45 51 / 78%), rgb(20 22 26 / 60%) 52%, rgb(36 39 44 / 68%));
+  --default-glass-subtle-surface:
+    linear-gradient(135deg, rgb(255 255 255 / 10%), rgb(255 255 255 / 4%));
+  --default-glass-border: rgb(255 255 255 / 14%);
+  --default-glass-shadow:
+    0 22px 70px rgb(0 0 0 / 36%),
+    0 2px 12px rgb(255 255 255 / 5%) inset;
+  --default-glass-edge-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 16%),
+    inset 0 -1px 0 rgb(255 255 255 / 6%);
+  --default-glass-blur: 26px;
+  --default-glass-filter: blur(var(--default-glass-blur)) saturate(180%) contrast(108%);
 
   /* Hover Color */
   --art-hover-color: #252530;
@@ -161,23 +202,23 @@
 
   /* Border Utilities */
   .border-full-d {
-    @apply border border-[var(--default-border)];
+    @apply border border-dashed border-[var(--default-border-dashed)];
   }
 
   .border-b-d {
-    @apply border-b border-[var(--default-border)];
+    @apply border-b border-dashed border-[var(--default-border-dashed)];
   }
 
   .border-t-d {
-    @apply border-t border-[var(--default-border)];
+    @apply border-t border-dashed border-[var(--default-border-dashed)];
   }
 
   .border-l-d {
-    @apply border-l border-[var(--default-border)];
+    @apply border-l border-dashed border-[var(--default-border-dashed)];
   }
 
   .border-r-d {
-    @apply border-r border-[var(--default-border)];
+    @apply border-r border-dashed border-[var(--default-border-dashed)];
   }
 
   /* Cursor Utilities */

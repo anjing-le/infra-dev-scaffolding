@@ -1,8 +1,23 @@
 .app-layout {
+  position: relative;
+  isolation: isolate;
   display: flex;
   width: 100%;
   min-height: 100vh;
   background: var(--default-bg-color);
+
+  &::before {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    content: '';
+    background-image:
+      linear-gradient(var(--default-border-dashed) 1px, transparent 1px),
+      linear-gradient(90deg, var(--default-border-dashed) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: linear-gradient(to bottom, rgb(0 0 0 / 64%), transparent 76%);
+  }
 
   #app-sidebar {
     flex-shrink: 0;
@@ -22,6 +37,14 @@
       z-index: 50;
       flex-shrink: 0;
       width: 100%;
+
+      :deep(> div) {
+        background: var(--default-glass-strong-surface) !important;
+        border-bottom: 1px dashed var(--default-glass-border);
+        box-shadow: var(--default-glass-edge-shadow);
+        backdrop-filter: var(--default-glass-filter);
+        -webkit-backdrop-filter: var(--default-glass-filter);
+      }
     }
 
     #app-content {
@@ -38,8 +61,14 @@
           box-sizing: border-box;
           padding: 20px;
           overflow: hidden;
-          background: var(--default-box-color);
+          background: var(--default-glass-surface);
+          border: 1px dashed var(--default-glass-border) !important;
           border-radius: calc(var(--custom-radius) / 2 + 2px) !important;
+          box-shadow:
+            var(--default-glass-shadow),
+            var(--default-glass-edge-shadow);
+          backdrop-filter: var(--default-glass-filter);
+          -webkit-backdrop-filter: var(--default-glass-filter);
         }
       }
     }

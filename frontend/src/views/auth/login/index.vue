@@ -1,25 +1,18 @@
 <!-- 登录页面 -->
 <template>
-  <div class="flex w-full h-screen">
-    <LoginLeftView />
+  <div class="login-page">
+    <AuthTopBar class="login-top-bar" />
 
-    <div class="relative flex-1">
-      <AuthTopBar />
-
-      <div class="auth-right-wrap">
+    <main class="login-main">
+      <section class="auth-right-wrap">
         <div class="form">
-          <h3 class="title">{{ $t('login.title') }}</h3>
-          <p class="sub-title">{{ $t('login.subTitle') }}</p>
-          <ElForm
-            ref="formRef"
-            :model="formData"
-            :rules="rules"
-            :key="formKey"
-            @keyup.enter="handleSubmit"
-            style="margin-top: 25px"
-          >
-            <ElFormItem prop="account">
-              <ElSelect v-model="formData.account" @change="setupAccount">
+          <div class="form-head">
+            <div class="brand">
+              <ArtLogo class="brand-logo" size="40" />
+            </div>
+            <div class="account-control">
+              <ArtSvgIcon icon="ri:user-3-line" class="account-icon" />
+              <ElSelect v-model="formData.account" class="account-select" @change="setupAccount">
                 <ElOption
                   v-for="account in accounts"
                   :key="account.key"
@@ -29,7 +22,16 @@
                   <span>{{ account.label }}</span>
                 </ElOption>
               </ElSelect>
-            </ElFormItem>
+            </div>
+          </div>
+          <ElForm
+            ref="formRef"
+            :model="formData"
+            :rules="rules"
+            :key="formKey"
+            class="auth-form"
+            @keyup.enter="handleSubmit"
+          >
             <ElFormItem prop="username">
               <ElInput
                 class="custom-height"
@@ -49,7 +51,7 @@
             </ElFormItem>
 
             <!-- 推拽验证 -->
-            <div class="relative pb-5 mt-6">
+            <div class="verify-row">
               <div
                 class="relative z-[2] overflow-hidden select-none rounded-lg border border-transparent tad-300"
                 :class="{ '!border-[#FF4E4F]': !isPassing && isClickPass }"
@@ -57,9 +59,9 @@
                 <ArtDragVerify
                   ref="dragVerify"
                   v-model:value="isPassing"
-                  :text="$t('login.sliderText')"
+                  text=""
                   textColor="var(--art-gray-700)"
-                  :successText="$t('login.sliderSuccessText')"
+                  successText=""
                   :progressBarBg="getCssVar('--el-color-primary')"
                   :background="isDark ? '#26272F' : '#F1F1F4'"
                   handlerBg="var(--default-box-color)"
@@ -73,50 +75,65 @@
               </p>
             </div>
 
-            <div class="flex-cb mt-2 text-sm">
-              <ElCheckbox v-model="formData.rememberPassword">{{
-                $t('login.rememberPwd')
-              }}</ElCheckbox>
-              <RouterLink class="text-theme" :to="{ name: 'ForgetPassword' }">{{
-                $t('login.forgetPwd')
-              }}</RouterLink>
+            <div class="form-options">
+              <ElTooltip :content="$t('login.rememberPwd')" placement="top">
+                <ElCheckbox
+                  v-model="formData.rememberPassword"
+                  :aria-label="$t('login.rememberPwd')"
+                />
+              </ElTooltip>
+              <div class="form-option-actions">
+                <ElTooltip :content="$t('login.forgetPwd')" placement="top">
+                  <RouterLink
+                    class="icon-link"
+                    :aria-label="$t('login.forgetPwd')"
+                    :to="{ name: 'ForgetPassword' }"
+                  >
+                    <ArtSvgIcon icon="ri:key-2-line" />
+                  </RouterLink>
+                </ElTooltip>
+                <ElTooltip :content="$t('login.register')" placement="top">
+                  <RouterLink
+                    class="icon-link"
+                    :aria-label="$t('login.register')"
+                    :to="{ name: 'Register' }"
+                  >
+                    <ArtSvgIcon icon="ri:user-add-line" />
+                  </RouterLink>
+                </ElTooltip>
+              </div>
             </div>
 
-            <div style="margin-top: 30px">
-              <ElButton
-                class="w-full custom-height"
-                type="primary"
-                @click="handleSubmit"
-                :loading="loading"
-                v-ripple
-              >
-                {{ $t('login.btnText') }}
-              </ElButton>
-            </div>
-
-            <!-- 游客登录按钮 -->
-            <div style="margin-top: 12px">
-              <ElButton
-                class="w-full custom-height"
-                plain
-                @click="handleGuestLogin"
-                :loading="guestLoading"
-                v-ripple
-              >
-                {{ $t('login.guestBtnText') }}
-              </ElButton>
-            </div>
-
-            <div class="mt-5 text-sm text-gray-600">
-              <span>{{ $t('login.noAccount') }}</span>
-              <RouterLink class="text-theme" :to="{ name: 'Register' }">{{
-                $t('login.register')
-              }}</RouterLink>
+            <div class="action-row">
+              <ElTooltip :content="$t('login.btnText')" placement="top">
+                <ElButton
+                  class="icon-action"
+                  type="primary"
+                  :aria-label="$t('login.btnText')"
+                  @click="handleSubmit"
+                  :loading="loading"
+                  v-ripple
+                >
+                  <ArtSvgIcon icon="ri:arrow-right-line" />
+                </ElButton>
+              </ElTooltip>
+              <ElTooltip :content="$t('login.guestBtnText')" placement="top">
+                <ElButton
+                  class="icon-action"
+                  plain
+                  :aria-label="$t('login.guestBtnText')"
+                  @click="handleGuestLogin"
+                  :loading="guestLoading"
+                  v-ripple
+                >
+                  <ArtSvgIcon icon="ri:compass-3-line" />
+                </ElButton>
+              </ElTooltip>
             </div>
           </ElForm>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   </div>
 </template>
 
@@ -185,7 +202,12 @@
   const isClickPass = ref(false)
 
   const systemName = AppConfig.systemInfo.name
+  const defaultHomePath = '/dashboard/console'
   const formRef = ref<FormInstance>()
+
+  const resolveLoginRedirect = (redirect?: string) => {
+    return redirect && redirect !== '/' ? redirect : defaultHomePath
+  }
 
   const formData = reactive({
     account: '',
@@ -255,7 +277,7 @@
 
       // 获取 redirect 参数，如果存在则跳转到指定页面，否则跳转到首页
       const redirect = route.query.redirect as string
-      router.push(redirect || '/')
+      router.push(resolveLoginRedirect(redirect))
     } catch (error) {
       // 处理 HttpError
       if (error instanceof HttpError) {
@@ -324,7 +346,7 @@
 
       // 跳转到首页
       const redirect = route.query.redirect as string
-      router.push(redirect || '/')
+      router.push(resolveLoginRedirect(redirect))
     } catch (error) {
       console.error('[Guest Login] Error:', error)
     } finally {
@@ -338,7 +360,152 @@
 </style>
 
 <style lang="scss" scoped>
+  :deep(.login-top-bar h1) {
+    display: none;
+  }
+
+  :deep(.el-form-item) {
+    margin-bottom: 18px;
+  }
+
+  :deep(.el-input__wrapper),
   :deep(.el-select__wrapper) {
-    height: 40px !important;
+    min-height: 44px;
+    padding: 0 2px;
+    background: transparent;
+    border: 0 !important;
+    border-bottom: 1px dashed var(--default-border-dashed) !important;
+    border-radius: 0;
+    box-shadow: none !important;
+  }
+
+  :deep(.el-input__wrapper:hover),
+  :deep(.el-select__wrapper:hover) {
+    border-bottom-color: var(--theme-color) !important;
+    box-shadow: none !important;
+  }
+
+  :deep(.el-input__wrapper.is-focus),
+  :deep(.el-select__wrapper.is-focused) {
+    background: transparent;
+    border-bottom-color: #111820 !important;
+    box-shadow: none !important;
+  }
+
+  :deep(.el-input__inner) {
+    color: #111820;
+    font-size: 14px;
+  }
+
+  :deep(.el-input__inner::placeholder) {
+    color: #9aa3ad;
+  }
+
+  :deep(.account-select) {
+    width: 100%;
+    transition: width 0.2s ease;
+  }
+
+  :deep(.account-select .el-select__wrapper) {
+    min-height: 34px;
+    padding: 0 12px;
+    border: 1px dashed var(--default-glass-border) !important;
+    border-radius: 999px;
+    box-shadow: none !important;
+  }
+
+  :deep(.account-select .el-select__selected-item) {
+    opacity: 0;
+    transition: opacity 0.16s ease;
+  }
+
+  .account-control:hover :deep(.account-select .el-select__selected-item),
+  .account-control:focus-within :deep(.account-select .el-select__selected-item) {
+    opacity: 1;
+  }
+
+  :deep(.account-select .el-select__suffix) {
+    opacity: 0;
+    transition: opacity 0.16s ease;
+  }
+
+  .account-control:hover :deep(.account-select .el-select__suffix),
+  .account-control:focus-within :deep(.account-select .el-select__suffix) {
+    opacity: 1;
+  }
+
+  :deep(.drag_verify) {
+    overflow: hidden;
+    border: 1px dashed var(--default-glass-border) !important;
+    box-shadow: none !important;
+  }
+
+  :deep(.drag_verify .dv_handler) {
+    border-right: 1px dashed var(--default-glass-border);
+    box-shadow: none;
+  }
+
+  :deep(.drag_verify .dv_text) {
+    font-size: 0;
+  }
+
+  :deep(.el-button) {
+    border-radius: 8px;
+  }
+
+  :deep(.el-button--primary) {
+    border-color: #101820;
+    color: #fff;
+    background-color: #101820;
+  }
+
+  :deep(.el-button--primary:hover),
+  :deep(.el-button--primary:focus) {
+    border-color: #26313d;
+    color: #fff;
+    background-color: #26313d;
+  }
+
+  :deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
+    border-color: #101820;
+    background-color: #101820;
+  }
+
+  :deep(.el-checkbox__label) {
+    display: none;
+  }
+
+  :deep(.icon-action .art-svg-icon),
+  .icon-link :deep(.art-svg-icon) {
+    font-size: 18px;
+    color: inherit !important;
+  }
+
+  :global(.dark) :deep(.el-input__wrapper),
+  :global(.dark) :deep(.el-select__wrapper) {
+    background: transparent;
+    border-bottom-color: var(--default-border-dashed) !important;
+    box-shadow: none !important;
+  }
+
+  :global(.dark) :deep(.el-input__wrapper.is-focus),
+  :global(.dark) :deep(.el-select__wrapper.is-focused) {
+    background: transparent;
+    border-bottom-color: rgb(255 255 255 / 72%) !important;
+    box-shadow: none !important;
+  }
+
+  :global(.dark) :deep(.account-select .el-select__wrapper) {
+    border-color: var(--default-glass-border) !important;
+    box-shadow: none !important;
+  }
+
+  :global(.dark) :deep(.el-input__inner) {
+    color: #f8fafc;
+  }
+
+  :global(.dark) :deep(.drag_verify) {
+    border-color: var(--default-glass-border) !important;
+    box-shadow: none !important;
   }
 </style>

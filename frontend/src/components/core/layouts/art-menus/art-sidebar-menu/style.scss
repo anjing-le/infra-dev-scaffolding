@@ -3,7 +3,11 @@
   height: 100vh;
   user-select: none;
   scrollbar-width: none;
-  border-right: 1px solid var(--art-card-border);
+  background: var(--default-glass-surface);
+  border-right: 1px dashed var(--default-glass-border);
+  box-shadow: var(--default-glass-edge-shadow);
+  backdrop-filter: var(--default-glass-filter);
+  -webkit-backdrop-filter: var(--default-glass-filter);
 
   &.no-border {
     border-right: none !important;
@@ -24,7 +28,9 @@
     position: relative;
     width: 80px;
     height: 100%;
-    border-right: 1px solid var(--art-card-border) !important;
+    background: var(--default-glass-surface) !important;
+    border-right: 1px dashed var(--default-glass-border) !important;
+    box-shadow: var(--default-glass-edge-shadow);
     transition: width 0.25s;
 
     .logo {
@@ -66,7 +72,8 @@
           }
 
           &.is-active {
-            background: var(--el-color-primary-light-9);
+            background: var(--default-glass-subtle-bg);
+            border: 1px dashed var(--default-glass-border);
 
             .art-svg-icon,
             span {
@@ -90,6 +97,9 @@
     position: relative;
     box-sizing: border-box;
     height: 100vh;
+    background: var(--default-glass-subtle-surface) !important;
+    backdrop-filter: var(--default-glass-filter);
+    -webkit-backdrop-filter: var(--default-glass-filter);
 
     @media only screen and (width <= 640px) {
       height: 100dvh;
@@ -113,9 +123,10 @@
       width: 11px;
       height: 50px;
       cursor: pointer;
-      background-color: var(--default-box-color);
-      border: 1px solid var(--art-card-border);
+      background: var(--default-glass-strong-surface);
+      border: 1px dashed var(--default-glass-border);
       border-radius: 0 15px 15px 0;
+      box-shadow: var(--default-glass-edge-shadow);
       opacity: 0;
       transition: opacity 0.2s;
       transform: translateY(-50%);
@@ -147,6 +158,7 @@
     overflow: hidden;
     line-height: 60px;
     cursor: pointer;
+    background: transparent !important;
 
     .logo {
       margin-left: 28px;
@@ -175,6 +187,7 @@
     // 防止菜单内的滚动影响整个页面滚动
     overscroll-behavior: contain;
     border-right: 0;
+    background: transparent !important;
     scrollbar-width: none;
     -ms-scroll-chaining: contain;
 
@@ -227,6 +240,8 @@
       width: 100%;
       height: 100vh;
       background: rgba($color: #000, $alpha: 50%);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       transition: opacity 0.2s ease-in-out;
     }
   }
@@ -240,14 +255,14 @@
 
 .dark {
   .layout-sidebar {
-    border-right: 1px solid rgb(255 255 255 / 13%);
+    border-right: 1px dashed var(--default-glass-border);
 
     :deep(.el-scrollbar__thumb) {
       background-color: #777;
     }
 
     .dual-menu-left {
-      border-right: 1px solid rgb(255 255 255 / 9%) !important;
+      border-right: 1px dashed var(--default-glass-border) !important;
     }
   }
 }
