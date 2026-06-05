@@ -1,4 +1,5 @@
 import { DEFAULT_TIME_ZONE } from '@/contracts/platform-contract'
+import { getClientLocale } from '@/utils/locale'
 
 export type DateInput = Date | string | number | null | undefined
 
@@ -79,7 +80,7 @@ export const formatDateTime = (
   if (!date) return ''
 
   const {
-    locale = navigator.language || 'zh-CN',
+    locale = getClientLocale(),
     timeZone = getClientTimeZone(),
     ...dateTimeOptions
   } = options

@@ -5,7 +5,8 @@ const path = require('path')
 const root = path.resolve(__dirname, '..')
 
 const allowedFiles = new Set([
-  'frontend/src/utils/time/index.ts'
+  'frontend/src/utils/time/index.ts',
+  'frontend/src/utils/locale/index.ts'
 ])
 
 const requiredTokens = [
@@ -16,6 +17,7 @@ const requiredTokens = [
   'formatFilenameTimestamp',
   'nowIsoString',
   'getClientTimeZone',
+  'getClientLocale',
   'DEFAULT_TIME_ZONE'
 ]
 
@@ -23,6 +25,7 @@ const disallowedPatterns = [
   [/\btoLocale(DateString|TimeString)\s*\(/, 'direct locale date/time formatting'],
   [/\bnew Date\([^)]*\)\.toLocaleString\s*\(/, 'direct locale date/time formatting'],
   [/\bIntl\.DateTimeFormat\s*\(/, 'direct Intl.DateTimeFormat usage'],
+  [/\bnavigator\.language\b/, 'direct navigator language usage'],
   [/\buseDateFormat\s*\(/, 'direct useDateFormat usage'],
   [/\b(dayjs|moment)\s*\(/, 'direct dayjs/moment formatting'],
   [/\bnew Date\(\)\.toISOString\s*\(/, 'direct current ISO timestamp formatting']

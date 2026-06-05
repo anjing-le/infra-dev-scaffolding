@@ -41,6 +41,7 @@ require_file backend/src/main/java/com/anjing/config/http/RequestContextFilter.j
 require_file backend/src/main/java/com/anjing/util/LocaleUtils.java
 require_file backend/src/main/java/com/anjing/util/TimeZoneUtils.java
 require_file frontend/src/utils/http/context.ts
+require_file frontend/src/utils/locale/index.ts
 require_file backend/src/main/java/com/anjing/client/RemoteHttpClient.java
 require_file backend/src/main/java/com/anjing/util/RemoteCallWrapper.java
 require_file frontend/src/contracts/platform-contract.ts
@@ -157,10 +158,13 @@ require_token frontend/src/contracts/platform-contract.ts '"acceptLanguage": "Ac
 require_token frontend/src/contracts/platform-contract.ts 'FRONTEND_PROPAGATED_HEADER_KEYS = PLATFORM_CONTRACT.frontendPropagatedHeaders'
 require_token frontend/src/contracts/platform-contract.ts 'DEFAULT_LOCALE = PLATFORM_CONTRACT.locale.defaultLocale'
 require_token frontend/src/contracts/platform-contract.ts 'SUPPORTED_LOCALES = PLATFORM_CONTRACT.locale.supportedLocales'
+require_token frontend/src/utils/locale/index.ts 'matchSupportedLocale'
+require_token frontend/src/utils/locale/index.ts 'getClientLocale'
+require_token frontend/src/utils/locale/index.ts 'getLanguageTag'
 require_token frontend/src/utils/http/context.ts 'getOrCreateTraceId'
 require_token frontend/src/utils/http/context.ts 'buildRequestContext'
 require_token frontend/src/utils/http/context.ts 'buildRequestContextHeaders'
-require_token frontend/src/utils/http/context.ts 'matchSupportedLocale'
+require_token frontend/src/utils/http/context.ts "import { getLanguageTag } from '@/utils/locale'"
 require_token frontend/src/utils/http/context.ts 'REQUEST_HEADERS[key]'
 require_token backend/src/main/java/com/anjing/util/RemoteCallWrapper.java 'serviceCallHeaders'
 require_token backend/src/main/java/com/anjing/util/RemoteCallWrapper.java 'RequestHeaderConstants.CALLER_ID'
@@ -171,6 +175,7 @@ require_token backend/src/main/java/com/anjing/config/properties/RemoteHttpClien
 
 # Time contract: shared utilities exist; avoid system default timezone in backend business code.
 require_token frontend/src/utils/time/index.ts 'getClientTimeZone'
+require_token frontend/src/utils/time/index.ts 'getClientLocale'
 require_token frontend/src/utils/time/index.ts 'import { DEFAULT_TIME_ZONE }'
 require_token frontend/src/utils/time/index.ts 'formatDateTime'
 require_token backend/src/main/java/com/anjing/util/TimeZoneUtils.java 'PlatformContractConstants.Time.DEFAULT_TIME_ZONE'

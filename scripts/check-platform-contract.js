@@ -17,6 +17,7 @@ const files = {
   frontendResponseTypes: 'frontend/src/types/common/response.ts',
   frontendApiTypes: 'frontend/src/types/api/api.d.ts',
   frontendTime: 'frontend/src/utils/time/index.ts',
+  frontendLocale: 'frontend/src/utils/locale/index.ts',
   localeUtils: 'backend/src/main/java/com/anjing/util/LocaleUtils.java',
   timeZoneUtils: 'backend/src/main/java/com/anjing/util/TimeZoneUtils.java',
   dateUtils: 'backend/src/main/java/com/anjing/util/DateUtils.java',
@@ -155,9 +156,13 @@ requireToken(files.frontendPlatform, `"clientLocaleHeader": "${locale.clientLoca
 requireToken(files.frontendPlatform, 'DEFAULT_LOCALE = PLATFORM_CONTRACT.locale.defaultLocale')
 requireToken(files.frontendPlatform, 'SUPPORTED_LOCALES = PLATFORM_CONTRACT.locale.supportedLocales')
 requireToken(files.frontendPlatform, 'PlatformSupportedLocale')
-requireToken(files.frontendContext, 'DEFAULT_LOCALE')
-requireToken(files.frontendContext, 'SUPPORTED_LOCALES')
-requireToken(files.frontendContext, 'matchSupportedLocale')
+requireToken(files.frontendLocale, 'DEFAULT_LOCALE')
+requireToken(files.frontendLocale, 'SUPPORTED_LOCALES')
+requireToken(files.frontendLocale, 'PlatformSupportedLocale')
+requireToken(files.frontendLocale, 'matchSupportedLocale')
+requireToken(files.frontendLocale, 'getClientLocale')
+requireToken(files.frontendContext, "import { getLanguageTag } from '@/utils/locale'")
+requireToken(files.frontendTime, "import { getClientLocale } from '@/utils/locale'")
 requireToken(files.localeUtils, 'PlatformContractConstants.Locale.DEFAULT_LOCALE')
 requireToken(files.localeUtils, 'PlatformContractConstants.Locale.SUPPORTED_LOCALES')
 requireToken(files.localeUtils, 'normalizeAcceptLanguage')

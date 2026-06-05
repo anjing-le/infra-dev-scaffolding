@@ -7,7 +7,8 @@ const contractPath = path.join(root, 'contracts/platform-contract.json')
 
 const allowedFiles = new Set([
   'frontend/src/contracts/platform-contract.ts',
-  'frontend/src/utils/http/context.ts'
+  'frontend/src/utils/http/context.ts',
+  'frontend/src/utils/locale/index.ts'
 ])
 
 const requiredContextTokens = [
@@ -17,9 +18,7 @@ const requiredContextTokens = [
   'export const buildRequestContext',
   'export const buildRequestContextHeaders',
   'FRONTEND_PROPAGATED_HEADER_KEYS',
-  'DEFAULT_LOCALE',
-  'SUPPORTED_LOCALES',
-  'matchSupportedLocale',
+  "import { getLanguageTag } from '@/utils/locale'",
   'REQUEST_HEADERS[key]',
   'requestId: createRequestId()',
   'traceId: getOrCreateTraceId()',
@@ -129,6 +128,20 @@ if (!platformSource.includes('FRONTEND_PROPAGATED_HEADER_KEYS')) {
 for (const token of ['DEFAULT_LOCALE', 'SUPPORTED_LOCALES', 'PlatformSupportedLocale']) {
   if (!platformSource.includes(token)) {
     fail(`frontend/src/contracts/platform-contract.ts is missing ${token}`)
+  }
+}
+
+const localeSource = read('frontend/src/utils/locale/index.ts')
+for (const token of [
+  'DEFAULT_LOCALE',
+  'SUPPORTED_LOCALES',
+  'PlatformSupportedLocale',
+  'matchSupportedLocale',
+  'getClientLocale',
+  'getLanguageTag'
+]) {
+  if (!localeSource.includes(token)) {
+    fail(`frontend/src/utils/locale/index.ts is missing ${token}`)
   }
 }
 

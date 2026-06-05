@@ -46,7 +46,7 @@
 - `SUPPORTED_LOCALES`
 - `PlatformSupportedLocale`
 
-`ApiConstants`、`RequestHeaderConstants`、`APIResponse`、`TimeZoneUtils`、`LocaleUtils`、`frontend/src/utils/http/context.ts`、`frontend/src/utils/http/response.ts`、`frontend/src/utils/time/index.ts` 应引用生成文件，不要重复手写 API 前缀、请求头、前端透传头列表、成功码、默认时区或支持语言。
+`ApiConstants`、`RequestHeaderConstants`、`APIResponse`、`TimeZoneUtils`、`LocaleUtils`、`frontend/src/utils/http/context.ts`、`frontend/src/utils/http/response.ts`、`frontend/src/utils/time/index.ts`、`frontend/src/utils/locale/index.ts` 应引用生成文件，不要重复手写 API 前缀、请求头、前端透传头列表、成功码、默认时区或支持语言。
 
 ## Update Rules
 

@@ -70,7 +70,7 @@ PageResult.of(page.getContent(), page.getTotalElements(), page.getNumber() + 1, 
 - `traceId` 在当前浏览器会话内复用，用于把页面内连续请求和后端服务间调用串起来。
 - `X-Time-Zone` 来自统一时间工具，`Accept-Language` 来自用户语言或浏览器语言。
 - 平台时区从 `contracts/platform-contract.json` 的 `time.defaultTimeZone` 派生；后端通过 `TimeZoneUtils.normalizeTimeZone` 归一化，缺失或非法时回落到默认 UTC。
-- 平台语言从 `contracts/platform-contract.json` 的 `locale.defaultLocale` 和 `locale.supportedLocales` 派生；前端只发送支持语言，后端通过 `LocaleUtils.normalizeAcceptLanguage` 归一化，无法匹配时回落到默认语言。
+- 平台语言从 `contracts/platform-contract.json` 的 `locale.defaultLocale` 和 `locale.supportedLocales` 派生；前端通过 `frontend/src/utils/locale` 归一化后只发送支持语言，后端通过 `LocaleUtils.normalizeAcceptLanguage` 归一化，无法匹配时回落到默认语言。
 - 页面、组件和 API 模块不要手写平台上下文请求头；Axios 拦截器和非 Axios 适配层需要复用 `buildRequestContextHeaders`。
 - 前端 `HttpError` 必须从响应体、响应头或请求头提取 `requestId` / `traceId`，业务错误码、HTTP 状态错误、网络错误和 401 分支都不能丢失链路上下文。
 
@@ -81,7 +81,7 @@ PageResult.of(page.getContent(), page.getTotalElements(), page.getNumber() + 1, 
 - 请求上下文中的 `timeZone` 必须通过 `TimeZoneUtils` 归一化，远程调用透传的是合法 IANA/offset zone id 或默认 UTC。
 - Controller、Service、工具扩展代码不要直接调用 `Instant.now()`、`LocalDateTime.now()`、`OffsetDateTime.now()` 或 `ZonedDateTime.now()`；统一入口方便未来接入租户时区、审计时间源或测试固定时钟。
 - 前端展示使用 `frontend/src/utils/time`，请求头透传 `X-Time-Zone` 和 `Accept-Language`。
-- 页面、组件和 API 模块不要直接使用浏览器本地化时间格式化 API 或 VueUse 日期格式化 helper；展示时间、文件名时间戳和日期 key 统一走 `formatDateTime`、`formatDate`、`formatTime`、`formatDateKey`、`formatFilenameTimestamp`。
+- 页面、组件和 API 模块不要直接使用浏览器本地化时间格式化 API、浏览器语言读取 API 或 VueUse 日期格式化 helper；展示时间、文件名时间戳和日期 key 统一走 `formatDateTime`、`formatDate`、`formatTime`、`formatDateKey`、`formatFilenameTimestamp`，展示语言统一走 `frontend/src/utils/locale`。
 
 ## Migration Notes
 
