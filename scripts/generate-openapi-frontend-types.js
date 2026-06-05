@@ -206,6 +206,51 @@ function operationRequestSchema(operation) {
   return content['application/json']?.schema || content['*/*']?.schema || null
 }
 
+function componentRefName(ref, prefix) {
+  const value = String(ref || '')
+  return value.startsWith(prefix) ? value.slice(prefix.length) : ''
+}
+
+function resolveParameter(openapi, parameter) {
+  if (!parameter?.$ref) return parameter
+  const name = componentRefName(parameter.$ref, '#/components/parameters/')
+  return name ? openapi.components?.parameters?.[name] || parameter : parameter
+}
+
+function operationParameters(openapi, pathItem, operation, location) {
+  const parameterMap = new Map()
+  const parameters = [
+    ...(Array.isArray(pathItem.parameters) ? pathItem.parameters : []),
+    ...(Array.isArray(operation.parameters) ? operation.parameters : [])
+  ]
+
+  for (const item of parameters) {
+    const parameter = resolveParameter(openapi, item)
+    if (!parameter || parameter.in !== location || !parameter.name) continue
+    parameterMap.set(`${parameter.in}:${parameter.name}`, parameter)
+  }
+
+  return Array.from(parameterMap.values()).sort((left, right) => {
+    return left.name.localeCompare(right.name)
+  })
+}
+
+function parameterSchema(parameter) {
+  const content = parameter.content || {}
+  return parameter.schema || content['application/json']?.schema || content['*/*']?.schema || null
+}
+
+function parameterObjectType(parameters, location) {
+  if (parameters.length === 0) return 'undefined'
+
+  const properties = parameters.map((parameter) => {
+    const required = location === 'path' || parameter.required
+    return `${propertyName(parameter.name)}${required ? '' : '?'}: ${schemaType(parameterSchema(parameter), { refPrefix: 'Schemas.' })}`
+  })
+
+  return `{ ${properties.join('; ')} }`
+}
+
 function operationId(pathKey, method, operation, usedIds) {
   const preferred = typeName(operation.operationId || `${method}_${pathKey}`)
   let candidate = preferred
@@ -233,6 +278,8 @@ function collectOperations(openapi) {
         id: operationId(pathKey, method, operation, usedIds),
         method: method.toUpperCase(),
         path: pathKey,
+        pathParamsType: parameterObjectType(operationParameters(openapi, pathItem, operation, 'path'), 'path'),
+        queryType: parameterObjectType(operationParameters(openapi, pathItem, operation, 'query'), 'query'),
         requestType: operationRequestSchema(operation)
           ? schemaType(operationRequestSchema(operation), { refPrefix: 'Schemas.' })
           : 'undefined',
@@ -289,6 +336,8 @@ function renderOperations(openapi) {
   sections.push('export interface OpenApiOperationTypes {')
   for (const operation of operations) {
     sections.push(`  ${propertyName(operation.id)}: {`)
+    sections.push(`    pathParams: ${operation.pathParamsType}`)
+    sections.push(`    query: ${operation.queryType}`)
     sections.push(`    request: ${operation.requestType}`)
     sections.push(`    response: ${operation.responseType}`)
     sections.push(`    data: ${dataType(operation.responseType)}`)
@@ -296,6 +345,8 @@ function renderOperations(openapi) {
   }
   sections.push('}')
   sections.push('')
+  sections.push('export type OpenApiOperationPathParams<T extends OpenApiOperationId> = OpenApiOperationTypes[T][\'pathParams\']')
+  sections.push('export type OpenApiOperationQuery<T extends OpenApiOperationId> = OpenApiOperationTypes[T][\'query\']')
   sections.push('export type OpenApiOperationRequest<T extends OpenApiOperationId> = OpenApiOperationTypes[T][\'request\']')
   sections.push('export type OpenApiOperationResponse<T extends OpenApiOperationId> = OpenApiOperationTypes[T][\'response\']')
   sections.push('export type OpenApiOperationData<T extends OpenApiOperationId> = OpenApiOperationTypes[T][\'data\']')

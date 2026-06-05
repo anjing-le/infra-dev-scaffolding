@@ -42,7 +42,7 @@ export const ApiPaths = {
 
 约定：
 
-- API 模块优先使用 `openApiRequest(operationId)` 调用 OpenAPI 运行接口；尚未接入 OpenAPI 的运行接口引用 `ApiPaths`，不要直接写 `url: '/api/...'`。
+- API 模块优先使用 `openApiRequest(operationId)` 调用 OpenAPI 运行接口；它会从生成的 operation 类型约束 `pathParams/query/body`。尚未接入 OpenAPI 的运行接口引用 `ApiPaths`，不要直接写 `url: '/api/...'`。
 - `ApiPaths` 只放 `contracts/service-boundaries.json` 中声明的运行或预留运行路径，并优先引用生成的 `SERVICE_BOUNDARY_ROUTE_PATHS`。
 - 旧模板、mock 或尚未由后端运行面承载的路径放入 `ApiLegacyPaths`，并在后续真实实现时迁回 `ApiPaths`。
 - 路径参数使用函数，并通过 `encodeURIComponent` 处理。

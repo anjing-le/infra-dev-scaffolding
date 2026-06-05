@@ -4,14 +4,53 @@ import {
   type OpenApiHttpMethod,
   type OpenApiOperationData,
   type OpenApiOperationId,
+  type OpenApiOperationPathParams,
+  type OpenApiOperationQuery,
   type OpenApiOperationRequest
 } from '@/contracts/openapi/operations'
 import { resolveApiPath } from './paths'
 
-export type OpenApiPathParams = Record<string, string | number>
+export type OpenApiPathParamValue = string | number | boolean
+export type OpenApiPathParams = Record<string, OpenApiPathParamValue>
 export type OpenApiQueryParams = Record<string, unknown>
 
-export interface OpenApiRequestOptions<T extends OpenApiOperationId> {
+type OpenApiPathParamsOption<T extends OpenApiOperationId> =
+  OpenApiOperationPathParams<T> extends undefined
+    ? { pathParams?: never }
+    : { pathParams: OpenApiOperationPathParams<T> }
+
+type OpenApiQueryOption<T extends OpenApiOperationId> =
+  OpenApiOperationQuery<T> extends undefined
+    ? { query?: never }
+    : { query?: OpenApiOperationQuery<T> }
+
+type OpenApiBodyOption<T extends OpenApiOperationId> =
+  OpenApiOperationRequest<T> extends undefined
+    ? { body?: never }
+    : { body: OpenApiOperationRequest<T> }
+
+export type OpenApiRequestOptions<T extends OpenApiOperationId> = OpenApiPathParamsOption<T> &
+  OpenApiQueryOption<T> &
+  OpenApiBodyOption<T> & {
+    showErrorMessage?: boolean
+    showSuccessMessage?: boolean
+  }
+
+type OpenApiPathParamsArg<T extends OpenApiOperationId> =
+  OpenApiOperationPathParams<T> extends undefined
+    ? [pathParams?: undefined]
+    : [pathParams: OpenApiOperationPathParams<T>]
+
+type OpenApiOperationsWithOptionalOptions = {
+  [K in OpenApiOperationId]: Record<string, never> extends OpenApiRequestOptions<K> ? K : never
+}[OpenApiOperationId]
+
+type OpenApiOperationsWithRequiredOptions = Exclude<
+  OpenApiOperationId,
+  OpenApiOperationsWithOptionalOptions
+>
+
+type OpenApiRuntimeOptions<T extends OpenApiOperationId> = {
   pathParams?: OpenApiPathParams
   query?: OpenApiQueryParams
   body?: OpenApiOperationRequest<T>
@@ -46,36 +85,55 @@ export const bindOpenApiPathParams = (
 
 export const openApiPath = <T extends OpenApiOperationId>(
   operationId: T,
-  pathParams?: OpenApiPathParams
+  ...[pathParams]: OpenApiPathParamsArg<T>
 ): string => {
-  return bindOpenApiPathParams(OPENAPI_OPERATIONS[operationId].path, pathParams)
+  return bindOpenApiPathParams(
+    OPENAPI_OPERATIONS[operationId].path,
+    pathParams as OpenApiPathParams | undefined
+  )
 }
 
 export const resolveOpenApiPath = <T extends OpenApiOperationId>(
   operationId: T,
-  pathParams?: OpenApiPathParams
+  ...[pathParams]: OpenApiPathParamsArg<T>
 ): string => {
-  return resolveApiPath(openApiPath(operationId, pathParams))
+  return resolveApiPath(
+    bindOpenApiPathParams(
+      OPENAPI_OPERATIONS[operationId].path,
+      pathParams as OpenApiPathParams | undefined
+    )
+  )
 }
+
+export function openApiRequest<T extends OpenApiOperationsWithOptionalOptions>(
+  operationId: T,
+  options?: OpenApiRequestOptions<T>
+): Promise<OpenApiOperationData<T>>
+
+export function openApiRequest<T extends OpenApiOperationsWithRequiredOptions>(
+  operationId: T,
+  options: OpenApiRequestOptions<T>
+): Promise<OpenApiOperationData<T>>
 
 export function openApiRequest<T extends OpenApiOperationId>(
   operationId: T,
-  options: OpenApiRequestOptions<T> = {}
+  options?: OpenApiRequestOptions<T>
 ): Promise<OpenApiOperationData<T>> {
+  const requestOptions = (options || {}) as OpenApiRuntimeOptions<T>
   const operation = OPENAPI_OPERATIONS[operationId]
   const config: OpenApiRuntimeRequestConfig = {
-    url: openApiPath(operationId, options.pathParams),
+    url: bindOpenApiPathParams(operation.path, requestOptions.pathParams),
     method: operation.method,
-    showErrorMessage: options.showErrorMessage,
-    showSuccessMessage: options.showSuccessMessage
+    showErrorMessage: requestOptions.showErrorMessage,
+    showSuccessMessage: requestOptions.showSuccessMessage
   }
 
-  if (options.query) {
-    config.params = options.query
+  if (requestOptions.query) {
+    config.params = requestOptions.query
   }
 
-  if (BODY_METHODS.has(operation.method) && options.body !== undefined) {
-    config.data = options.body
+  if (BODY_METHODS.has(operation.method) && requestOptions.body !== undefined) {
+    config.data = requestOptions.body
   }
 
   return request.request<OpenApiOperationData<T>>(config)

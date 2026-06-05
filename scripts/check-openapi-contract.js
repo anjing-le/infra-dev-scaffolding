@@ -109,8 +109,13 @@ requireToken(files.backendProbe, 'generate-openapi-frontend-types.js')
 for (const token of [
   'components?.schemas',
   'function renderOperations',
+  'function operationParameters',
   'OpenApiOperationTypes',
+  'OpenApiOperationPathParams',
+  'OpenApiOperationQuery',
   'operationsOutputPath',
+  'pathParamsType',
+  'queryType',
   'function schemaType',
   'OpenApiSchemas',
   'generate-openapi-frontend-types: ok'
@@ -156,6 +161,10 @@ for (const token of [
   'refreshToken: {',
   'OpenApiOperationRequest',
   'OpenApiOperationData',
+  'OpenApiOperationPathParams',
+  'OpenApiOperationQuery',
+  'pathParams: { id: number }',
+  'query: { keyword?: string }',
   'Schemas.LoginRequest',
   'Schemas.APIResponseAuthTokenResponse',
   'Schemas.APIResponseCurrentUserResponse'
@@ -166,11 +175,14 @@ for (const token of [
 for (const token of [
   "from '@/contracts/openapi/operations'",
   'OPENAPI_OPERATIONS',
+  'OpenApiOperationPathParams',
+  'OpenApiOperationQuery',
   'OpenApiOperationRequest',
   'OpenApiOperationData',
   'bindOpenApiPathParams',
   'openApiPath',
   'resolveOpenApiPath',
+  'OpenApiOperationsWithRequiredOptions',
   'openApiRequest'
 ]) {
   requireToken(files.frontendOpenApiClient, token)

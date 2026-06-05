@@ -4,7 +4,7 @@
 
 此目录存放所有 API 接口的 TypeScript 类型定义文件。每个 Model 文件与对应的 API 文件配对。
 
-运行接口的后端 DTO/VO schema 会从 OpenAPI JSON 生成到 `frontend/src/contracts/openapi/schemas.ts`，运行接口 operation 会生成到 `frontend/src/contracts/openapi/operations.ts`。API model 层优先从 operation 类型派生请求和响应类型，再补充前端兼容字段或命名适配；API 文件优先通过 `frontend/src/api/openapiClient.ts` 的 `openApiRequest(operationId)` 调用运行接口；页面和组件不要直接依赖生成目录。
+运行接口的后端 DTO/VO schema 会从 OpenAPI JSON 生成到 `frontend/src/contracts/openapi/schemas.ts`，运行接口 operation、path 参数和 query 参数会生成到 `frontend/src/contracts/openapi/operations.ts`。API model 层优先从 operation 类型派生请求和响应类型，再补充前端兼容字段或命名适配；API 文件优先通过 `frontend/src/api/openapiClient.ts` 的 `openApiRequest(operationId)` 调用运行接口；页面和组件不要直接依赖生成目录。
 
 ## 命名规范
 

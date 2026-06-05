@@ -89,77 +89,107 @@ export type OpenApiOperationId = keyof typeof OPENAPI_OPERATIONS
 
 export interface OpenApiOperationTypes {
   createItem: {
+    pathParams: undefined
+    query: undefined
     request: Record<string, unknown>
     response: Schemas.APIResponseMapStringObject
     data: NonNullable<Schemas.APIResponseMapStringObject['data']>
   }
   deleteItem: {
+    pathParams: { id: number }
+    query: undefined
     request: undefined
     response: Schemas.APIResponseVoid
     data: NonNullable<Schemas.APIResponseVoid['data']>
   }
   features: {
+    pathParams: undefined
+    query: undefined
     request: undefined
     response: Schemas.APIResponseMiddlewareStatusReport
     data: NonNullable<Schemas.APIResponseMiddlewareStatusReport['data']>
   }
   getCurrentUser: {
+    pathParams: undefined
+    query: undefined
     request: undefined
     response: Schemas.APIResponseCurrentUserResponse
     data: NonNullable<Schemas.APIResponseCurrentUserResponse['data']>
   }
   getItem: {
+    pathParams: { id: number }
+    query: undefined
     request: undefined
     response: Schemas.APIResponseMapStringObject
     data: NonNullable<Schemas.APIResponseMapStringObject['data']>
   }
   health: {
+    pathParams: undefined
+    query: undefined
     request: undefined
     response: Schemas.APIResponseMapStringObject
     data: NonNullable<Schemas.APIResponseMapStringObject['data']>
   }
   listItems: {
+    pathParams: undefined
+    query: { keyword?: string }
     request: undefined
     response: Schemas.APIResponseMapStringObject
     data: NonNullable<Schemas.APIResponseMapStringObject['data']>
   }
   login: {
+    pathParams: undefined
+    query: undefined
     request: Schemas.LoginRequest
     response: Schemas.APIResponseAuthTokenResponse
     data: NonNullable<Schemas.APIResponseAuthTokenResponse['data']>
   }
   logout: {
+    pathParams: undefined
+    query: undefined
     request: undefined
     response: Schemas.APIResponseVoid
     data: NonNullable<Schemas.APIResponseVoid['data']>
   }
   ping: {
+    pathParams: undefined
+    query: undefined
     request: undefined
     response: Schemas.APIResponseString
     data: NonNullable<Schemas.APIResponseString['data']>
   }
   refreshToken: {
+    pathParams: undefined
+    query: undefined
     request: Schemas.RefreshTokenRequest
     response: Schemas.APIResponseAuthTokenResponse
     data: NonNullable<Schemas.APIResponseAuthTokenResponse['data']>
   }
   testBizException: {
+    pathParams: undefined
+    query: undefined
     request: undefined
     response: Schemas.APIResponseVoid
     data: NonNullable<Schemas.APIResponseVoid['data']>
   }
   testSystemException: {
+    pathParams: undefined
+    query: undefined
     request: undefined
     response: Schemas.APIResponseVoid
     data: NonNullable<Schemas.APIResponseVoid['data']>
   }
   updateItem: {
+    pathParams: { id: number }
+    query: undefined
     request: Record<string, unknown>
     response: Schemas.APIResponseMapStringObject
     data: NonNullable<Schemas.APIResponseMapStringObject['data']>
   }
 }
 
+export type OpenApiOperationPathParams<T extends OpenApiOperationId> = OpenApiOperationTypes[T]['pathParams']
+export type OpenApiOperationQuery<T extends OpenApiOperationId> = OpenApiOperationTypes[T]['query']
 export type OpenApiOperationRequest<T extends OpenApiOperationId> = OpenApiOperationTypes[T]['request']
 export type OpenApiOperationResponse<T extends OpenApiOperationId> = OpenApiOperationTypes[T]['response']
 export type OpenApiOperationData<T extends OpenApiOperationId> = OpenApiOperationTypes[T]['data']

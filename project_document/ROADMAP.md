@@ -104,7 +104,7 @@
 目标：减少手写重复契约，让 AI 和人都沿着同一套约定生成代码。
 
 验收：
-- OpenAPI schema 和 operation 生成前端 types，并提供轻量 typed `openApiRequest` 调用入口；后续评估继续生成完整 API client。
+- OpenAPI schema、operation、path/query 参数生成前端 types，并提供轻量 typed `openApiRequest` 调用入口；后续评估继续生成完整 API client。
 - 评估抽出共享包，只放稳定工具和类型。
 - AI Prompts 生成模块时自动引用统一 URL、统一响应和统一时间工具。
 
@@ -114,7 +114,7 @@
 - `frontend/src/contracts/platform-contract.ts` 已由 manifest 生成并被前端 HTTP、响应、时间和 `utils/locale` 语言上下文工具复用。
 - `scripts/generate-platform-contract-backend.js --check`、`scripts/generate-platform-contract-frontend.js --check` 和 `scripts/check-platform-contract.js` 已校验生成产物、前后端代码及文档一致。
 - `scripts/check-error-codes.js` 已校验 Java 错误码枚举和 platform contract 分段一致，`RemoteCallWrapper` 已读取生成的可重试范围。
-- `springdoc-openapi-starter-webmvc-api` 已提供 `/v3/api-docs`，`scripts/generate-openapi-frontend-types.js` 已生成 `frontend/src/contracts/openapi/schemas.ts` 与 `frontend/src/contracts/openapi/operations.ts`，`frontend/src/api/openapiClient.ts` 已提供按 `operationId` 调用的 typed helper，`scripts/check-openapi-contract.js`、`scripts/check-openapi-runtime-contract.js` 与 `./scripts/probe-backend-dev.sh` 已校验 OpenAPI 配置、service boundary 运行路径、平台请求头、前端生成 schema / operation 类型和 auth DTO/VO 契约。
+- `springdoc-openapi-starter-webmvc-api` 已提供 `/v3/api-docs`，`scripts/generate-openapi-frontend-types.js` 已生成 `frontend/src/contracts/openapi/schemas.ts` 与 `frontend/src/contracts/openapi/operations.ts`，其中 operation 类型包含 path/query 参数；`frontend/src/api/openapiClient.ts` 已提供按 `operationId` 调用的 typed helper，`scripts/check-openapi-contract.js`、`scripts/check-openapi-runtime-contract.js` 与 `./scripts/probe-backend-dev.sh` 已校验 OpenAPI 配置、service boundary 运行路径、平台请求头、前端生成 schema / operation 类型和 auth DTO/VO 契约。
 - `contracts/service-boundaries.json` 已记录当前运行、示例、预留和未来服务边界，后端 `ServiceBoundaryConstants.java` 与前端 `service-boundaries.ts` 已由 manifest 生成，`scripts/check-service-boundaries.js` 已校验 route、basePath 和前后端路径一致。
 - `ApiPaths` 已和旧模板路径分离，`ApiLegacyPaths` 承载历史兼容路径，`scripts/check-frontend-api-boundaries.js` 已防止旧路径回流到运行路径。
 - `frontend/src/utils/http/context.ts` 已统一生成前端 `requestId`、会话级 `traceId`、语言和时区请求头，并通过 `frontend/src/utils/locale` 从生成契约读取默认语言和支持语言；`HttpError` 已统一保留 `requestId` / `traceId`，`scripts/check-frontend-context-contract.js` 已防止平台上下文头和错误上下文逻辑散落到页面或 API 模块。
