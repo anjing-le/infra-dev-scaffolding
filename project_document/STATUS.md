@@ -64,7 +64,8 @@ AI 协作验证：
   - 前端标准响应消息使用 `message`，`msg` 兼容集中在 `utils/http/response.ts`。
   - API envelope 契约记录在 `project_document/API_CONTRACT_GUIDE.md`。
   - OpenAPI 运行接口契约记录在 `project_document/OPENAPI_CONTRACT_GUIDE.md`；后端通过 `springdoc-openapi-starter-webmvc-api` 暴露 `/v3/api-docs`，dev/test 默认开启，prod 默认关闭并可通过 `OPENAPI_API_DOCS_ENABLED=true` 显式开启。
-  - `OpenApiConfig` 已限制 OpenAPI 只扫描 `com.anjing.controller` 和 `/api/**`，并给每个 operation 补充 requestId、traceId、tenantId、callerId、timeZone、language 等平台请求头。
+  - `OpenApiConfig` 已限制 OpenAPI 只扫描 `com.anjing.controller` 和 `/api/**`，并给每个 operation 补充 requestId、traceId、tenantId、userId、userName、userRoles、callerId、timeZone、language 等平台请求头。
+  - `node scripts/check-openapi-runtime-contract.js` 已读取真实 OpenAPI JSON、`contracts/service-boundaries.json` 和 `contracts/platform-contract.json`，校验 openapi 运行 route/method 全量存在，并由 `./scripts/probe-backend-dev.sh` 自动执行。
   - `AuthController` 已将登录、当前用户和刷新 Token 的运行 payload 从 `Map` 收敛为 `LoginRequest`、`RefreshTokenRequest`、`AuthTokenResponse` 和 `CurrentUserResponse`，前端 `authModel.ts` 与全局 `Api.Auth` 类型已同步。
   - `contracts/platform-contract.json` 已记录 API 前缀、响应 envelope、分页字段、请求上下文头、UTC 时间策略和错误码分段，并生成 `backend/src/main/java/com/anjing/model/constants/PlatformContractConstants.java` 与 `frontend/src/contracts/platform-contract.ts` 供前后端基础工具复用；`node scripts/generate-platform-contract-backend.js --check`、`node scripts/generate-platform-contract-frontend.js --check` 和 `node scripts/check-platform-contract.js` 已校验生成产物、Java/TypeScript/文档一致。
   - 前端 `requestId` 每次请求生成、`traceId` 在浏览器会话内复用；`HttpError` 已从响应体、响应头或请求头提取 `requestId` / `traceId`，业务错误码、HTTP 状态错误、网络错误和 401 分支都保留链路上下文；`node scripts/check-frontend-context-contract.js` 已禁止前端源码直接手写平台上下文请求头并校验错误上下文。

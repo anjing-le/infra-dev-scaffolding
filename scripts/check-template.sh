@@ -46,6 +46,7 @@ require_file scripts/generate-service-boundaries-frontend.js
 require_file scripts/check-platform-contract.js
 require_file scripts/check-error-codes.js
 require_file scripts/check-openapi-contract.js
+require_file scripts/check-openapi-runtime-contract.js
 require_file scripts/check-service-boundaries.js
 require_file scripts/check-shared-kernel.js
 require_file scripts/check-remote-http-contract.js

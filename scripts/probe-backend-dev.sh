@@ -93,6 +93,7 @@ assert(schemas.LoginRequest, 'OpenAPI must include LoginRequest schema')
 assert(schemas.AuthTokenResponse, 'OpenAPI must include AuthTokenResponse schema')
 assert(schemas.CurrentUserResponse, 'OpenAPI must include CurrentUserResponse schema')
 NODE
+    node "$ROOT/scripts/check-openapi-runtime-contract.js" "$OPENAPI_FILE"
     echo "probe-backend-dev: ok"
     echo "probe-backend-dev: health=$HEALTH_FILE"
     echo "probe-backend-dev: features=$FEATURES_FILE"

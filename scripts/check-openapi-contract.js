@@ -12,6 +12,8 @@ const files = {
   prod: 'backend/src/main/resources/application-prod.yml',
   applicationClass: 'backend/src/main/java/com/anjing/Application.java',
   config: 'backend/src/main/java/com/anjing/config/openapi/OpenApiConfig.java',
+  runtimeCheck: 'scripts/check-openapi-runtime-contract.js',
+  backendProbe: 'scripts/probe-backend-dev.sh',
   authController: 'backend/src/main/java/com/anjing/controller/AuthController.java',
   testController: 'backend/src/main/java/com/anjing/controller/TestController.java',
   loginRequest: 'backend/src/main/java/com/anjing/model/request/LoginRequest.java',
@@ -79,11 +81,25 @@ for (const token of [
   'RequestHeaderConstants.TRACE_ID',
   'RequestHeaderConstants.TENANT_ID',
   'RequestHeaderConstants.CALLER_ID',
+  'RequestHeaderConstants.USER_NAME',
+  'RequestHeaderConstants.USER_ROLES',
   'RequestHeaderConstants.TIME_ZONE',
   'RequestHeaderConstants.ACCEPT_LANGUAGE'
 ]) {
   requireToken(files.config, token)
 }
+
+for (const token of [
+  'contracts/service-boundaries.json',
+  'contracts/platform-contract.json',
+  'expectedRuntimeRoutes',
+  'ensureOperationHeaders',
+  'check-openapi-runtime-contract: ok'
+]) {
+  requireToken(files.runtimeCheck, token)
+}
+
+requireToken(files.backendProbe, 'check-openapi-runtime-contract.js')
 
 for (const token of [
   '@Tag(name = "Auth"',
@@ -122,6 +138,7 @@ for (const token of [
   'springdoc-openapi-starter-webmvc-api',
   'OPENAPI_API_DOCS_ENABLED',
   'node scripts/check-openapi-contract.js',
+  'node scripts/check-openapi-runtime-contract.js',
   './scripts/probe-backend-dev.sh'
 ]) {
   requireToken(files.guide, token)

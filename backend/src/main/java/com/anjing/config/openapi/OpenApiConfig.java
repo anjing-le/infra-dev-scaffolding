@@ -45,6 +45,8 @@ public class OpenApiConfig {
             addHeader(operation, RequestHeaderConstants.TRACE_ID, "Trace id propagated across services.");
             addHeader(operation, RequestHeaderConstants.TENANT_ID, "Tenant id for multi-tenant scenarios.");
             addHeader(operation, RequestHeaderConstants.USER_ID, "Current user id propagated by gateway or auth adapter.");
+            addHeader(operation, RequestHeaderConstants.USER_NAME, "Current user display name propagated by gateway or auth adapter.");
+            addHeader(operation, RequestHeaderConstants.USER_ROLES, "Current user role list propagated by gateway or auth adapter.");
             addHeader(operation, RequestHeaderConstants.CALLER_ID, "Calling service id for service-to-service requests.");
             addHeader(operation, RequestHeaderConstants.TIME_ZONE, "Client time zone, for example Asia/Shanghai.");
             addHeader(operation, RequestHeaderConstants.ACCEPT_LANGUAGE, "Client locale preference.");

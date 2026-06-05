@@ -58,6 +58,14 @@ node scripts/check-openapi-contract.js
 
 开发环境运行检查会通过 `./scripts/probe-backend-dev.sh` 拉取 `/v3/api-docs`，确认 OpenAPI JSON、运行路径和平台请求头可用。
 
+动态契约检查：
+
+```bash
+node scripts/check-openapi-runtime-contract.js /path/to/openapi.json
+```
+
+该脚本读取 `contracts/service-boundaries.json` 和 `contracts/platform-contract.json`，校验所有 `openapi=true` 的 route/method 都出现在 OpenAPI 中，并校验每个 operation 都包含平台请求头。`./scripts/probe-backend-dev.sh` 会自动调用它。
+
 完整母版检查：
 
 ```bash
