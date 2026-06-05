@@ -456,15 +456,26 @@ public class RemoteCallWrapper {
      * Adds all non-empty request context fields to outbound headers.
      */
     private static void appendContextHeaders(Map<String, String> headers, GlobalRequestContext context) {
-        putIfHasText(headers, RequestHeaderConstants.REQUEST_ID, context.getRequestId());
-        putIfHasText(headers, RequestHeaderConstants.TRACE_ID, context.getTraceId());
-        putIfHasText(headers, RequestHeaderConstants.TENANT_ID, context.getTenantId());
-        putIfHasText(headers, RequestHeaderConstants.USER_ID, context.getUserId());
-        putIfHasText(headers, RequestHeaderConstants.USER_NAME, context.getUserName());
-        putIfHasText(headers, RequestHeaderConstants.USER_ROLES, context.getUserRoles());
-        putIfHasText(headers, RequestHeaderConstants.CALLER_ID, context.getCallerId());
-        putIfHasText(headers, RequestHeaderConstants.TIME_ZONE, context.getTimeZone());
-        putIfHasText(headers, RequestHeaderConstants.ACCEPT_LANGUAGE, context.getLocale());
+        for (String key : PlatformContractConstants.BACKEND_PROPAGATED_HEADER_KEYS) {
+            appendContextHeader(headers, context, key);
+        }
+    }
+
+    private static void appendContextHeader(Map<String, String> headers, GlobalRequestContext context, String key) {
+        switch (key) {
+            case "requestId" -> putIfHasText(headers, RequestHeaderConstants.REQUEST_ID, context.getRequestId());
+            case "traceId" -> putIfHasText(headers, RequestHeaderConstants.TRACE_ID, context.getTraceId());
+            case "tenantId" -> putIfHasText(headers, RequestHeaderConstants.TENANT_ID, context.getTenantId());
+            case "userId" -> putIfHasText(headers, RequestHeaderConstants.USER_ID, context.getUserId());
+            case "userName" -> putIfHasText(headers, RequestHeaderConstants.USER_NAME, context.getUserName());
+            case "userRoles" -> putIfHasText(headers, RequestHeaderConstants.USER_ROLES, context.getUserRoles());
+            case "callerId" -> putIfHasText(headers, RequestHeaderConstants.CALLER_ID, context.getCallerId());
+            case "timeZone" -> putIfHasText(headers, RequestHeaderConstants.TIME_ZONE, context.getTimeZone());
+            case "acceptLanguage" -> putIfHasText(headers, RequestHeaderConstants.ACCEPT_LANGUAGE, context.getLocale());
+            default -> {
+                // Unknown keys are ignored so generated contract changes must be guarded by tests and scripts.
+            }
+        }
     }
 
     private static void ensureRequestTraceHeaders(Map<String, String> headers) {

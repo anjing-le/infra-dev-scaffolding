@@ -29,7 +29,7 @@ APIResponse<?> response = remoteHttpClient.exchange(request, APIResponse.class);
 
 ## 统一透传头
 
-`RemoteHttpClient` 会自动透传：
+`RemoteHttpClient` 会按照 `contracts/platform-contract.json` 的 `backendPropagatedHeaders` 自动透传：
 
 - `X-Request-Id`
 - `X-Trace-Id`
@@ -42,6 +42,8 @@ APIResponse<?> response = remoteHttpClient.exchange(request, APIResponse.class);
 - `Accept-Language`
 
 没有入站请求上下文时，会生成新的 `X-Request-Id` 和 `X-Trace-Id`，适用于定时任务、异步任务和本地工具入口。
+
+浏览器端只允许透传 `frontendPropagatedHeaders` 中的 requestId、traceId、timezone、language；租户、用户和 caller 这类身份上下文由网关、认证层或后端服务间调用链路生成和透传。
 
 ## 配置
 

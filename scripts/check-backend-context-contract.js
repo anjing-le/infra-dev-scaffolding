@@ -146,6 +146,8 @@ for (const token of [
 for (const token of [
   'currentContextHeaders',
   'serviceCallHeaders',
+  'PlatformContractConstants.BACKEND_PROPAGATED_HEADER_KEYS',
+  'appendContextHeader',
   'ensureRequestTraceHeaders',
   'RequestHeaderConstants.REQUEST_ID',
   'RequestHeaderConstants.TRACE_ID',

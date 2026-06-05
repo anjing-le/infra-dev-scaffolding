@@ -21,6 +21,17 @@
     "acceptLanguage": "Accept-Language"
   },
   "frontendPropagatedHeaders": ["requestId", "traceId", "timeZone", "acceptLanguage"],
+  "backendPropagatedHeaders": [
+    "requestId",
+    "traceId",
+    "tenantId",
+    "userId",
+    "userName",
+    "userRoles",
+    "callerId",
+    "timeZone",
+    "acceptLanguage"
+  ],
   "time": {
     "defaultTimeZone": "UTC",
     "serverCurrentTimeSource": "DateUtils",

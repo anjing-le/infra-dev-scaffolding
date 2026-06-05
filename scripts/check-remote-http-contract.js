@@ -4,11 +4,14 @@ const path = require('path')
 
 const root = path.resolve(__dirname, '..')
 const serviceBoundariesPath = path.join(root, 'contracts/service-boundaries.json')
+const platformContractPath = path.join(root, 'contracts/platform-contract.json')
 
 const files = {
+  platform: 'backend/src/main/java/com/anjing/model/constants/PlatformContractConstants.java',
   properties: 'backend/src/main/java/com/anjing/config/properties/RemoteHttpClientProperties.java',
   request: 'backend/src/main/java/com/anjing/client/RemoteHttpRequest.java',
   client: 'backend/src/main/java/com/anjing/client/RemoteHttpClient.java',
+  remoteWrapper: 'backend/src/main/java/com/anjing/util/RemoteCallWrapper.java',
   application: 'backend/src/main/resources/application.yml',
   example: 'backend/src/main/java/com/anjing/example/RemoteCallExampleService.java',
   guide: 'project_document/REMOTE_CALL_GUIDE.md'
@@ -44,6 +47,9 @@ requireToken(files.client, 'resolveUrl')
 requireToken(files.client, 'joinUrl')
 requireToken(files.client, 'properties.getServiceBaseUrls()')
 requireToken(files.application, 'service-base-urls:')
+requireToken(files.platform, 'BACKEND_PROPAGATED_HEADER_KEYS')
+requireToken(files.remoteWrapper, 'PlatformContractConstants.BACKEND_PROPAGATED_HEADER_KEYS')
+requireToken(files.remoteWrapper, 'appendContextHeader')
 requireToken(files.example, 'ServiceBoundaryConstants.APPLICATION_ID')
 requireToken(files.example, '.serviceId(ServiceBoundaryConstants.APPLICATION_ID)')
 requireToken(files.example, '.path(ApiConstants.Test.PING_FULL)')
@@ -57,6 +63,13 @@ try {
   serviceBoundaries = JSON.parse(fs.readFileSync(serviceBoundariesPath, 'utf8'))
 } catch (error) {
   fail(`invalid contracts/service-boundaries.json: ${error.message}`)
+}
+
+let platformContract
+try {
+  platformContract = JSON.parse(fs.readFileSync(platformContractPath, 'utf8'))
+} catch (error) {
+  fail(`invalid contracts/platform-contract.json: ${error.message}`)
 }
 
 const applicationId = serviceBoundaries.applicationId
@@ -75,6 +88,19 @@ if (/\.url\("http:\/\/localhost/.test(sampleSource) || sampleSource.includes('se
 const guideSource = read(files.guide)
 if (guideSource.includes('.url("http://infra-auth')) {
   fail('REMOTE_CALL_GUIDE should demonstrate serviceId + path for internal service calls')
+}
+
+const requestHeaders = platformContract.requestHeaders || {}
+const backendPropagatedHeaders = platformContract.backendPropagatedHeaders || []
+if (!backendPropagatedHeaders.length) {
+  fail('contracts/platform-contract.json must define backendPropagatedHeaders')
+}
+for (const key of backendPropagatedHeaders) {
+  if (!requestHeaders[key]) {
+    fail(`backendPropagatedHeaders contains unknown request header key: ${key}`)
+  }
+  requireToken(files.remoteWrapper, `case "${key}"`)
+  requireToken(files.guide, requestHeaders[key])
 }
 
 console.log('check-remote-http-contract: ok')

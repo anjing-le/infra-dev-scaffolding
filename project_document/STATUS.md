@@ -45,6 +45,7 @@ node scripts/check-remote-http-contract.js
 (cd backend && mvn -q -Dtest=RequestContextTaskDecoratorTest test)
 (cd backend && mvn -q -Dtest=LocaleUtilsTest test)
 (cd backend && mvn -q -Dtest=TimeZoneUtilsTest test)
+(cd backend && mvn -q -Dtest=RemoteCallWrapperContextHeadersTest test)
 (cd backend && mvn -q -DskipTests package)
 (cd frontend && pnpm build)
 (cd frontend && pnpm -s clean:dev)
@@ -69,7 +70,7 @@ AI 协作验证：
   - `OpenApiConfig` 已限制 OpenAPI 只扫描 `com.anjing.controller` 和 `/api/**`，并给每个 operation 补充 requestId、traceId、tenantId、userId、userName、userRoles、callerId、timeZone、language 等平台请求头。
   - `node scripts/check-openapi-runtime-contract.js` 已读取真实 OpenAPI JSON、`contracts/service-boundaries.json` 和 `contracts/platform-contract.json`，校验 openapi 运行 route/method 全量存在，并由 `./scripts/probe-backend-dev.sh` 自动执行。
   - `AuthController` 已将登录、当前用户和刷新 Token 的运行 payload 从 `Map` 收敛为 `LoginRequest`、`RefreshTokenRequest`、`AuthTokenResponse` 和 `CurrentUserResponse`，前端 `authModel.ts` 与全局 `Api.Auth` 类型已同步。
-  - `contracts/platform-contract.json` 已记录 API 前缀、响应 envelope、分页字段、请求上下文头、UTC 时间策略、默认语言、支持语言和错误码分段，并生成 `backend/src/main/java/com/anjing/model/constants/PlatformContractConstants.java` 与 `frontend/src/contracts/platform-contract.ts` 供前后端基础工具复用；`node scripts/generate-platform-contract-backend.js --check`、`node scripts/generate-platform-contract-frontend.js --check` 和 `node scripts/check-platform-contract.js` 已校验生成产物、Java/TypeScript/文档一致。
+  - `contracts/platform-contract.json` 已记录 API 前缀、响应 envelope、分页字段、请求上下文头、前端/后端透传头、UTC 时间策略、默认语言、支持语言和错误码分段，并生成 `backend/src/main/java/com/anjing/model/constants/PlatformContractConstants.java` 与 `frontend/src/contracts/platform-contract.ts` 供前后端基础工具复用；`node scripts/generate-platform-contract-backend.js --check`、`node scripts/generate-platform-contract-frontend.js --check` 和 `node scripts/check-platform-contract.js` 已校验生成产物、Java/TypeScript/文档一致。
   - 前端 `requestId` 每次请求生成、`traceId` 在浏览器会话内复用；语言请求头已通过 `frontend/src/utils/locale` 从生成契约读取默认语言和支持语言，按用户语言或浏览器语言匹配后发送；`HttpError` 已从响应体、响应头或请求头提取 `requestId` / `traceId`，业务错误码、HTTP 状态错误、网络错误和 401 分支都保留链路上下文；`node scripts/check-frontend-context-contract.js` 已禁止前端源码直接手写平台上下文请求头并校验错误上下文。
   - 后端 `RequestContextFilter` 已统一生成/透传 requestId、traceId、租户、用户、语言和时区上下文，`Accept-Language` 已通过 `LocaleUtils.normalizeAcceptLanguage` 归一化到 platform contract 支持语言，`X-Time-Zone` 已通过 `TimeZoneUtils.normalizeTimeZone` 归一化到默认 UTC 或合法 zone id，`ControllerLogAspect` 访问日志已固定输出接口路径、耗时和错误码；`node scripts/check-backend-context-contract.js` 已校验后端入站上下文、MDC、响应头、访问日志字段和远程调用透传。
   - `GlobalRequestContextHolder` 已提供纯 Java 上下文快照和 `runWith/callWith` 辅助方法；`RequestContextTaskDecorator` 与统一 `applicationTaskExecutor` 已让 `@Async` 线程传播 requestId、traceId、租户、用户、语言、时区和 MDC；`node scripts/check-async-context-contract.js` 已纳入守护。
@@ -77,8 +78,8 @@ AI 协作验证：
   - 共享内核边界记录在 `project_document/SHARED_KERNEL_GUIDE.md`，`LocaleUtils` 和 `TimeZoneUtils` 已作为纯 Java 全球化契约工具纳入共享候选；`node scripts/check-shared-kernel.js` 已校验候选共享类不依赖 Spring Web、Servlet、JPA 或运行时层。
   - 业务当前时间统一通过 `DateUtils.nowIso()`、`DateUtils.now(pattern)`、`DateUtils.nowEpochMilli()` 等 UTC 出口获取，默认 zone 来自 `TimeZoneUtils.defaultZoneId()`，自检脚本已禁止业务源码直接调用 `Instant.now()` / `LocalDateTime.now()`。
   - 前端展示时间、展示语言、导出文件名时间戳、错误时间戳和日期 key 已收口到 `frontend/src/utils/time` 与 `frontend/src/utils/locale`；`node scripts/check-frontend-time-contract.js` 已禁止页面/组件直接散落 `toLocale*`、`Intl.DateTimeFormat`、浏览器语言读取和 `useDateFormat`。
-  - HTTP 服务间调用使用 `RemoteHttpClient`，内部服务地址通过 `app.remote-http.service-base-urls` 统一配置，调用侧优先使用 `serviceId + path`；自定义 adapter 使用 `RemoteCallWrapper.serviceCallHeaders(callerId)` 透传 requestId、traceId、租户、用户、语言和时区。
-  - `node scripts/check-remote-http-contract.js` 已校验后端远程 HTTP 调用具备 service registry、示例不再拼接本地绝对 URL、文档使用 `serviceId + path`。
+  - HTTP 服务间调用使用 `RemoteHttpClient`，内部服务地址通过 `app.remote-http.service-base-urls` 统一配置，调用侧优先使用 `serviceId + path`；自定义 adapter 使用 `RemoteCallWrapper.serviceCallHeaders(callerId)` 按 `backendPropagatedHeaders` 透传 requestId、traceId、租户、用户、语言和时区。
+  - `node scripts/check-remote-http-contract.js` 已校验后端远程 HTTP 调用具备 service registry、示例不再拼接本地绝对 URL、文档使用 `serviceId + path`，且服务间透传头来自 platform contract。
   - 错误码按 `project_document/ERROR_CODE_GUIDE.md` 分段，`node scripts/check-error-codes.js` 已校验 Java 错误码枚举必须实现 `ErrorCode`、4 位数字、全局唯一并落在 `contracts/platform-contract.json` 分段内。
   - 远程调用默认只重试 `1800-1899`，`RemoteCallWrapper` 已读取 `PlatformContractConstants.ErrorCodes.RETRYABLE_RANGES`，避免在业务代码里硬编码重试范围。
   - `node scripts/check-openapi-contract.js` 已校验 springdoc 依赖、OpenAPI 配置、平台请求头、Auth 明确 DTO/VO 和前端 auth 类型一致性。

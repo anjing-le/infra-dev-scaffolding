@@ -18,6 +18,7 @@ const files = {
   frontendApiTypes: 'frontend/src/types/api/api.d.ts',
   frontendTime: 'frontend/src/utils/time/index.ts',
   frontendLocale: 'frontend/src/utils/locale/index.ts',
+  remoteWrapper: 'backend/src/main/java/com/anjing/util/RemoteCallWrapper.java',
   localeUtils: 'backend/src/main/java/com/anjing/util/LocaleUtils.java',
   timeZoneUtils: 'backend/src/main/java/com/anjing/util/TimeZoneUtils.java',
   dateUtils: 'backend/src/main/java/com/anjing/util/DateUtils.java',
@@ -108,6 +109,9 @@ for (const field of paginationFields) {
 
 const requestHeaders = contract.requestHeaders || {}
 requireToken(files.frontendPlatform, 'FRONTEND_PROPAGATED_HEADER_KEYS = PLATFORM_CONTRACT.frontendPropagatedHeaders')
+requireToken(files.backendPlatform, 'FRONTEND_PROPAGATED_HEADER_KEYS')
+requireToken(files.backendPlatform, 'BACKEND_PROPAGATED_HEADER_KEYS')
+requireToken(files.frontendPlatform, 'BACKEND_PROPAGATED_HEADER_KEYS = PLATFORM_CONTRACT.backendPropagatedHeaders')
 for (const [key, value] of Object.entries(requestHeaders)) {
   requireToken(files.backendPlatform, `"${value}"`)
   requireToken(files.requestHeaders, `PlatformContractConstants.Headers.${key.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toUpperCase()}`)
@@ -119,6 +123,31 @@ for (const [key, value] of Object.entries(requestHeaders)) {
     requireToken(files.frontendContext, `${key}:`)
   }
 }
+
+const frontendPropagatedHeaders = contract.frontendPropagatedHeaders || []
+const backendPropagatedHeaders = contract.backendPropagatedHeaders || []
+if (!frontendPropagatedHeaders.length) {
+  fail('frontendPropagatedHeaders must not be empty')
+}
+if (!backendPropagatedHeaders.length) {
+  fail('backendPropagatedHeaders must not be empty')
+}
+for (const key of [...frontendPropagatedHeaders, ...backendPropagatedHeaders]) {
+  if (!requestHeaders[key]) {
+    fail(`propagated header key is not defined in requestHeaders: ${key}`)
+  }
+}
+for (const key of frontendPropagatedHeaders) {
+  if (!backendPropagatedHeaders.includes(key)) {
+    fail(`backendPropagatedHeaders must include frontend propagated key: ${key}`)
+  }
+}
+for (const key of backendPropagatedHeaders) {
+  requireToken(files.backendPlatform, `"${key}"`)
+  requireToken(files.frontendPlatform, `"${key}"`)
+  requireToken(files.remoteWrapper, `case "${key}"`)
+}
+requireToken(files.remoteWrapper, 'PlatformContractConstants.BACKEND_PROPAGATED_HEADER_KEYS')
 
 requireToken(files.frontendPlatform, `"defaultTimeZone": "${contract.time.defaultTimeZone}"`)
 requireToken(files.backendPlatform, `DEFAULT_TIME_ZONE = "${contract.time.defaultTimeZone}"`)

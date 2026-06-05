@@ -8,6 +8,8 @@ public final class PlatformContractConstants {
 
     public static final int SCHEMA_VERSION = 1;
     public static final String API_PREFIX = "/api";
+    public static final String[] FRONTEND_PROPAGATED_HEADER_KEYS = { "requestId", "traceId", "timeZone", "acceptLanguage" };
+    public static final String[] BACKEND_PROPAGATED_HEADER_KEYS = { "requestId", "traceId", "tenantId", "userId", "userName", "userRoles", "callerId", "timeZone", "acceptLanguage" };
 
     private PlatformContractConstants() {
     }

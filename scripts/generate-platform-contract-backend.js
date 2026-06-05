@@ -47,6 +47,8 @@ public final class PlatformContractConstants {
 
     public static final int SCHEMA_VERSION = ${contract.schemaVersion};
     public static final String API_PREFIX = ${javaString(contract.apiPrefix)};
+    public static final String[] FRONTEND_PROPAGATED_HEADER_KEYS = ${javaArray(contract.frontendPropagatedHeaders)};
+    public static final String[] BACKEND_PROPAGATED_HEADER_KEYS = ${javaArray(contract.backendPropagatedHeaders)};
 
     private PlatformContractConstants() {
     }
