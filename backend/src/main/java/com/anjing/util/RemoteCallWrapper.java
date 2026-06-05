@@ -74,7 +74,7 @@ import java.util.function.Supplier;
  * );
  *
  * // HTTP/WebClient/Feign 调用前准备上下文请求头
- * Map&lt;String, String&gt; headers = RemoteCallWrapper.serviceCallHeaders("infra-dev-scaffolding");
+ * Map&lt;String, String&gt; headers = RemoteCallWrapper.serviceCallHeaders(ServiceBoundaryConstants.APPLICATION_ID);
  * </pre>
  * 
  * <h3>📊 自动日志输出：</h3>

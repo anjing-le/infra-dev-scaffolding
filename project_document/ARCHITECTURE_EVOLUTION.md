@@ -32,7 +32,7 @@
 
 主要缺口：
 
-- 前端 API URL 已开始收口到 `ApiPaths`，后端运行 Controller 已开始引用 `ApiConstants`；`ApiConstants` 内部也已收口为 `API_PREFIX`、模块 `BASE`、相对子路径和 `*_FULL`，并由 `scripts/check-api-constants.js` 守护。路径规则已记录到 `project_document/API_PATH_GUIDE.md`；`contracts/service-boundaries.json` 已进一步记录 auth、test、common 当前边界和 user、admin、integration 未来服务边界，并由 `scripts/check-service-boundaries.js` 校验。旧模板 auth/system 路径已从 `ApiPaths` 拆到 `ApiLegacyPaths`，由 `scripts/check-frontend-api-boundaries.js` 防止回流。
+- 前端 API URL 已开始收口到 `ApiPaths`，后端运行 Controller 已开始引用 `ApiConstants`；`ApiConstants` 内部也已收口为 `API_PREFIX`、模块 `BASE`、相对子路径和 `*_FULL`，并由 `scripts/check-api-constants.js` 守护。路径规则已记录到 `project_document/API_PATH_GUIDE.md`；`contracts/service-boundaries.json` 已进一步记录 auth、test、common 当前边界和 user、admin、integration 未来服务边界，生成 `ServiceBoundaryConstants.java`，并由 `scripts/check-service-boundaries.js` 校验。旧模板 auth/system 路径已从 `ApiPaths` 拆到 `ApiLegacyPaths`，由 `scripts/check-frontend-api-boundaries.js` 防止回流。
 - 响应契约已开始收敛到 `APIResponse` + `message` + `PageResult(records/current/size/total)`，并已记录到 `project_document/API_CONTRACT_GUIDE.md`；`msg`、`BaseResponse`、`PageResponse` 仅作为旧接口或远程响应兼容入口。
 - OpenAPI 运行接口契约已开始落地，`/v3/api-docs` 由 `springdoc-openapi-starter-webmvc-api` 暴露，dev/test 默认开启、prod 默认关闭；`project_document/OPENAPI_CONTRACT_GUIDE.md` 和 `scripts/check-openapi-contract.js` 已守护后续前端类型生成入口。
 - 平台级契约已沉淀为 `contracts/platform-contract.json`，覆盖 API 前缀、响应 envelope、分页字段、请求头、时间策略、错误码分段和可重试范围；后端生成 `PlatformContractConstants.java`，前端生成 `frontend/src/contracts/platform-contract.ts`，供路径、请求头、响应解析、时间工具和远程重试判断复用，并由 `scripts/generate-platform-contract-backend.js --check`、`scripts/generate-platform-contract-frontend.js --check`、`scripts/check-platform-contract.js` 校验生成产物、前后端与文档一致性。
@@ -126,6 +126,7 @@
 - `scripts/check-frontend-api-boundaries.js` 已把前端运行路径和旧模板兼容路径分开校验，避免历史 mock/system API 混入服务边界运行面。
 - `scripts/check-frontend-context-contract.js` 已把前端 `requestId`、`traceId`、语言和时区请求头的生成入口纳入自动校验，避免页面或 API 模块直接手写平台上下文头。
 - `scripts/check-service-boundaries.js` 已把服务边界 manifest、`ApiConstants`、`ApiPaths`、Controller base path 和 OpenAPI `@Tag` 一致性纳入自动校验。
+- `scripts/generate-service-boundaries-backend.js --check` 已确保后端服务边界常量与 manifest 一致。
 - `scripts/generate-platform-contract-backend.js --check` 已确保后端平台契约生成文件与 manifest 一致。
 - `scripts/generate-platform-contract-frontend.js --check` 已确保前端平台契约生成文件与 manifest 一致。
 - `scripts/check-platform-contract.js` 已把 `contracts/platform-contract.json` 与 Java/TypeScript/文档的一致性纳入自动校验。

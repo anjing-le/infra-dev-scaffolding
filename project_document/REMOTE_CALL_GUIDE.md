@@ -15,9 +15,9 @@
 ```java
 RemoteHttpRequest request = RemoteHttpRequest.builder()
         .method(HttpMethod.GET)
-        .serviceId("infra-auth")
+        .serviceId(ServiceBoundaryConstants.Auth.OWNER)
         .path(ApiConstants.Auth.ME_FULL)
-        .callerId("infra-dev-scaffolding")
+        .callerId(ServiceBoundaryConstants.APPLICATION_ID)
         .retryCount(1)
         .checkResponse(true)
         .build();

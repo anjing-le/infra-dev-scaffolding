@@ -31,6 +31,7 @@ require_absent() {
 
 require_file backend/src/main/java/com/anjing/model/constants/ApiConstants.java
 require_file backend/src/main/java/com/anjing/model/constants/PlatformContractConstants.java
+require_file backend/src/main/java/com/anjing/model/constants/ServiceBoundaryConstants.java
 require_file frontend/src/api/paths.ts
 require_file backend/src/main/java/com/anjing/model/response/APIResponse.java
 require_file backend/src/main/java/com/anjing/model/response/PageResult.java
@@ -61,6 +62,7 @@ require_file scripts/check-frontend-context-contract.js
 require_file scripts/check-frontend-time-contract.js
 require_file scripts/generate-platform-contract-backend.js
 require_file scripts/generate-platform-contract-frontend.js
+require_file scripts/generate-service-boundaries-backend.js
 require_file scripts/check-platform-contract.js
 require_file scripts/check-error-codes.js
 require_file scripts/check-openapi-contract.js
@@ -170,6 +172,7 @@ node scripts/check-frontend-context-contract.js
 node scripts/check-frontend-time-contract.js
 node scripts/generate-platform-contract-backend.js --check
 node scripts/generate-platform-contract-frontend.js --check
+node scripts/generate-service-boundaries-backend.js --check
 node scripts/check-platform-contract.js
 node scripts/check-error-codes.js
 node scripts/check-openapi-contract.js

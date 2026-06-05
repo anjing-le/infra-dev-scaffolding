@@ -11,6 +11,14 @@
 - AI 生成新模块时能先选择边界，再补 `ApiConstants`、`ApiPaths`、DTO/VO 和 OpenAPI。
 - 复制成新项目时能判断哪些示例接口要删除，哪些平台契约要保留。
 
+## Generated Artifacts
+
+后端生成服务边界常量：
+
+- `backend/src/main/java/com/anjing/model/constants/ServiceBoundaryConstants.java`
+
+它提供 `APPLICATION_ID`、`API_PREFIX`、边界 id、owner、currentHost、basePath 和 route 名称。后端远程调用、默认 caller id、示例代码等需要应用 id 或服务边界元数据时，优先引用该生成常量，不要重复手写 manifest 中的字符串。
+
 ## Boundary Kinds
 
 | kind | 含义 | 当前示例 |
@@ -34,6 +42,7 @@
 ## Update Rules
 
 - 新增运行模块时，先在 `contracts/service-boundaries.json` 增加 boundary。
+- 运行 `node scripts/generate-service-boundaries-backend.js` 更新后端生成常量。
 - 后端同步新增 `ApiConstants.Xxx.BASE` 和 `*_FULL` 路径。
 - 前端同步新增 `ApiPaths.xxx`，只把真实运行路径加入 manifest route。
 - 旧模板或 mock 路径留在 `ApiLegacyPaths`，不要加入 `ApiPaths` 或 manifest route。
@@ -45,6 +54,10 @@
 
 ```bash
 node scripts/check-service-boundaries.js
+```
+
+```bash
+node scripts/generate-service-boundaries-backend.js --check
 ```
 
 完整检查链路：
@@ -61,3 +74,4 @@ node scripts/check-service-boundaries.js
 - manifest 中的 route 与 `ApiConstants.*_FULL`、`ApiPaths` 一致。
 - `ApiPaths` 不混入旧模板路径；旧路径集中在 `ApiLegacyPaths`。
 - 当前 OpenAPI 运行 Controller 使用 `ApiConstants.Xxx.BASE` 并带有 `@Tag`。
+- 后端 `ServiceBoundaryConstants` 与 manifest 保持一致。

@@ -3,6 +3,7 @@ package com.anjing.controller;
 import com.anjing.annotation.ScaffoldSample;
 import com.anjing.config.middleware.MiddlewareManager;
 import com.anjing.model.constants.ApiConstants;
+import com.anjing.model.constants.ServiceBoundaryConstants;
 import com.anjing.model.errorcode.CommonErrorCode;
 import com.anjing.model.exception.BizException;
 import com.anjing.model.response.APIResponse;
@@ -11,7 +12,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,9 +46,6 @@ import java.util.*;
 @Tag(name = "Scaffold Test", description = "Teaching, health-check, and scaffold sample APIs")
 public class TestController {
 
-    @Value("${spring.application.name:infra-dev-scaffolding}")
-    private String applicationName;
-
     private final MiddlewareManager middlewareManager;
     private final Environment environment;
 
@@ -73,7 +70,7 @@ public class TestController {
 
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("status", "UP");
-        data.put("application", applicationName);
+        data.put("application", environment.getProperty("spring.application.name", ServiceBoundaryConstants.APPLICATION_ID));
         data.put("timestamp", DateUtils.nowIso());
         data.put("uptime", String.format("%d小时%d分%d秒",
                 uptime.toHours(), uptime.toMinutesPart(), uptime.toSecondsPart()));

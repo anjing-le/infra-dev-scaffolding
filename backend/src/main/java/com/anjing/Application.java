@@ -1,5 +1,6 @@
 package com.anjing;
 
+import com.anjing.model.constants.ServiceBoundaryConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.SpringApplication;
@@ -61,7 +62,7 @@ public class Application
         // 获取环境配置
         Environment env = applicationContext.getEnvironment();
         String ip = InetAddress.getLocalHost().getHostAddress();
-        String applicationName = env.getProperty("spring.application.name", "infra-dev-scaffolding");
+        String applicationName = env.getProperty("spring.application.name", ServiceBoundaryConstants.APPLICATION_ID);
         String port = env.getProperty("server.port", "8080");
         String contextPath = env.getProperty("server.servlet.context-path", "");
         String profile = String.join(",", env.getActiveProfiles());

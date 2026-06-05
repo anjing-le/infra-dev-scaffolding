@@ -35,6 +35,7 @@ function requireToken(relativeFile, token) {
 }
 
 requireToken(files.properties, 'private Map<String, String> serviceBaseUrls')
+requireToken(files.properties, 'ServiceBoundaryConstants.APPLICATION_ID')
 requireToken(files.request, 'private String serviceId')
 requireToken(files.request, 'private String path')
 requireToken(files.client, 'getFromService')
@@ -43,9 +44,12 @@ requireToken(files.client, 'resolveUrl')
 requireToken(files.client, 'joinUrl')
 requireToken(files.client, 'properties.getServiceBaseUrls()')
 requireToken(files.application, 'service-base-urls:')
+requireToken(files.example, 'ServiceBoundaryConstants.APPLICATION_ID')
+requireToken(files.example, '.serviceId(ServiceBoundaryConstants.APPLICATION_ID)')
 requireToken(files.example, '.path(ApiConstants.Test.PING_FULL)')
-requireToken(files.guide, '.serviceId("infra-auth")')
+requireToken(files.guide, 'ServiceBoundaryConstants.Auth.OWNER')
 requireToken(files.guide, '.path(ApiConstants.Auth.ME_FULL)')
+requireToken(files.guide, 'ServiceBoundaryConstants.APPLICATION_ID')
 requireToken(files.guide, 'service-base-urls:')
 
 let serviceBoundaries
@@ -61,7 +65,7 @@ if (!applicationId) {
 }
 
 requireToken(files.application, `${applicationId}:`)
-requireToken(files.example, `.serviceId("${applicationId}")`)
+requireToken(files.example, 'ServiceBoundaryConstants.APPLICATION_ID')
 
 const sampleSource = read(files.example)
 if (/\.url\("http:\/\/localhost/.test(sampleSource) || sampleSource.includes('serverPort + ApiConstants')) {

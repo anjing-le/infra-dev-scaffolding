@@ -1,5 +1,6 @@
 package com.anjing.config.properties;
 
+import com.anjing.model.constants.ServiceBoundaryConstants;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,7 @@ public class RemoteHttpClientProperties {
     /**
      * Default caller id propagated through X-Caller-Id.
      */
-    private String defaultCallerId = "infra-dev-scaffolding";
+    private String defaultCallerId = ServiceBoundaryConstants.APPLICATION_ID;
 
     /**
      * Connection timeout for outbound HTTP calls.

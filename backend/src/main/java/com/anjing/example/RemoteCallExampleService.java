@@ -4,6 +4,7 @@ import com.anjing.annotation.ScaffoldSample;
 import com.anjing.client.RemoteHttpClient;
 import com.anjing.client.RemoteHttpRequest;
 import com.anjing.model.constants.ApiConstants;
+import com.anjing.model.constants.ServiceBoundaryConstants;
 import com.anjing.model.request.BaseRequest;
 import com.anjing.model.response.APIResponse;
 import com.anjing.util.RemoteCallWrapper;
@@ -173,7 +174,7 @@ public class RemoteCallExampleService {
     public APIResponse<Map<String, String>> serviceCallHeadersExample() {
         log.info("=== 示例6: 服务间调用上下文请求头 ===");
 
-        Map<String, String> headers = RemoteCallWrapper.serviceCallHeaders("infra-dev-scaffolding");
+        Map<String, String> headers = RemoteCallWrapper.serviceCallHeaders(ServiceBoundaryConstants.APPLICATION_ID);
         return APIResponse.success(headers, "服务调用请求头生成成功");
     }
 
@@ -186,9 +187,9 @@ public class RemoteCallExampleService {
 
         RemoteHttpRequest request = RemoteHttpRequest.builder()
                 .method(HttpMethod.GET)
-                .serviceId("infra-dev-scaffolding")
+                .serviceId(ServiceBoundaryConstants.APPLICATION_ID)
                 .path(ApiConstants.Test.PING_FULL)
-                .callerId("infra-dev-scaffolding")
+                .callerId(ServiceBoundaryConstants.APPLICATION_ID)
                 .checkResponse(true)
                 .build();
 

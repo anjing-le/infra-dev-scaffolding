@@ -39,6 +39,7 @@ require_file scripts/check-frontend-context-contract.js
 require_file scripts/check-frontend-time-contract.js
 require_file scripts/generate-platform-contract-backend.js
 require_file scripts/generate-platform-contract-frontend.js
+require_file scripts/generate-service-boundaries-backend.js
 require_file scripts/check-platform-contract.js
 require_file scripts/check-error-codes.js
 require_file scripts/check-openapi-contract.js

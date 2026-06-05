@@ -110,6 +110,10 @@ node scripts/check-service-boundaries.js
 ```
 
 ```bash
+node scripts/generate-service-boundaries-backend.js --check
+```
+
+```bash
 node scripts/check-shared-kernel.js
 ```
 
