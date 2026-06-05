@@ -30,6 +30,7 @@
 验收：
 - `frontend` 通过 `pnpm build`。
 - `backend` 通过 `mvn -q -DskipTests package`。
+- `./scripts/quality-gate.sh` 串联母版质量门禁，后续可接入任意 CI。
 - 前端游客模式进入 `/dashboard/console`。
 - README 中的环境要求、端口、启动命令和验证命令准确。
 - 敏感配置只出现在模板或环境变量说明中。

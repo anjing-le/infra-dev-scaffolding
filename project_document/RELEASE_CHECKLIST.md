@@ -4,6 +4,12 @@
 
 ## 必过命令
 
+完整质量门禁：
+
+```bash
+./scripts/quality-gate.sh
+```
+
 母版自检：
 
 ```bash

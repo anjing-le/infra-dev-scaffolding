@@ -8,8 +8,8 @@
 
 | 阶段 | 状态 | 证据 |
 |------|------|------|
-| S0 构建与入口收口 | Ready | 前端 `pnpm build`、后端 `mvn -q -DskipTests package` 已通过 |
-| S1 工程母版收口 | Ready | `./scripts/check-template.sh` 和 `./scripts/smoke-copy.sh` 已通过 |
+| S0 构建与入口收口 | Ready | 前端 `pnpm build`、后端 `mvn -q -DskipTests package` 已通过，`./scripts/quality-gate.sh` 已纳入仓库 |
+| S1 工程母版收口 | Ready | `./scripts/check-template.sh`、`./scripts/smoke-copy.sh` 和 `./scripts/quality-gate.sh` 已纳入门禁 |
 | S2 AI 协作资产收口 | Ready | Notice prompt smoke 已在临时复制项目验证，母版只保留演示文档和 Prompt 契约 |
 | S3 后续项目复用验证 | In progress | `infra-skill-hub` 已从本母版接入骨架，完成 H0 / H1 / H2 验证，并推进 H3 HTTP/MCP/INTERNAL 调度层、全局与注册级协议配置、凭据托管与选择体验、权限身份头联动、策略批量管理、默认策略模板、调用治理、审计查询、治理指标与前端治理面 |
 | S4 契约与全球化基线 | In progress | 已落地前端 `ApiPaths`、请求上下文头、统一时间工具、`utils/locale`、响应解析 helper、platform locale contract；后端已落地 `ApiConstants` 运行路径引用、`RequestContextFilter`、`LocaleUtils` 语言归一化、`TimeZoneUtils` 时区归一化、UTC 默认时间策略、响应 `requestId`、`PageResult`、API 契约指南、`contracts/service-boundaries.json` 和 `/v3/api-docs` OpenAPI JSON |
@@ -21,6 +21,7 @@
 母版发布前至少运行：
 
 ```bash
+./scripts/quality-gate.sh
 ./scripts/check-template.sh
 ./scripts/check-contracts.sh
 node scripts/check-api-constants.js

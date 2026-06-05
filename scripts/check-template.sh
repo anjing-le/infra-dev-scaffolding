@@ -51,6 +51,7 @@ require_file scripts/check-service-boundaries.js
 require_file scripts/check-shared-kernel.js
 require_file scripts/check-remote-http-contract.js
 require_file scripts/check-contracts.sh
+require_file scripts/quality-gate.sh
 require_file scripts/probe-backend-dev.sh
 require_file backend/.env.example
 require_file backend/src/main/resources/application.yml
@@ -72,6 +73,7 @@ for token in \
   'S2 AI 协作资产收口' \
   'S3 后续项目复用验证' \
   'Notice prompt smoke' \
+  './scripts/quality-gate.sh' \
   './scripts/check-template.sh' \
   './scripts/smoke-copy.sh' \
   'mvn -q -DskipTests package' \

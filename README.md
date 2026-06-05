@@ -57,6 +57,14 @@ mvn spring-boot:run
 
 ## 验证
 
+完整质量门禁：
+
+```bash
+./scripts/quality-gate.sh
+```
+
+也可以按模块拆开运行：
+
 ```bash
 ./scripts/check-template.sh
 ```
