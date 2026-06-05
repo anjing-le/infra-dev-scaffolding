@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -20,7 +19,7 @@ public class DateUtils {
     public static final String DEFAULT_DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     public static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd";
     public static final String DEFAULT_TIME_PATTERN = "HH:mm:ss";
-    public static final ZoneId UTC_ZONE = ZoneOffset.UTC;
+    public static final ZoneId UTC_ZONE = TimeZoneUtils.defaultZoneId();
 
     private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern(DEFAULT_DATETIME_PATTERN);
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(DEFAULT_DATE_PATTERN);
@@ -156,7 +155,7 @@ public class DateUtils {
      * @return OffsetDateTime
      */
     public static OffsetDateTime nowUtc() {
-        return OffsetDateTime.now(ZoneOffset.UTC);
+        return OffsetDateTime.ofInstant(nowInstant(), UTC_ZONE);
     }
 
     /**

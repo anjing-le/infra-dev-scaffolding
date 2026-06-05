@@ -13,6 +13,7 @@ const files = {
   logback: 'backend/src/main/resources/logback-spring.xml',
   remoteWrapper: 'backend/src/main/java/com/anjing/util/RemoteCallWrapper.java',
   localeUtils: 'backend/src/main/java/com/anjing/util/LocaleUtils.java',
+  timeZoneUtils: 'backend/src/main/java/com/anjing/util/TimeZoneUtils.java',
   apiResponse: 'backend/src/main/java/com/anjing/model/response/APIResponse.java',
   status: 'project_document/STATUS.md',
   roadmap: 'project_document/ROADMAP.md',
@@ -62,7 +63,7 @@ for (const token of [
   'RequestHeaderConstants.ACCEPT_LANGUAGE',
   'LocaleUtils.normalizeAcceptLanguage',
   'RequestHeaderConstants.TIME_ZONE',
-  'normalizeTimeZone',
+  'TimeZoneUtils.normalizeTimeZone',
   'MDC_REQUEST_ID = "requestId"',
   'MDC_TRACE_ID = "traceId"',
   'MDC_TENANT_ID = "tenantId"',
@@ -105,6 +106,16 @@ for (const token of [
   'return DEFAULT_LOCALE'
 ]) {
   requireToken(files.localeUtils, token)
+}
+
+for (const token of [
+  'PlatformContractConstants.Time.DEFAULT_TIME_ZONE',
+  'defaultTimeZoneId',
+  'normalizeTimeZone',
+  'parseOrDefault',
+  'return defaultTimeZoneId()'
+]) {
+  requireToken(files.timeZoneUtils, token)
 }
 
 for (const token of [

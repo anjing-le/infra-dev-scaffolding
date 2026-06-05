@@ -4,6 +4,7 @@ import com.anjing.context.GlobalRequestContextHolder;
 import com.anjing.model.constants.RequestHeaderConstants;
 import com.anjing.model.request.GlobalRequestContext;
 import com.anjing.util.LocaleUtils;
+import com.anjing.util.TimeZoneUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,7 +15,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.time.ZoneId;
 import java.util.UUID;
 
 /**
@@ -54,7 +54,7 @@ public class RequestContextFilter extends OncePerRequestFilter {
                 UUID.randomUUID().toString()
         );
         String traceId = firstNonBlank(request.getHeader(RequestHeaderConstants.TRACE_ID), requestId);
-        String timeZone = normalizeTimeZone(request.getHeader(RequestHeaderConstants.TIME_ZONE));
+        String timeZone = TimeZoneUtils.normalizeTimeZone(request.getHeader(RequestHeaderConstants.TIME_ZONE));
         String locale = LocaleUtils.normalizeAcceptLanguage(request.getHeader(RequestHeaderConstants.ACCEPT_LANGUAGE));
 
         return GlobalRequestContext.builder()
@@ -86,18 +86,6 @@ public class RequestContextFilter extends OncePerRequestFilter {
             return forwardedFor.split(",")[0].trim();
         }
         return request.getRemoteAddr();
-    }
-
-    private String normalizeTimeZone(String timeZone) {
-        if (!StringUtils.hasText(timeZone)) {
-            return null;
-        }
-
-        try {
-            return ZoneId.of(timeZone).getId();
-        } catch (Exception ignored) {
-            return null;
-        }
     }
 
     private void putMdc(String key, String value) {

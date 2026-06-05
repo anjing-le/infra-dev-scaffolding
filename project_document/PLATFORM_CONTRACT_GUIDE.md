@@ -11,7 +11,7 @@
 - 成功码：`0`
 - 分页 payload：`records`、`current`、`size`、`total`
 - 请求上下文头：requestId、traceId、tenant、user、caller、timezone、language
-- 时间策略：默认 UTC，前端透传 `X-Time-Zone` 和 `Accept-Language`
+- 时间策略：默认 UTC，前端透传 `X-Time-Zone`，后端通过 `TimeZoneUtils` 归一化
 - 语言策略：默认 `zh-CN`，支持语言由 `locale.supportedLocales` 统一声明
 - 错误码分段和默认可重试远程错误范围
 
@@ -46,7 +46,7 @@
 - `SUPPORTED_LOCALES`
 - `PlatformSupportedLocale`
 
-`ApiConstants`、`RequestHeaderConstants`、`APIResponse`、`LocaleUtils`、`frontend/src/utils/http/context.ts`、`frontend/src/utils/http/response.ts`、`frontend/src/utils/time/index.ts` 应引用生成文件，不要重复手写 API 前缀、请求头、前端透传头列表、成功码、默认时区或支持语言。
+`ApiConstants`、`RequestHeaderConstants`、`APIResponse`、`TimeZoneUtils`、`LocaleUtils`、`frontend/src/utils/http/context.ts`、`frontend/src/utils/http/response.ts`、`frontend/src/utils/time/index.ts` 应引用生成文件，不要重复手写 API 前缀、请求头、前端透传头列表、成功码、默认时区或支持语言。
 
 ## Update Rules
 
@@ -84,6 +84,10 @@ node scripts/generate-platform-contract-frontend.js --check
 
 ```bash
 (cd backend && mvn -q -Dtest=LocaleUtilsTest test)
+```
+
+```bash
+(cd backend && mvn -q -Dtest=TimeZoneUtilsTest test)
 ```
 
 完整检查链路会通过 `./scripts/check-contracts.sh` 间接运行该脚本。

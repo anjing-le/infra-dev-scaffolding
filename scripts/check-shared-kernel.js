@@ -28,6 +28,7 @@ const sharedKernelFiles = [
   'backend/src/main/java/com/anjing/util/IdUtils.java',
   'backend/src/main/java/com/anjing/util/LocaleUtils.java',
   'backend/src/main/java/com/anjing/util/StringUtils.java',
+  'backend/src/main/java/com/anjing/util/TimeZoneUtils.java',
   'backend/src/main/java/com/anjing/util/ValidationUtils.java'
 ]
 

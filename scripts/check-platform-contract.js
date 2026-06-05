@@ -18,6 +18,8 @@ const files = {
   frontendApiTypes: 'frontend/src/types/api/api.d.ts',
   frontendTime: 'frontend/src/utils/time/index.ts',
   localeUtils: 'backend/src/main/java/com/anjing/util/LocaleUtils.java',
+  timeZoneUtils: 'backend/src/main/java/com/anjing/util/TimeZoneUtils.java',
+  dateUtils: 'backend/src/main/java/com/anjing/util/DateUtils.java',
   errorGuide: 'project_document/ERROR_CODE_GUIDE.md',
   apiContractGuide: 'project_document/API_CONTRACT_GUIDE.md'
 }
@@ -125,6 +127,10 @@ requireToken(files.frontendPlatform, `"localeHeader": "${contract.time.localeHea
 requireToken(files.frontendContext, 'timeZone: getClientTimeZone()')
 requireToken(files.frontendContext, 'acceptLanguage: getLanguageTag(language)')
 requireToken(files.apiResponse, contract.time.serverCurrentTimeSource)
+requireToken(files.timeZoneUtils, 'PlatformContractConstants.Time.DEFAULT_TIME_ZONE')
+requireToken(files.timeZoneUtils, 'normalizeTimeZone')
+requireToken(files.timeZoneUtils, 'parseOrDefault')
+requireToken(files.dateUtils, 'TimeZoneUtils.defaultZoneId()')
 
 const locale = contract.locale || {}
 const supportedLocales = locale.supportedLocales || []

@@ -39,6 +39,7 @@ require_file frontend/src/utils/http/response.ts
 require_file backend/src/main/java/com/anjing/model/constants/RequestHeaderConstants.java
 require_file backend/src/main/java/com/anjing/config/http/RequestContextFilter.java
 require_file backend/src/main/java/com/anjing/util/LocaleUtils.java
+require_file backend/src/main/java/com/anjing/util/TimeZoneUtils.java
 require_file frontend/src/utils/http/context.ts
 require_file backend/src/main/java/com/anjing/client/RemoteHttpClient.java
 require_file backend/src/main/java/com/anjing/util/RemoteCallWrapper.java
@@ -144,6 +145,7 @@ require_token backend/src/main/java/com/anjing/model/constants/RequestHeaderCons
 
 require_token backend/src/main/java/com/anjing/config/http/RequestContextFilter.java 'GlobalRequestContextHolder.set(context)'
 require_token backend/src/main/java/com/anjing/config/http/RequestContextFilter.java 'LocaleUtils.normalizeAcceptLanguage'
+require_token backend/src/main/java/com/anjing/config/http/RequestContextFilter.java 'TimeZoneUtils.normalizeTimeZone'
 require_token backend/src/main/java/com/anjing/config/http/RequestContextFilter.java 'response.setHeader(RequestHeaderConstants.REQUEST_ID'
 require_token backend/src/main/java/com/anjing/aspect/ControllerLogAspect.java 'API_REQUEST_END'
 require_token backend/src/main/java/com/anjing/aspect/ControllerLogAspect.java 'durationMs={}'
@@ -171,6 +173,9 @@ require_token backend/src/main/java/com/anjing/config/properties/RemoteHttpClien
 require_token frontend/src/utils/time/index.ts 'getClientTimeZone'
 require_token frontend/src/utils/time/index.ts 'import { DEFAULT_TIME_ZONE }'
 require_token frontend/src/utils/time/index.ts 'formatDateTime'
+require_token backend/src/main/java/com/anjing/util/TimeZoneUtils.java 'PlatformContractConstants.Time.DEFAULT_TIME_ZONE'
+require_token backend/src/main/java/com/anjing/util/TimeZoneUtils.java 'normalizeTimeZone'
+require_token backend/src/main/java/com/anjing/util/DateUtils.java 'TimeZoneUtils.defaultZoneId()'
 require_token backend/src/main/java/com/anjing/util/DateUtils.java 'nowIso'
 require_token backend/src/main/java/com/anjing/util/DateUtils.java 'nowEpochMilli'
 require_absent 'ZoneId\.systemDefault\(' \

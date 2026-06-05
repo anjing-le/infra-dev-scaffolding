@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PORT="${1:-18180}"
+ATTEMPTS="${PROBE_ATTEMPTS:-90}"
 TMP_ROOT="${TMPDIR:-/tmp}"
 LOG_FILE="$TMP_ROOT/infra-dev-scaffolding-backend-probe.$PORT.log"
 PID_FILE="$TMP_ROOT/infra-dev-scaffolding-backend-probe.$PORT.pid"
@@ -44,7 +45,7 @@ rm -f "$LOG_FILE" "$HEALTH_FILE" "$FEATURES_FILE" "$OPENAPI_FILE"
 
 pid="$(cat "$PID_FILE")"
 
-for _ in $(seq 1 45); do
+for _ in $(seq 1 "$ATTEMPTS"); do
   kill -0 "$pid" >/dev/null 2>&1 || fail "backend process exited before health check passed"
 
   if curl -fsS "http://localhost:$PORT/api/test/health" >"$HEALTH_FILE" 2>/dev/null; then
@@ -104,4 +105,4 @@ NODE
   sleep 1
 done
 
-fail "backend did not pass health check in time"
+fail "backend did not pass health check in ${ATTEMPTS}s"

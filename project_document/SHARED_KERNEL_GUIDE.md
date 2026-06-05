@@ -11,7 +11,7 @@
 - 错误码与异常：`ErrorCode`、各类 `XxxErrorCode`、`BizException`、`SystemException`
 - 请求/响应契约：`BaseRequest`、`GlobalRequestContext`、`PageRequest`、`APIResponse`、`PageResult`
 - 上下文持有：`GlobalRequestContextHolder`，包含纯 Java 的 `capture/restore` 辅助方法，供异步和定时任务 adapter 复用
-- 纯工具：`DateUtils`、`IdUtils`、`LocaleUtils`、`StringUtils`、`ValidationUtils`
+- 纯工具：`DateUtils`、`IdUtils`、`LocaleUtils`、`StringUtils`、`TimeZoneUtils`、`ValidationUtils`
 
 这些类未来可以优先抽到共享 jar。为了保持可抽取，它们不能反向依赖 Controller、Config、Aspect、Client、Example 等运行时层，也不能依赖 Spring Web、Servlet、JPA。
 
@@ -34,6 +34,7 @@
 - 时间、ID、语言、字符串、校验这类工具优先保持纯 Java；需要框架能力时拆 adapter。
 - 异步上下文传播时，共享内核只保留 `GlobalRequestContextHolder.capture()` / `setOrClear()` 等纯 Java 方法；MDC、线程池和 Spring `TaskDecorator` 留在运行时适配层。
 - `LocaleUtils` 只依赖 platform contract 和 JDK `Locale`，用于把 `Accept-Language` 归一化到母版声明的支持语言。
+- `TimeZoneUtils` 只依赖 platform contract 和 JDK `ZoneId`，用于把 `X-Time-Zone` 归一化到合法时区或默认 UTC。
 - 新增共享候选类时，同步加入 `scripts/check-shared-kernel.js` 的文件清单。
 
 ## Verification
