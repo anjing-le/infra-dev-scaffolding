@@ -2,6 +2,8 @@
 
 OpenAPI 是后端运行接口给前端、AI Prompts、网关和未来服务调用方看的机器可读契约。母版先提供轻量 JSON 文档入口，不默认引入 Swagger UI；后续可以基于该入口接入前端类型或 API client 生成。
 
+服务/模块归属由 `contracts/service-boundaries.json` 记录。OpenAPI 负责描述运行接口细节，service boundary 负责描述这些接口当前由谁承载、未来可能迁到哪个服务。
+
 ## Runtime Endpoint
 
 开发和测试环境默认启用：

@@ -38,6 +38,7 @@
    - RESTful API
    - 统一返回 APIResponse
    - API 路径引用 `ApiConstants`，并在 `ApiConstants` 中新增模块 `BASE`、子路径和必要的 `*_FULL`
+   - 若该模块进入运行面，同步在 `contracts/service-boundaries.json` 增加 boundary 和 routes
    - 参数校验注解
    - 不要添加 `@ScaffoldSample`
 
@@ -68,6 +69,7 @@
 - 统一返回 `APIResponse<T>`
 - 真实业务接口使用明确 Request / Response DTO，不要用 `Map<String, Object>` 作为请求体或响应数据
 - 新增或复用 `ApiConstants` 中的路径常量，Controller 注解不要硬编码 URL
+- 新增运行模块前确认 `contracts/service-boundaries.json` 的服务边界，避免和 auth/common/admin/integration 等未来服务冲突
 - 同步提醒前端在 `src/api/paths.ts` 的 `ApiPaths` 中补齐对应路径
 - 列表接口 `GET /api/[resource]` 使用 `@ModelAttribute [EntityName]SearchRequest`
 - 列表接口返回 `APIResponse<PageResult<[EntityName]VO>>`，或返回字段完全一致的 `[EntityName]PageVO`

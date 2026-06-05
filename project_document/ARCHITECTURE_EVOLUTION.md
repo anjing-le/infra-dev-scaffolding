@@ -32,7 +32,7 @@
 
 主要缺口：
 
-- 前端 API URL 已开始收口到 `ApiPaths`，后端运行 Controller 已开始引用 `ApiConstants`；`ApiConstants` 内部也已收口为 `API_PREFIX`、模块 `BASE`、相对子路径和 `*_FULL`，并由 `scripts/check-api-constants.js` 守护。路径规则已记录到 `project_document/API_PATH_GUIDE.md`；后续需要继续扩大覆盖面，并评估与 OpenAPI 的生成关系。
+- 前端 API URL 已开始收口到 `ApiPaths`，后端运行 Controller 已开始引用 `ApiConstants`；`ApiConstants` 内部也已收口为 `API_PREFIX`、模块 `BASE`、相对子路径和 `*_FULL`，并由 `scripts/check-api-constants.js` 守护。路径规则已记录到 `project_document/API_PATH_GUIDE.md`；`contracts/service-boundaries.json` 已进一步记录 auth、test、common 当前边界和 user、admin、integration 未来服务边界，并由 `scripts/check-service-boundaries.js` 校验。
 - 响应契约已开始收敛到 `APIResponse` + `message` + `PageResult(records/current/size/total)`，并已记录到 `project_document/API_CONTRACT_GUIDE.md`；`msg`、`BaseResponse`、`PageResponse` 仅作为旧接口或远程响应兼容入口。
 - OpenAPI 运行接口契约已开始落地，`/v3/api-docs` 由 `springdoc-openapi-starter-webmvc-api` 暴露，dev/test 默认开启、prod 默认关闭；`project_document/OPENAPI_CONTRACT_GUIDE.md` 和 `scripts/check-openapi-contract.js` 已守护后续前端类型生成入口。
 - 平台级契约已沉淀为 `contracts/platform-contract.json`，覆盖 API 前缀、响应 envelope、分页字段、请求头、时间策略、错误码分段和可重试范围；后端生成 `PlatformContractConstants.java`，前端生成 `frontend/src/contracts/platform-contract.ts`，供路径、请求头、响应解析、时间工具和远程重试判断复用，并由 `scripts/generate-platform-contract-backend.js --check`、`scripts/generate-platform-contract-frontend.js --check`、`scripts/check-platform-contract.js` 校验生成产物、前后端与文档一致性。
@@ -51,6 +51,7 @@
 - 统一 API 契约：`code`、`message`、`data`、`timestamp`、`requestId`、分页字段、错误码命名。
 - 统一接口文档契约：后端运行接口暴露 OpenAPI JSON，前端类型生成和 AI Prompts 都从同一入口理解 DTO/VO。
 - 统一 URL 管理：后端 `ApiConstants` 与前端 `ApiPaths` / `apiUrl()`，禁止业务页面手写 URL 字符串。
+- 统一服务边界：机器可读 manifest 记录 basePath、owner、currentHost、copyAction 和 runtime route，为未来网关转发和微服务拆分提供事实来源。
 - 统一请求上下文：请求进入后生成或透传 `X-Request-Id`，保留 `X-Trace-Id`、`X-Tenant-Id`、`X-User-Id`、`X-Time-Zone`、`Accept-Language`。
 - 统一时间策略：服务端存储 UTC，接口输出 ISO-8601，前端按用户时区格式化展示。
 - 统一环境配置：前端 env、后端 yml、README、复制指南中的端口、API base、应用名、数据库名保持一致。
@@ -118,9 +119,10 @@
 - `MiddlewareManager.statusReport()` 和 `/api/test/features` 已提供可选能力状态基线，状态词典记录在 `project_document/FEATURE_STATUS_GUIDE.md`。
 - `application-dev.yml`、`application-test.yml`、`application-prod.yml` 已提供环境矩阵，dev/test 使用 H2 轻启动，生产 MySQL 和外部能力由环境变量显式开启。
 - `project_document/LOCAL_STARTUP_GUIDE.md` 已记录无 MySQL/Redis 的后端本地启动验证方式和当前证据。
-- `scripts/check-contracts.sh` 已把路径、响应、分页、上下文、远程调用和时间工具约束变成可执行守护检查。
+- `scripts/check-contracts.sh` 已把路径、服务边界、响应、分页、上下文、远程调用和时间工具约束变成可执行守护检查。
 - `scripts/check-api-constants.js` 已把 `ApiConstants` 内部 API 前缀约束纳入自动校验，避免共享路径常量重新散落 `"/api/..."` 字面量。
-- `scripts/check-api-path-parity.js` 已把后端 `ApiConstants.Auth/Test` 与前端 `ApiPaths.auth/test` 的运行路径一致性纳入自动校验。
+- `scripts/check-api-path-parity.js` 已改为读取 `contracts/service-boundaries.json`，把 manifest 声明的后端 `ApiConstants` 与前端 `ApiPaths` 运行路径一致性纳入自动校验。
+- `scripts/check-service-boundaries.js` 已把服务边界 manifest、`ApiConstants`、`ApiPaths`、Controller base path 和 OpenAPI `@Tag` 一致性纳入自动校验。
 - `scripts/generate-platform-contract-backend.js --check` 已确保后端平台契约生成文件与 manifest 一致。
 - `scripts/generate-platform-contract-frontend.js --check` 已确保前端平台契约生成文件与 manifest 一致。
 - `scripts/check-platform-contract.js` 已把 `contracts/platform-contract.json` 与 Java/TypeScript/文档的一致性纳入自动校验。
@@ -134,6 +136,7 @@
 验收：
 
 - 明确 auth、gateway、common、admin、business 的 API prefix 和包边界。
+- `contracts/service-boundaries.json` 记录运行边界、示例边界、预留边界和未来服务归属。
 - 新项目复制后可以只保留需要的模块，不破坏构建。
 - 可选中间件有 profile 示例、验证命令和状态接口。
 - 下游项目验证出的通用工具回流母版，领域能力留在下游。

@@ -1,6 +1,6 @@
 # API Path Guide
 
-本文档定义前后端 API 路径的集中管理方式。路径是未来 OpenAPI、网关转发、微服务拆分和 AI 生成代码的共同契约。
+本文档定义前后端 API 路径的集中管理方式。路径是未来 OpenAPI、网关转发、微服务拆分和 AI 生成代码的共同契约。服务/模块归属记录在 `contracts/service-boundaries.json`，维护方式见 `project_document/SERVICE_BOUNDARY_GUIDE.md`。
 
 ## Backend
 
@@ -63,7 +63,7 @@ export const ApiPaths = {
 
 ## Future Direction
 
-当后续接入 OpenAPI / 类型生成时，应以 `ApiConstants` 和 Controller 注解作为后端事实来源，生成或校验前端 `ApiPaths`。当前母版先用手写路径注册表保证可读、可复制、可被 AI 正确复用。
+当后续接入 OpenAPI / 类型生成时，应以 `ApiConstants`、Controller 注解和 `contracts/service-boundaries.json` 作为后端事实来源，生成或校验前端 `ApiPaths`。当前母版先用手写路径注册表和服务边界 manifest 保证可读、可复制、可被 AI 正确复用。
 
 ## Verification
 
@@ -85,4 +85,8 @@ node scripts/check-api-constants.js
 node scripts/check-api-path-parity.js
 ```
 
-`check-api-constants.js` 会阻止 `ApiConstants` 内部重新散落 `"/api/..."` 字面量。`check-api-path-parity.js` 会比对 `ApiConstants.Auth/Test/Common` 和 `ApiPaths.auth/test/common` 的稳定运行接口。后续新增模块进入运行面时，应同步扩展该脚本的映射表。
+```bash
+node scripts/check-service-boundaries.js
+```
+
+`check-api-constants.js` 会阻止 `ApiConstants` 内部重新散落 `"/api/..."` 字面量。`check-api-path-parity.js` 会读取 `contracts/service-boundaries.json`，比对 manifest 中声明的稳定运行接口和 `ApiConstants` / `ApiPaths`。后续新增模块进入运行面时，应同步扩展 `service-boundaries.json` 的 route 表。

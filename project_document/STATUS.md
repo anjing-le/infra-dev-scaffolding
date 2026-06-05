@@ -12,9 +12,9 @@
 | S1 工程母版收口 | Ready | `./scripts/check-template.sh` 和 `./scripts/smoke-copy.sh` 已通过 |
 | S2 AI 协作资产收口 | Ready | Notice prompt smoke 已在临时复制项目验证，母版只保留演示文档和 Prompt 契约 |
 | S3 后续项目复用验证 | In progress | `infra-skill-hub` 已从本母版接入骨架，完成 H0 / H1 / H2 验证，并推进 H3 HTTP/MCP/INTERNAL 调度层、全局与注册级协议配置、凭据托管与选择体验、权限身份头联动、策略批量管理、默认策略模板、调用治理、审计查询、治理指标与前端治理面 |
-| S4 契约与全球化基线 | In progress | 已落地前端 `ApiPaths`、请求上下文头、统一时间工具、响应解析 helper；后端已落地 `ApiConstants` 运行路径引用、`RequestContextFilter`、UTC 默认时间策略、响应 `requestId`、`PageResult`、API 契约指南和 `/v3/api-docs` OpenAPI JSON |
+| S4 契约与全球化基线 | In progress | 已落地前端 `ApiPaths`、请求上下文头、统一时间工具、响应解析 helper；后端已落地 `ApiConstants` 运行路径引用、`RequestContextFilter`、UTC 默认时间策略、响应 `requestId`、`PageResult`、API 契约指南、`contracts/service-boundaries.json` 和 `/v3/api-docs` OpenAPI JSON |
 | S5 分布式可观测基线 | In progress | 已落地 MDC 日志字段、`RemoteCallWrapper.serviceCallHeaders(callerId)`、`RemoteHttpClient`、错误码分段指南、`scripts/check-error-codes.js`、`/api/test/features` 可选能力状态接口和 dev/test/prod profile 矩阵 |
-| S7 契约生成与共享包 | In progress | 已落地 `project_document/SHARED_KERNEL_GUIDE.md`、`project_document/OPENAPI_CONTRACT_GUIDE.md`、`scripts/check-openapi-contract.js` 和 `scripts/check-shared-kernel.js`，先守住未来可抽 `anjing-common` 与前端类型生成的契约边界 |
+| S7 契约生成与共享包 | In progress | 已落地 `project_document/SHARED_KERNEL_GUIDE.md`、`project_document/OPENAPI_CONTRACT_GUIDE.md`、`project_document/SERVICE_BOUNDARY_GUIDE.md`、`scripts/check-openapi-contract.js`、`scripts/check-service-boundaries.js` 和 `scripts/check-shared-kernel.js`，先守住未来可抽 `anjing-common`、服务边界与前端类型生成的契约边界 |
 
 ## 当前证据链
 
@@ -30,6 +30,7 @@ node scripts/generate-platform-contract-frontend.js --check
 node scripts/check-platform-contract.js
 node scripts/check-error-codes.js
 node scripts/check-openapi-contract.js
+node scripts/check-service-boundaries.js
 node scripts/check-shared-kernel.js
 ./scripts/smoke-copy.sh
 ./scripts/probe-backend-dev.sh
@@ -46,7 +47,8 @@ AI 协作验证：
   - 后端列表响应字段为 `records`、`current`、`size`、`total`。
   - 后端运行 Controller 路径引用 `ApiConstants`，前端路径收口到 `ApiPaths`，路径契约记录在 `project_document/API_PATH_GUIDE.md`。
   - `node scripts/check-api-constants.js` 已校验 `ApiConstants` 内部只保留 `API_PREFIX = "/api"` 一个 API 前缀字面量，模块路径使用 `BASE + 相对路径 + *_FULL`。
-  - `node scripts/check-api-path-parity.js` 已校验 `ApiConstants.Auth/Test/Common` 与 `ApiPaths.auth/test/common` 的稳定运行路径一致。
+  - `contracts/service-boundaries.json` 已记录 auth、test、common 当前运行/预留边界，以及 user、admin、integration 未来服务边界；`node scripts/check-service-boundaries.js` 已校验边界 basePath、route、`ApiConstants`、`ApiPaths`、Controller 和 OpenAPI `@Tag` 一致。
+  - `node scripts/check-api-path-parity.js` 已改为读取 `contracts/service-boundaries.json`，校验 manifest 中声明的稳定运行路径和 `ApiConstants` / `ApiPaths` 一致。
   - 非 Axios 上传地址通过 `resolveApiPath(ApiPaths.common.uploadWangEditor)` 生成，避免组件手动拼 `VITE_API_URL + '/api/...'`。
   - 前端删除请求使用项目 HTTP 工具的 `request.del`。
   - 前端标准响应消息使用 `message`，`msg` 兼容集中在 `utils/http/response.ts`。
@@ -62,7 +64,7 @@ AI 协作验证：
   - 错误码按 `project_document/ERROR_CODE_GUIDE.md` 分段，`node scripts/check-error-codes.js` 已校验 Java 错误码枚举必须实现 `ErrorCode`、4 位数字、全局唯一并落在 `contracts/platform-contract.json` 分段内。
   - 远程调用默认只重试 `1800-1899`，`RemoteCallWrapper` 已读取 `PlatformContractConstants.ErrorCodes.RETRYABLE_RANGES`，避免在业务代码里硬编码重试范围。
   - `node scripts/check-openapi-contract.js` 已校验 springdoc 依赖、OpenAPI 配置、平台请求头、Auth 明确 DTO/VO 和前端 auth 类型一致性。
-  - `./scripts/check-contracts.sh` 已将 API 路径、响应 envelope、分页字段、请求上下文、远程调用、时间工具、错误码和 OpenAPI 的关键约束纳入可执行检查。
+  - `./scripts/check-contracts.sh` 已将 API 路径、服务边界、响应 envelope、分页字段、请求上下文、远程调用、时间工具、错误码和 OpenAPI 的关键约束纳入可执行检查。
   - 可选中间件状态按 `project_document/FEATURE_STATUS_GUIDE.md` 使用 `disabled/configured/ready/degraded`，并通过 `/api/test/features` 输出。
   - 后端 profile 矩阵按 `project_document/ENVIRONMENT_PROFILE_GUIDE.md` 管理，`dev/test` 使用 H2 轻启动，`prod` 通过环境变量显式开启 MySQL 和外部中间件。
   - 本地轻启动验证记录在 `project_document/LOCAL_STARTUP_GUIDE.md`，已验证 `dev` profile 下 `/api/test/health`、`/api/test/features` 和 `/v3/api-docs` 可返回。

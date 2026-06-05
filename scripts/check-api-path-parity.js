@@ -8,6 +8,7 @@ const apiConstantsPath = path.join(
   'backend/src/main/java/com/anjing/model/constants/ApiConstants.java'
 )
 const apiPathsPath = path.join(root, 'frontend/src/api/paths.ts')
+const serviceBoundaryPath = path.join(root, 'contracts/service-boundaries.json')
 
 function fail(message) {
   console.error(`check-api-path-parity: ${message}`)
@@ -19,6 +20,18 @@ function read(file) {
     fail(`missing required file: ${path.relative(root, file)}`)
   }
   return fs.readFileSync(file, 'utf8')
+}
+
+function readJson(file) {
+  if (!fs.existsSync(file)) {
+    fail(`missing required file: ${path.relative(root, file)}`)
+  }
+
+  try {
+    return JSON.parse(fs.readFileSync(file, 'utf8'))
+  } catch (error) {
+    fail(`invalid ${path.relative(root, file)}: ${error.message}`)
+  }
 }
 
 function findBlock(source, marker) {
@@ -66,6 +79,10 @@ function evaluateJavaExpression(expression, constants) {
         return constants[part]
       }
 
+      if (/^\w+\.\w+$/.test(part)) {
+        return `__QUALIFIED_REF__${part}`
+      }
+
       fail(`cannot evaluate Java API path expression: ${expression}`)
     })
     .join('')
@@ -106,37 +123,44 @@ function extractTsModule(source, moduleName) {
 
 const javaSource = read(apiConstantsPath)
 const tsSource = read(apiPathsPath)
+const serviceBoundaries = readJson(serviceBoundaryPath)
 
-const backend = {
-  Auth: extractJavaConstants(javaSource, 'Auth'),
-  Test: extractJavaConstants(javaSource, 'Test'),
-  Common: extractJavaConstants(javaSource, 'Common')
+const routeMappings = []
+const backendClasses = new Set()
+const frontendModules = new Set()
+
+for (const boundary of serviceBoundaries.boundaries || []) {
+  if (!boundary.apiConstantsClass) {
+    continue
+  }
+
+  backendClasses.add(boundary.apiConstantsClass)
+
+  if (boundary.apiPathsKey) {
+    frontendModules.add(boundary.apiPathsKey)
+  }
+
+  for (const route of boundary.routes || []) {
+    if (route.backendConstant && route.frontendKey && boundary.apiPathsKey) {
+      routeMappings.push([
+        `${boundary.apiConstantsClass}.${route.backendConstant}`,
+        `${boundary.apiPathsKey}.${route.frontendKey}`
+      ])
+    }
+  }
 }
 
-const frontend = {
-  auth: extractTsModule(tsSource, 'auth'),
-  test: extractTsModule(tsSource, 'test'),
-  common: extractTsModule(tsSource, 'common')
+if (!routeMappings.length) {
+  fail('contracts/service-boundaries.json does not define any backend/frontend route mappings')
 }
 
-const mappings = [
-  ['Auth.LOGIN_FULL', 'auth.login'],
-  ['Auth.LOGOUT_FULL', 'auth.logout'],
-  ['Auth.ME_FULL', 'auth.me'],
-  ['Auth.REFRESH_FULL', 'auth.refresh'],
-  ['Test.HEALTH_FULL', 'test.health'],
-  ['Test.FEATURES_FULL', 'test.features'],
-  ['Test.PING_FULL', 'test.ping'],
-  ['Test.EXCEPTION_BIZ_FULL', 'test.bizException'],
-  ['Test.EXCEPTION_SYSTEM_FULL', 'test.systemException'],
-  ['Test.ITEMS_FULL', 'test.items'],
-  ['Test.ITEM_DETAIL_FULL', 'test.itemDetail'],
-  ['Common.UPLOAD_FILE_FULL', 'common.upload'],
-  ['Common.UPLOAD_IMAGE_FULL', 'common.uploadImage'],
-  ['Common.UPLOAD_WANG_EDITOR_FULL', 'common.uploadWangEditor'],
-  ['Common.DOWNLOAD_FILE_FULL', 'common.download'],
-  ['Common.DELETE_FILE_FULL', 'common.deleteFile']
-]
+const backend = Object.fromEntries(
+  [...backendClasses].map((className) => [className, extractJavaConstants(javaSource, className)])
+)
+
+const frontend = Object.fromEntries(
+  [...frontendModules].map((moduleName) => [moduleName, extractTsModule(tsSource, moduleName)])
+)
 
 function getBackendValue(key) {
   const [moduleName, constantName] = key.split('.')
@@ -148,7 +172,7 @@ function getFrontendValue(key) {
   return frontend[moduleName]?.[pathName]
 }
 
-for (const [backendKey, frontendKey] of mappings) {
+for (const [backendKey, frontendKey] of routeMappings) {
   const backendValue = getBackendValue(backendKey)
   const frontendValue = getFrontendValue(frontendKey)
 

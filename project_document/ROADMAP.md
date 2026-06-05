@@ -70,6 +70,7 @@
 
 验收：
 - 统一前后端 API path 管理，减少散落 URL 字符串。
+- 使用机器可读 service boundary manifest 记录运行模块、预留模块和未来服务归属。
 - 统一响应 envelope 和分页 payload，新增接口只使用 `code/message/data/timestamp/requestId` 与 `records/current/size/total`。
 - 请求链路具备 `requestId`、`traceId`、语言和时区上下文。
 - 后端默认 UTC，可通过环境变量覆盖应用时区。
@@ -93,6 +94,7 @@
 
 验收：
 - 明确 auth、gateway、common、admin、business 的 API prefix 和包边界。
+- 服务边界 manifest 能校验 `ApiConstants`、`ApiPaths`、Controller 和 OpenAPI 标记一致。
 - 可选中间件有 dev/test/prod profile 示例、状态接口和验证命令。
 - 下游项目验证出的通用工具回流母版，领域能力留在下游。
 
@@ -112,6 +114,7 @@
 - `scripts/generate-platform-contract-backend.js --check`、`scripts/generate-platform-contract-frontend.js --check` 和 `scripts/check-platform-contract.js` 已校验生成产物、前后端代码及文档一致。
 - `scripts/check-error-codes.js` 已校验 Java 错误码枚举和 platform contract 分段一致，`RemoteCallWrapper` 已读取生成的可重试范围。
 - `springdoc-openapi-starter-webmvc-api` 已提供 `/v3/api-docs`，`scripts/check-openapi-contract.js` 与 `./scripts/probe-backend-dev.sh` 已校验 OpenAPI 配置、平台请求头和 auth DTO/VO 契约。
+- `contracts/service-boundaries.json` 已记录当前运行、示例、预留和未来服务边界，`scripts/check-service-boundaries.js` 已校验 route、basePath 和前后端路径一致。
 - `project_document/SHARED_KERNEL_GUIDE.md` 已定义共享内核边界。
 - `scripts/check-shared-kernel.js` 已守护可抽取契约/工具类不能依赖 Spring Web、Servlet、JPA 或运行时层。
 

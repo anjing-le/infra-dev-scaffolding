@@ -18,6 +18,7 @@
 - `backend/src/main/java/com/anjing/aspect/`、`annotation/`、`util/`、`statemachine/`：可复用基础设施能力。
 - `backend/src/main/java/com/anjing/controller/AuthController.java`：Mock 认证示例。真实项目接入认证中心或数据库后可替换。
 - `.cursor/rules/` 和 `.cursor/prompts/`：AI 协作规范和代码生成入口。
+- `contracts/service-boundaries.json`：服务/模块边界、API 归属和未来拆分计划。
 - `project_document/`：规划、边界、复制、发布检查文档。
 
 ## 示例能力
@@ -72,6 +73,12 @@ pnpm clean:dev -- --apply
 3. 删除或替换“示例能力”，但不要删除统一响应、异常、权限、路由、环境配置这些母版能力。
 4. 新业务代码放在新的业务包和页面目录中，不要写进 `backend/src/main/java/com/anjing/example/`。
 5. 清理完后运行 `./scripts/check-template.sh`、`pnpm build`、`mvn -q -DskipTests package`。
+
+复制项目如果删除或替换接口边界，需要同步更新 `contracts/service-boundaries.json`，再运行：
+
+```bash
+node scripts/check-service-boundaries.js
+```
 
 ## 后端示例定位
 
