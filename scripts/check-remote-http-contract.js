@@ -11,6 +11,8 @@ const files = {
   properties: 'backend/src/main/java/com/anjing/config/properties/RemoteHttpClientProperties.java',
   request: 'backend/src/main/java/com/anjing/client/RemoteHttpRequest.java',
   client: 'backend/src/main/java/com/anjing/client/RemoteHttpClient.java',
+  callerResolver: 'backend/src/main/java/com/anjing/client/RemoteCallerResolver.java',
+  defaultCallerResolver: 'backend/src/main/java/com/anjing/client/DefaultRemoteCallerResolver.java',
   endpointResolver: 'backend/src/main/java/com/anjing/client/ServiceEndpointResolver.java',
   configuredEndpointResolver: 'backend/src/main/java/com/anjing/client/ConfiguredServiceEndpointResolver.java',
   callPolicy: 'backend/src/main/java/com/anjing/client/RemoteCallPolicy.java',
@@ -57,8 +59,16 @@ requireToken(files.client, 'ParameterizedTypeReference')
 requireToken(files.client, 'exchange(RemoteHttpRequest request, ParameterizedTypeReference<R> responseType)')
 requireToken(files.client, 'responseSpec.body(responseType)')
 requireToken(files.client, 'resolveUrl')
+requireToken(files.client, 'RemoteCallerResolver')
+requireToken(files.client, 'remoteCallerResolver.resolveCallerId')
 requireToken(files.client, 'ServiceEndpointResolver')
 requireToken(files.client, 'serviceEndpointResolver.resolveUrl')
+requireToken(files.callerResolver, 'interface RemoteCallerResolver')
+requireToken(files.callerResolver, 'resolveCallerId(RemoteHttpRequest request)')
+requireToken(files.defaultCallerResolver, 'implements RemoteCallerResolver')
+requireToken(files.defaultCallerResolver, 'request.getCallerId()')
+requireToken(files.defaultCallerResolver, 'properties.getDefaultCallerId()')
+requireToken(files.defaultCallerResolver, 'ServiceBoundaryConstants.APPLICATION_ID')
 requireToken(files.client, 'RemoteCallPolicy')
 requireToken(files.client, 'remoteCallPolicy.beforeCall')
 requireToken(files.client, 'remoteCallPolicy.afterSuccess')
@@ -92,6 +102,8 @@ requireToken(files.httpClientConfig, '@ConditionalOnMissingBean(RemoteCallPolicy
 requireToken(files.httpClientConfig, 'new NoopRemoteCallPolicy()')
 requireToken(files.httpClientConfig, '@ConditionalOnMissingBean(RemoteCallObserver.class)')
 requireToken(files.httpClientConfig, 'new NoopRemoteCallObserver()')
+requireToken(files.httpClientConfig, '@ConditionalOnMissingBean(RemoteCallerResolver.class)')
+requireToken(files.httpClientConfig, 'new DefaultRemoteCallerResolver(properties)')
 requireToken(files.application, 'service-base-urls:')
 requireToken(files.platform, 'BACKEND_PROPAGATED_HEADER_KEYS')
 requireToken(files.remoteWrapper, 'PlatformContractConstants.BACKEND_PROPAGATED_HEADER_KEYS')
@@ -110,11 +122,14 @@ requireToken(files.test, 'REMOTE_CALL_CIRCUIT_BREAKER_OPEN')
 requireToken(files.test, 'RecordingRemoteCallPolicy')
 requireToken(files.test, 'RecordingRemoteCallObserver')
 requireToken(files.test, 'observer.observation.durationMs()')
+requireToken(files.test, 'exchangeShouldUseRemoteCallerResolver')
+requireToken(files.test, 'defaultRemoteCallerResolverShouldSupportRequestOverrideAndFallback')
 requireToken(files.guide, 'ServiceBoundaryConstants.Auth.OWNER')
 requireToken(files.guide, '.path(ApiConstants.Auth.ME_FULL)')
 requireToken(files.guide, 'ServiceBoundaryConstants.APPLICATION_ID')
 requireToken(files.guide, 'new ParameterizedTypeReference<APIResponse<CurrentUserResponse>>()')
 requireToken(files.guide, 'service-base-urls:')
+requireToken(files.guide, 'RemoteCallerResolver')
 
 let serviceBoundaries
 try {

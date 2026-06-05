@@ -67,6 +67,12 @@ app:
 
 `ConfiguredServiceEndpointResolver` 是默认的服务解析实现，读取 `service-base-urls` 并拼接 service-relative path。母版不默认引入注册中心；下游项目可以先用环境变量切换服务地址，再在真实微服务项目中替换 `ServiceEndpointResolver`，接入 API Gateway、Service Discovery、区域路由或灰度路由。
 
+## 调用方身份扩展点
+
+`RemoteCallerResolver` 是服务间调用的调用方身份解析扩展点。默认 `DefaultRemoteCallerResolver` 先使用 `RemoteHttpRequest.callerId`，再使用 `app.remote-http.default-caller-id`，最后回退到 `ServiceBoundaryConstants.APPLICATION_ID`。
+
+下游如果接入认证中心、API Gateway、服务网格或服务注册策略，可以定义自己的 `RemoteCallerResolver` bean，统一决定 `X-Caller-Id`。业务代码不应在每个调用点手写调用方身份规则。
+
 ## 调用策略扩展点
 
 `RemoteCallPolicy` 是远程调用治理扩展点。母版默认提供 `NoopRemoteCallPolicy`，不会限流或熔断；下游项目可以定义自己的 `RemoteCallPolicy` bean，替换默认实现：

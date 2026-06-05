@@ -43,6 +43,7 @@ class RemoteHttpClientTest {
                 builder.build(),
                 properties,
                 new ConfiguredServiceEndpointResolver(properties),
+                new DefaultRemoteCallerResolver(properties),
                 new NoopRemoteCallPolicy(),
                 new NoopRemoteCallObserver()
         );
@@ -102,6 +103,7 @@ class RemoteHttpClientTest {
                 builder.build(),
                 properties,
                 new ConfiguredServiceEndpointResolver(properties),
+                new DefaultRemoteCallerResolver(properties),
                 new RemoteCallPolicy() {
                     @Override
                     public void beforeCall(RemoteCallPolicyContext context) {
@@ -146,6 +148,7 @@ class RemoteHttpClientTest {
                 builder.build(),
                 properties,
                 new ConfiguredServiceEndpointResolver(properties),
+                new DefaultRemoteCallerResolver(properties),
                 policy,
                 observer
         );
@@ -196,6 +199,55 @@ class RemoteHttpClientTest {
         assertNull(observer.observation.errorCode());
         assertNull(observer.observation.exceptionType());
         server.verify();
+    }
+
+    @Test
+    void exchangeShouldUseRemoteCallerResolver() {
+        RestClient.Builder builder = RestClient.builder();
+        MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
+        RemoteHttpClientProperties properties = properties();
+        RecordingRemoteCallPolicy policy = new RecordingRemoteCallPolicy();
+        RecordingRemoteCallObserver observer = new RecordingRemoteCallObserver();
+        RemoteHttpClient client = new RemoteHttpClient(
+                builder.build(),
+                properties,
+                new ConfiguredServiceEndpointResolver(properties),
+                request -> "gateway-caller",
+                policy,
+                observer
+        );
+
+        server.expect(requestTo("http://inventory.local/api/items"))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(header(RequestHeaderConstants.CALLER_ID, "gateway-caller"))
+                .andRespond(withSuccess("ok", MediaType.TEXT_PLAIN));
+
+        String response = client.exchange(
+                RemoteHttpRequest.builder()
+                        .serviceId("inventory")
+                        .path("/api/items")
+                        .build(),
+                String.class
+        );
+
+        assertEquals("ok", response);
+        assertEquals("gateway-caller", policy.context.callerId());
+        assertEquals("gateway-caller", observer.observation.callerId());
+        server.verify();
+    }
+
+    @Test
+    void defaultRemoteCallerResolverShouldSupportRequestOverrideAndFallback() {
+        RemoteHttpClientProperties properties = properties();
+        DefaultRemoteCallerResolver resolver = new DefaultRemoteCallerResolver(properties);
+
+        assertEquals("request-caller", resolver.resolveCallerId(RemoteHttpRequest.builder()
+                .callerId("request-caller")
+                .build()));
+        assertEquals("infra-dev-scaffolding-test", resolver.resolveCallerId(RemoteHttpRequest.builder().build()));
+
+        properties.setDefaultCallerId("");
+        assertEquals("infra-dev-scaffolding", resolver.resolveCallerId(RemoteHttpRequest.builder().build()));
     }
 
     @Test

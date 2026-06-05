@@ -85,7 +85,7 @@
 
 验收：
 - 日志统一输出 requestId、traceId、用户、租户、路径、耗时和错误码。
-- 远程调用 wrapper 和 HTTP client adapter 支持上下文透传、调用方身份、超时、重试、审计字段、服务解析扩展点、调用治理策略扩展点、调用审计扩展点和标准/分页/列表响应的泛型反序列化。
+- 远程调用 wrapper 和 HTTP client adapter 支持上下文透传、调用方身份解析扩展点、超时、重试、审计字段、服务解析扩展点、调用治理策略扩展点、调用审计扩展点和标准/分页/列表响应的泛型反序列化。
 - 错误码按分段指南分配，并由脚本校验唯一性、格式、范围和可重试错误。
 - 中间件状态能区分 disabled、configured、ready、degraded，并提供可被前端/运维页消费的状态接口。
 
@@ -121,7 +121,7 @@
 - 后端 `RequestContextFilter`、MDC、`ControllerLogAspect` 访问日志和远程调用上下文透传已由 `scripts/check-backend-context-contract.js` 守住，`Accept-Language` 通过 `LocaleUtils` 归一化到支持语言，`X-Time-Zone` 通过 `TimeZoneUtils` 归一化到默认 UTC 或合法 zone id，日志统一输出 requestId、traceId、用户、租户、路径、耗时和错误码。
 - 后端 `GlobalRequestContextHolder` 已提供上下文快照能力，`RequestContextTaskDecorator` 和统一 `applicationTaskExecutor` 已支持 `@Async` 场景传播请求上下文与 MDC，`scripts/check-async-context-contract.js` 已纳入守卫。
 - `frontend/src/utils/time`、`frontend/src/utils/locale` 和后端 `TimeZoneUtils` 已承载前端展示时间、展示语言、日期 key、文件名时间戳、错误时间戳和后端请求时区归一化，`scripts/check-frontend-time-contract.js` 已防止时间格式化和浏览器语言读取逻辑散落到页面组件。
-- `RemoteHttpClient` 已支持通过 `serviceId + path` 调用内部服务，服务地址由 `ServiceEndpointResolver` 解析，默认配置型实现读取 `app.remote-http.service-base-urls`，并通过 `RemoteCallPolicy` 提供熔断、限流和治理策略挂点，通过 `RemoteCallObserver` 提供调用审计、指标和 tracing 挂点，通过 `ParameterizedTypeReference<T>` 保留嵌套泛型响应；`RemoteCallWrapper` 已按 `backendPropagatedHeaders` 透传服务间上下文，`scripts/check-remote-http-contract.js` 已纳入守卫。
+- `RemoteHttpClient` 已支持通过 `serviceId + path` 调用内部服务，服务地址由 `ServiceEndpointResolver` 解析，默认配置型实现读取 `app.remote-http.service-base-urls`；调用方身份由 `RemoteCallerResolver` 解析，默认实现支持请求级覆盖、配置默认值和应用 id 回退；并通过 `RemoteCallPolicy` 提供熔断、限流和治理策略挂点，通过 `RemoteCallObserver` 提供调用审计、指标和 tracing 挂点，通过 `ParameterizedTypeReference<T>` 保留嵌套泛型响应；`RemoteCallWrapper` 已按 `backendPropagatedHeaders` 透传服务间上下文，`scripts/check-remote-http-contract.js` 已纳入守卫。
 - `project_document/SHARED_KERNEL_GUIDE.md` 已定义共享内核边界。
 - `scripts/check-shared-kernel.js` 已守护可抽取契约/工具类不能依赖 Spring Web、Servlet、JPA 或运行时层。
 

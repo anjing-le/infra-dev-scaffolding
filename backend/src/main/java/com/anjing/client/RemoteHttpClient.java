@@ -37,6 +37,7 @@ public class RemoteHttpClient {
     private final RestClient remoteRestClient;
     private final RemoteHttpClientProperties properties;
     private final ServiceEndpointResolver serviceEndpointResolver;
+    private final RemoteCallerResolver remoteCallerResolver;
     private final RemoteCallPolicy remoteCallPolicy;
     private final RemoteCallObserver remoteCallObserver;
 
@@ -348,9 +349,7 @@ public class RemoteHttpClient {
     }
 
     private String resolveCallerId(RemoteHttpRequest request) {
-        return StringUtils.hasText(request.getCallerId())
-                ? request.getCallerId()
-                : properties.getDefaultCallerId();
+        return remoteCallerResolver.resolveCallerId(request);
     }
 
     private int resolveRetryCount(RemoteHttpRequest request) {
