@@ -1,6 +1,6 @@
 # Status
 
-更新时间：2026-06-05
+更新时间：2026-06-06
 
 本文记录 `infra-dev-scaffolding` 当前作为 Anjing 开源工程母版的阶段状态和可验证证据。
 
@@ -13,7 +13,7 @@
 | S2 AI 协作资产收口 | Ready | Notice prompt smoke 已在临时复制项目验证，母版只保留演示文档和 Prompt 契约 |
 | S3 后续项目复用验证 | In progress | `infra-skill-hub` 已从本母版接入骨架，完成 H0 / H1 / H2 验证，并推进 H3 HTTP/MCP/INTERNAL 调度层、全局与注册级协议配置、凭据托管与选择体验、权限身份头联动、策略批量管理、默认策略模板、调用治理、审计查询、治理指标与前端治理面 |
 | S4 契约与全球化基线 | In progress | 已落地前端 `ApiPaths`、请求上下文头、统一时间工具、响应解析 helper；后端已落地 `ApiConstants` 运行路径引用、`RequestContextFilter`、UTC 默认时间策略、响应 `requestId`、`PageResult` 和 API 契约指南 |
-| S5 分布式可观测基线 | In progress | 已落地 MDC 日志字段、`RemoteCallWrapper.serviceCallHeaders(callerId)`、`RemoteHttpClient`、错误码分段指南、`/api/test/features` 可选能力状态接口和 dev/test/prod profile 矩阵 |
+| S5 分布式可观测基线 | In progress | 已落地 MDC 日志字段、`RemoteCallWrapper.serviceCallHeaders(callerId)`、`RemoteHttpClient`、错误码分段指南、`scripts/check-error-codes.js`、`/api/test/features` 可选能力状态接口和 dev/test/prod profile 矩阵 |
 | S7 契约生成与共享包 | In progress | 已落地 `project_document/SHARED_KERNEL_GUIDE.md` 和 `scripts/check-shared-kernel.js`，先守住未来可抽 `anjing-common` 的纯契约/工具边界 |
 
 ## 当前证据链
@@ -28,6 +28,7 @@ node scripts/check-api-path-parity.js
 node scripts/generate-platform-contract-backend.js --check
 node scripts/generate-platform-contract-frontend.js --check
 node scripts/check-platform-contract.js
+node scripts/check-error-codes.js
 node scripts/check-shared-kernel.js
 ./scripts/smoke-copy.sh
 ./scripts/probe-backend-dev.sh
@@ -54,8 +55,9 @@ AI 协作验证：
   - 共享内核边界记录在 `project_document/SHARED_KERNEL_GUIDE.md`，`node scripts/check-shared-kernel.js` 已校验候选共享类不依赖 Spring Web、Servlet、JPA 或运行时层。
   - 业务当前时间统一通过 `DateUtils.nowIso()`、`DateUtils.now(pattern)`、`DateUtils.nowEpochMilli()` 等 UTC 出口获取，自检脚本已禁止业务源码直接调用 `Instant.now()` / `LocalDateTime.now()`。
   - HTTP 服务间调用使用 `RemoteHttpClient`，自定义 adapter 使用 `RemoteCallWrapper.serviceCallHeaders(callerId)` 透传 requestId、traceId、租户、用户、语言和时区。
-  - 错误码按 `project_document/ERROR_CODE_GUIDE.md` 分段，远程调用默认只重试 `1800-1899`。
-  - `./scripts/check-contracts.sh` 已将 API 路径、响应 envelope、分页字段、请求上下文、远程调用和时间工具的关键约束纳入可执行检查。
+  - 错误码按 `project_document/ERROR_CODE_GUIDE.md` 分段，`node scripts/check-error-codes.js` 已校验 Java 错误码枚举必须实现 `ErrorCode`、4 位数字、全局唯一并落在 `contracts/platform-contract.json` 分段内。
+  - 远程调用默认只重试 `1800-1899`，`RemoteCallWrapper` 已读取 `PlatformContractConstants.ErrorCodes.RETRYABLE_RANGES`，避免在业务代码里硬编码重试范围。
+  - `./scripts/check-contracts.sh` 已将 API 路径、响应 envelope、分页字段、请求上下文、远程调用、时间工具和错误码的关键约束纳入可执行检查。
   - 可选中间件状态按 `project_document/FEATURE_STATUS_GUIDE.md` 使用 `disabled/configured/ready/degraded`，并通过 `/api/test/features` 输出。
   - 后端 profile 矩阵按 `project_document/ENVIRONMENT_PROFILE_GUIDE.md` 管理，`dev/test` 使用 H2 轻启动，`prod` 通过环境变量显式开启 MySQL 和外部中间件。
   - 本地轻启动验证记录在 `project_document/LOCAL_STARTUP_GUIDE.md`，已验证 `dev` profile 下 `/api/test/health` 和 `/api/test/features` 可返回。

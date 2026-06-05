@@ -1,6 +1,7 @@
 package com.anjing.util;
 
 import com.anjing.context.GlobalRequestContextHolder;
+import com.anjing.model.constants.PlatformContractConstants;
 import com.anjing.model.constants.RequestHeaderConstants;
 import com.anjing.model.exception.SystemException;
 import com.anjing.model.errorcode.RemoteErrorCode;
@@ -359,8 +360,7 @@ public class RemoteCallWrapper {
         if (e instanceof SystemException) {
             SystemException se = (SystemException) e;
             String errorCode = se.getErrorCode().getCode();
-            // 网络相关错误可以重试
-            return errorCode.startsWith("180"); // 1800-1899是网络和超时错误
+            return isRetryableErrorCode(errorCode);
         }
         
         // 网络异常、超时异常等可以重试
@@ -368,6 +368,35 @@ public class RemoteCallWrapper {
                e instanceof java.net.ConnectException ||
                e instanceof java.net.SocketException ||
                e instanceof java.io.IOException;
+    }
+
+    private static boolean isRetryableErrorCode(String errorCode) {
+        for (String range : PlatformContractConstants.ErrorCodes.RETRYABLE_RANGES) {
+            if (isCodeInRange(errorCode, range)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isCodeInRange(String errorCode, String range) {
+        if (!StringUtils.hasText(errorCode) || !errorCode.matches("\\d+")) {
+            return false;
+        }
+
+        int code = Integer.parseInt(errorCode);
+        String[] parts = range.split("-");
+        if (parts.length == 1) {
+            return code == Integer.parseInt(parts[0]);
+        }
+
+        if (parts.length != 2) {
+            return false;
+        }
+
+        int start = Integer.parseInt(parts[0]);
+        int end = Integer.parseInt(parts[1]);
+        return code >= start && code <= end;
     }
 
     /**

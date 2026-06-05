@@ -34,10 +34,10 @@
 
 - 前端 API URL 已开始收口到 `ApiPaths`，后端运行 Controller 已开始引用 `ApiConstants`；`ApiConstants` 内部也已收口为 `API_PREFIX`、模块 `BASE`、相对子路径和 `*_FULL`，并由 `scripts/check-api-constants.js` 守护。路径规则已记录到 `project_document/API_PATH_GUIDE.md`；后续需要继续扩大覆盖面，并评估与 OpenAPI 的生成关系。
 - 响应契约已开始收敛到 `APIResponse` + `message` + `PageResult(records/current/size/total)`，并已记录到 `project_document/API_CONTRACT_GUIDE.md`；`msg`、`BaseResponse`、`PageResponse` 仅作为旧接口或远程响应兼容入口。
-- 平台级契约已沉淀为 `contracts/platform-contract.json`，覆盖 API 前缀、响应 envelope、分页字段、请求头、时间策略和错误码分段；后端生成 `PlatformContractConstants.java`，前端生成 `frontend/src/contracts/platform-contract.ts`，供路径、请求头、响应解析和时间工具复用，并由 `scripts/generate-platform-contract-backend.js --check`、`scripts/generate-platform-contract-frontend.js --check`、`scripts/check-platform-contract.js` 校验生成产物、前后端与文档一致性。
+- 平台级契约已沉淀为 `contracts/platform-contract.json`，覆盖 API 前缀、响应 envelope、分页字段、请求头、时间策略、错误码分段和可重试范围；后端生成 `PlatformContractConstants.java`，前端生成 `frontend/src/contracts/platform-contract.ts`，供路径、请求头、响应解析、时间工具和远程重试判断复用，并由 `scripts/generate-platform-contract-backend.js --check`、`scripts/generate-platform-contract-frontend.js --check`、`scripts/check-platform-contract.js` 校验生成产物、前后端与文档一致性。
 - 时间策略已开始转向 UTC 默认和客户端时区展示，后续需要继续把存量页面时间展示迁移到统一工具。
 - 请求上下文已开始具备 `requestId`、`traceId`、语言和时区透传，并已接入日志格式、远程调用请求头生成和统一 HTTP client adapter；后续需要继续接入权限上下文和真实 RPC client adapter。
-- 错误码已补充分段指南，后续新模块应按 `project_document/ERROR_CODE_GUIDE.md` 分配 code。
+- 错误码已补充分段指南和 `scripts/check-error-codes.js`，后续新模块应按 `project_document/ERROR_CODE_GUIDE.md` 分配 code，并通过唯一性、4 位数字和 manifest 分段校验。
 - 共享内核边界已开始收口，`project_document/SHARED_KERNEL_GUIDE.md` 和 `scripts/check-shared-kernel.js` 已约束未来可抽 `anjing-common` 的契约/工具类不依赖 Spring Web、Servlet、JPA 或运行时层。
 - 前端已有统一时间工具层，后续需要让日期控件、文件名、通知时间等存量逻辑逐步迁移。
 - 中间件状态已能区分 `disabled/configured/ready/degraded`，并通过 `/api/test/features` 输出；dev/test/prod profile 矩阵已落地，后续仍需补真实探测开关。
@@ -101,7 +101,7 @@
 - 日志统一输出 `requestId`、`traceId`、`userId`、`tenantId`、接口路径、耗时、错误码。
 - `RemoteCallWrapper` 支持调用方、上下文请求头、重试和 requestId/traceId 透传。
 - `RemoteHttpClient` 支持统一 HTTP 出站调用、超时配置、上下文透传、目标服务审计描述和可重试错误映射；后续补充熔断和 RPC adapter。
-- 错误码按模块分段，有文档说明哪些错误能重试、哪些必须提示用户。
+- 错误码按模块分段，有文档和脚本说明并校验哪些错误能重试、哪些必须提示用户。
 - 健康检查和中间件状态能区分 disabled、configured、ready、degraded。
 
 当前已完成：
@@ -111,6 +111,7 @@
 - `RemoteCallWrapper.serviceCallHeaders(callerId)` 已提供服务间调用的上下文请求头生成。
 - `RemoteHttpClient` / `RemoteHttpRequest` 已提供 HTTP 服务间调用适配层。
 - `project_document/ERROR_CODE_GUIDE.md` 已记录错误码分段和远程调用重试策略。
+- `scripts/check-error-codes.js` 已把 Java 错误码枚举实现、格式、全局唯一性、manifest 分段和远程可重试范围纳入自动校验。
 - `MiddlewareManager.statusReport()` 和 `/api/test/features` 已提供可选能力状态基线，状态词典记录在 `project_document/FEATURE_STATUS_GUIDE.md`。
 - `application-dev.yml`、`application-test.yml`、`application-prod.yml` 已提供环境矩阵，dev/test 使用 H2 轻启动，生产 MySQL 和外部能力由环境变量显式开启。
 - `project_document/LOCAL_STARTUP_GUIDE.md` 已记录无 MySQL/Redis 的后端本地启动验证方式和当前证据。
@@ -120,6 +121,7 @@
 - `scripts/generate-platform-contract-backend.js --check` 已确保后端平台契约生成文件与 manifest 一致。
 - `scripts/generate-platform-contract-frontend.js --check` 已确保前端平台契约生成文件与 manifest 一致。
 - `scripts/check-platform-contract.js` 已把 `contracts/platform-contract.json` 与 Java/TypeScript/文档的一致性纳入自动校验。
+- `RemoteCallWrapper` 已通过 `PlatformContractConstants.ErrorCodes.RETRYABLE_RANGES` 判断可重试错误码，避免重试范围散落在业务代码。
 
 ### S6: 服务边界与可选适配层
 

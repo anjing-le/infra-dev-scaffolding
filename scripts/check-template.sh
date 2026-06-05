@@ -34,6 +34,7 @@ require_file scripts/check-api-path-parity.js
 require_file scripts/generate-platform-contract-backend.js
 require_file scripts/generate-platform-contract-frontend.js
 require_file scripts/check-platform-contract.js
+require_file scripts/check-error-codes.js
 require_file scripts/check-shared-kernel.js
 require_file scripts/check-contracts.sh
 require_file scripts/probe-backend-dev.sh
@@ -50,7 +51,7 @@ require_file frontend/.env.production
 
 status_doc='project_document/STATUS.md'
 for token in \
-  '2026-06-05' \
+  '2026-06-06' \
   'S0 构建与入口收口' \
   'S1 工程母版收口' \
   'S2 AI 协作资产收口' \

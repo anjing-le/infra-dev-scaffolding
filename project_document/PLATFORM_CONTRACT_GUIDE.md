@@ -30,6 +30,7 @@
 - `PlatformContractConstants.Headers.*`
 - `PlatformContractConstants.Time.DEFAULT_TIME_ZONE`
 - `PlatformContractConstants.ErrorCodes.RANGES`
+- `PlatformContractConstants.ErrorCodes.RETRYABLE_RANGES`
 
 前端当前通过生成文件导出：
 
@@ -47,6 +48,7 @@
 - 运行 `node scripts/generate-platform-contract-frontend.js` 更新前端生成常量。
 - 同步更新 Java/TypeScript 代码、文档和 Cursor Rules / Prompts。
 - 新增字段必须能被 `scripts/check-platform-contract.js` 校验到。
+- 新增错误码枚举或调整错误码范围时，必须通过 `scripts/check-error-codes.js`。
 - 业务模块自己的字段不要写进 platform contract；它们属于业务 OpenAPI 或模块文档。
 
 ## Verification
@@ -59,6 +61,10 @@ node scripts/generate-platform-contract-backend.js --check
 
 ```bash
 node scripts/check-platform-contract.js
+```
+
+```bash
+node scripts/check-error-codes.js
 ```
 
 ```bash

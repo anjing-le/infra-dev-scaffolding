@@ -7,6 +7,7 @@
 - 所有错误码枚举必须实现 `ErrorCode`。
 - 错误码使用字符串，保持 4 位数字；成功固定为 `0`。
 - 新增模块先确认分段，再新增 `XxxErrorCode`，不要复用已有 code。
+- 错误码分段事实来源是 `contracts/platform-contract.json`，Java 枚举由 `scripts/check-error-codes.js` 校验唯一性、格式和范围。
 - 错误信息可以给用户展示时才写成用户语言；系统、远程、集成类错误不要暴露内部细节。
 - Controller 不手动拼错误响应，优先抛出 `BizException(ErrorCode)` 或 `SystemException(ErrorCode)`。
 
@@ -32,6 +33,7 @@
 ## 远程调用重试
 
 `RemoteCallWrapper` 默认只把 `1800-1899` 视作可重试远程错误，因为这类错误通常代表网络、连接、读写超时或熔断瞬时状态。
+实际判断读取 `PlatformContractConstants.ErrorCodes.RETRYABLE_RANGES`，不要在业务代码里重新硬编码重试范围。
 
 - `1600-1699`：调用契约或远程服务基础错误，默认不自动重试。
 - `1700-1799`：响应格式或状态校验错误，默认不自动重试。
@@ -58,3 +60,17 @@
 - `2xxx` / `3xxx` / `4xxx`：可以展示后端 `message`，必要时跳转登录或权限页。
 - `1xxx` / `16xx-19xx` / `8xxx`：展示通用失败文案，同时保留 `requestId` 方便排查。
 - 所有错误提示都应携带或可复制 `requestId`，日志中用 `requestId` / `traceId` 追踪完整链路。
+
+## Verification
+
+新增或调整错误码后运行：
+
+```bash
+node scripts/check-error-codes.js
+```
+
+发布母版或复制项目前运行：
+
+```bash
+./scripts/check-contracts.sh
+```

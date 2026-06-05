@@ -56,6 +56,7 @@ require_file scripts/check-api-path-parity.js
 require_file scripts/generate-platform-contract-backend.js
 require_file scripts/generate-platform-contract-frontend.js
 require_file scripts/check-platform-contract.js
+require_file scripts/check-error-codes.js
 require_file scripts/check-shared-kernel.js
 
 # URL contract: backend Controller mappings use ApiConstants; frontend API modules use ApiPaths.
@@ -152,6 +153,7 @@ node scripts/check-api-path-parity.js
 node scripts/generate-platform-contract-backend.js --check
 node scripts/generate-platform-contract-frontend.js --check
 node scripts/check-platform-contract.js
+node scripts/check-error-codes.js
 node scripts/check-shared-kernel.js
 
 echo "check-contracts: ok"

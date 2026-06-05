@@ -86,6 +86,10 @@ node scripts/check-platform-contract.js
 ```
 
 ```bash
+node scripts/check-error-codes.js
+```
+
+```bash
 node scripts/check-shared-kernel.js
 ```
 

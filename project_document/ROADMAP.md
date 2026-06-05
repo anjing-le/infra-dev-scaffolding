@@ -83,7 +83,7 @@
 验收：
 - 日志统一输出 requestId、traceId、用户、租户、路径、耗时和错误码。
 - 远程调用 wrapper 和 HTTP client adapter 支持上下文透传、调用方身份、超时、重试和审计字段。
-- 错误码按分段指南分配，明确可重试错误与用户可见错误。
+- 错误码按分段指南分配，并由脚本校验唯一性、格式、范围和可重试错误。
 - 中间件状态能区分 disabled、configured、ready、degraded，并提供可被前端/运维页消费的状态接口。
 
 ### S6: 服务边界与可选适配层
@@ -109,6 +109,7 @@
 - `backend/src/main/java/com/anjing/model/constants/PlatformContractConstants.java` 已由 manifest 生成并被后端 API 前缀、请求头和响应成功码复用。
 - `frontend/src/contracts/platform-contract.ts` 已由 manifest 生成并被前端 HTTP、响应和时间工具复用。
 - `scripts/generate-platform-contract-backend.js --check`、`scripts/generate-platform-contract-frontend.js --check` 和 `scripts/check-platform-contract.js` 已校验生成产物、前后端代码及文档一致。
+- `scripts/check-error-codes.js` 已校验 Java 错误码枚举和 platform contract 分段一致，`RemoteCallWrapper` 已读取生成的可重试范围。
 - `project_document/SHARED_KERNEL_GUIDE.md` 已定义共享内核边界。
 - `scripts/check-shared-kernel.js` 已守护可抽取契约/工具类不能依赖 Spring Web、Servlet、JPA 或运行时层。
 
