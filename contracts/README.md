@@ -10,6 +10,7 @@ Generated constants:
 - `backend/src/main/java/com/anjing/model/constants/PlatformContractConstants.java`
 - `backend/src/main/java/com/anjing/model/constants/ServiceBoundaryConstants.java`
 - `frontend/src/contracts/platform-contract.ts`
+- `frontend/src/contracts/service-boundaries.ts`
 
 Update flow:
 
@@ -17,6 +18,7 @@ Update flow:
 node scripts/generate-platform-contract-backend.js
 node scripts/generate-platform-contract-frontend.js
 node scripts/generate-service-boundaries-backend.js
+node scripts/generate-service-boundaries-frontend.js
 node scripts/check-platform-contract.js
 node scripts/check-service-boundaries.js
 ```

@@ -42,6 +42,7 @@ require_file frontend/src/utils/http/context.ts
 require_file backend/src/main/java/com/anjing/client/RemoteHttpClient.java
 require_file backend/src/main/java/com/anjing/util/RemoteCallWrapper.java
 require_file frontend/src/contracts/platform-contract.ts
+require_file frontend/src/contracts/service-boundaries.ts
 require_file frontend/src/utils/time/index.ts
 require_file contracts/platform-contract.json
 require_file contracts/service-boundaries.json
@@ -63,6 +64,7 @@ require_file scripts/check-frontend-time-contract.js
 require_file scripts/generate-platform-contract-backend.js
 require_file scripts/generate-platform-contract-frontend.js
 require_file scripts/generate-service-boundaries-backend.js
+require_file scripts/generate-service-boundaries-frontend.js
 require_file scripts/check-platform-contract.js
 require_file scripts/check-error-codes.js
 require_file scripts/check-openapi-contract.js
@@ -95,6 +97,8 @@ require_absent 'VITE_API_URL.*\/api' \
 
 require_token frontend/src/api/paths.ts 'resolveApiPath'
 require_token frontend/src/api/paths.ts 'uploadWangEditor'
+require_token frontend/src/api/paths.ts 'SERVICE_BOUNDARY_ROUTE_PATHS'
+require_token frontend/src/contracts/service-boundaries.ts 'SERVICE_BOUNDARY_ROUTE_PATHS'
 
 # Response contract: new code uses message/code/data; msg compatibility is centralized.
 require_absent '\bmsg\??:' \
@@ -173,6 +177,7 @@ node scripts/check-frontend-time-contract.js
 node scripts/generate-platform-contract-backend.js --check
 node scripts/generate-platform-contract-frontend.js --check
 node scripts/generate-service-boundaries-backend.js --check
+node scripts/generate-service-boundaries-frontend.js --check
 node scripts/check-platform-contract.js
 node scripts/check-error-codes.js
 node scripts/check-openapi-contract.js

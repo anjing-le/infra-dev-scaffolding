@@ -54,7 +54,21 @@ function findBlock(source, marker) {
   fail(`missing block closing brace: ${marker}`)
 }
 
-function extractTsModule(source, objectName, moduleName) {
+function buildFrontendRoutePaths(manifest) {
+  const values = {}
+  for (const boundary of manifest.boundaries || []) {
+    if (!boundary.apiPathsKey) continue
+    values[boundary.apiPathsKey] = values[boundary.apiPathsKey] || {}
+    for (const route of boundary.routes || []) {
+      if (route.frontendKey) {
+        values[boundary.apiPathsKey][route.frontendKey] = route.path
+      }
+    }
+  }
+  return values
+}
+
+function extractTsModule(source, objectName, moduleName, routePaths) {
   const objectBlock = findBlock(source, `export const ${objectName}`)
   const moduleBlock = findBlock(objectBlock, `${moduleName}:`)
   const values = {}
@@ -63,8 +77,16 @@ function extractTsModule(source, objectName, moduleName) {
     values[match[1]] = match[2]
   }
 
+  for (const match of moduleBlock.matchAll(/(\w+):\s*SERVICE_BOUNDARY_ROUTE_PATHS\.(\w+)\.(\w+)/g)) {
+    values[match[1]] = routePaths[match[2]]?.[match[3]]
+  }
+
   for (const match of moduleBlock.matchAll(/(\w+):\s*\([^)]*\)\s*=>\s*`([^`]+)`/g)) {
     values[match[1]] = match[2].replace(/\$\{encodePathValue\((\w+)\)\}/g, '{$1}')
+  }
+
+  for (const match of moduleBlock.matchAll(/(\w+):\s*\([^)]*\)\s*=>\s*bindApiPathParams\(SERVICE_BOUNDARY_ROUTE_PATHS\.(\w+)\.(\w+),/g)) {
+    values[match[1]] = routePaths[match[2]]?.[match[3]]
   }
 
   return values
@@ -72,6 +94,7 @@ function extractTsModule(source, objectName, moduleName) {
 
 const source = read(apiPathsFile)
 const manifest = readJson(boundaryFile)
+const routePaths = buildFrontendRoutePaths(manifest)
 
 if (!source.includes('export const ApiLegacyPaths')) {
   fail('frontend/src/api/paths.ts must export ApiLegacyPaths for old template endpoints')
@@ -95,9 +118,16 @@ if (!declaredRoutes.size) {
 }
 
 const apiPathsBlock = findBlock(source, 'export const ApiPaths')
+if (!apiPathsBlock.includes('SERVICE_BOUNDARY_ROUTE_PATHS')) {
+  fail('ApiPaths must reference SERVICE_BOUNDARY_ROUTE_PATHS from frontend service-boundary contract')
+}
+if (/['"`]\/api\//.test(apiPathsBlock)) {
+  fail('ApiPaths must use SERVICE_BOUNDARY_ROUTE_PATHS instead of direct /api/... literals')
+}
+
 for (const match of apiPathsBlock.matchAll(/([a-zA-Z]\w*):\s*{/g)) {
   const moduleName = match[1]
-  const values = extractTsModule(source, 'ApiPaths', moduleName)
+  const values = extractTsModule(source, 'ApiPaths', moduleName, routePaths)
 
   for (const [key, value] of Object.entries(values)) {
     const routeKey = `${moduleName}.${key}`

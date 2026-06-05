@@ -120,7 +120,21 @@ function extractJavaConstants(source, className) {
   return constants
 }
 
-function extractTsModule(source, moduleName) {
+function buildFrontendRoutePaths(manifest) {
+  const values = {}
+  for (const boundary of manifest.boundaries || []) {
+    if (!boundary.apiPathsKey) continue
+    values[boundary.apiPathsKey] = values[boundary.apiPathsKey] || {}
+    for (const route of boundary.routes || []) {
+      if (route.frontendKey) {
+        values[boundary.apiPathsKey][route.frontendKey] = route.path
+      }
+    }
+  }
+  return values
+}
+
+function extractTsModule(source, moduleName, routePaths) {
   const block = findBlock(source, `${moduleName}:`)
   const values = {}
 
@@ -128,8 +142,16 @@ function extractTsModule(source, moduleName) {
     values[match[1]] = match[2]
   }
 
+  for (const match of block.matchAll(/(\w+):\s*SERVICE_BOUNDARY_ROUTE_PATHS\.(\w+)\.(\w+)/g)) {
+    values[match[1]] = routePaths[match[2]]?.[match[3]]
+  }
+
   for (const match of block.matchAll(/(\w+):\s*\([^)]*\)\s*=>\s*`([^`]+)`/g)) {
     values[match[1]] = match[2].replace(/\$\{encodePathValue\((\w+)\)\}/g, '{$1}')
+  }
+
+  for (const match of block.matchAll(/(\w+):\s*\([^)]*\)\s*=>\s*bindApiPathParams\(SERVICE_BOUNDARY_ROUTE_PATHS\.(\w+)\.(\w+),/g)) {
+    values[match[1]] = routePaths[match[2]]?.[match[3]]
   }
 
   return values
@@ -162,6 +184,7 @@ const manifest = readJson(boundaryPath, 'contracts/service-boundaries.json')
 const frontendPackage = readJson(frontendPackagePath, 'frontend/package.json')
 const apiConstants = fs.readFileSync(apiConstantsPath, 'utf8')
 const apiPaths = fs.readFileSync(apiPathsPath, 'utf8')
+const frontendRoutePaths = buildFrontendRoutePaths(manifest)
 
 if (manifest.schemaVersion !== 1) {
   fail('schemaVersion must be 1')
@@ -210,7 +233,9 @@ for (const boundary of boundaries) {
     fail(`ApiConstants.${boundary.apiConstantsClass}.BASE (${constants.BASE}) does not match ${boundary.id}.basePath (${boundary.basePath})`)
   }
 
-  const frontend = boundary.apiPathsKey ? extractTsModule(apiPaths, boundary.apiPathsKey) : {}
+  const frontend = boundary.apiPathsKey
+    ? extractTsModule(apiPaths, boundary.apiPathsKey, frontendRoutePaths)
+    : {}
 
   for (const route of boundary.routes || []) {
     ensureRoutePath(route, boundary)

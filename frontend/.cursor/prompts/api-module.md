@@ -22,6 +22,7 @@
    - 每个函数添加完整的 JSDoc 注释（包含 @param 和 @returns）
    - 使用 `request.get` / `request.post` / `request.put` / `request.del` 方法
    - API 路径必须写入并引用 `src/api/paths.ts` 的 `ApiPaths`
+   - `ApiPaths` 的运行路径优先引用 `@/contracts/service-boundaries` 的 `SERVICE_BOUNDARY_ROUTE_PATHS`
    - 不要在 API 函数里直接手写 `url: '/api/...'`
    - 路径参数必须封装在 `ApiPaths` 函数中，并使用 `encodeURIComponent`
    - 正确使用泛型指定返回类型
@@ -233,6 +234,7 @@ export type UpdateUserParams = Partial<Omit<CreateUserParams, 'password'>> & {
    - 相对路径导入（Model 文件）
 4. **路径定义**：
    - 先在 `src/api/paths.ts` 添加模块路径
+   - 运行路径优先引用 `SERVICE_BOUNDARY_ROUTE_PATHS`
    - path 参数必须在 `ApiPaths` 的函数中编码
    - API 文件只引用 `ApiPaths`
 

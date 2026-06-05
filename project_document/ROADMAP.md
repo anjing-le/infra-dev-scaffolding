@@ -114,7 +114,7 @@
 - `scripts/generate-platform-contract-backend.js --check`、`scripts/generate-platform-contract-frontend.js --check` 和 `scripts/check-platform-contract.js` 已校验生成产物、前后端代码及文档一致。
 - `scripts/check-error-codes.js` 已校验 Java 错误码枚举和 platform contract 分段一致，`RemoteCallWrapper` 已读取生成的可重试范围。
 - `springdoc-openapi-starter-webmvc-api` 已提供 `/v3/api-docs`，`scripts/check-openapi-contract.js` 与 `./scripts/probe-backend-dev.sh` 已校验 OpenAPI 配置、平台请求头和 auth DTO/VO 契约。
-- `contracts/service-boundaries.json` 已记录当前运行、示例、预留和未来服务边界，`ServiceBoundaryConstants.java` 已由 manifest 生成，`scripts/check-service-boundaries.js` 已校验 route、basePath 和前后端路径一致。
+- `contracts/service-boundaries.json` 已记录当前运行、示例、预留和未来服务边界，后端 `ServiceBoundaryConstants.java` 与前端 `service-boundaries.ts` 已由 manifest 生成，`scripts/check-service-boundaries.js` 已校验 route、basePath 和前后端路径一致。
 - `ApiPaths` 已和旧模板路径分离，`ApiLegacyPaths` 承载历史兼容路径，`scripts/check-frontend-api-boundaries.js` 已防止旧路径回流到运行路径。
 - `frontend/src/utils/http/context.ts` 已统一生成前端 `requestId`、会话级 `traceId`、语言和时区请求头，`scripts/check-frontend-context-contract.js` 已防止平台上下文头散落到页面或 API 模块。
 - `frontend/src/utils/time` 已承载前端展示时间、日期 key、文件名时间戳和错误时间戳，`scripts/check-frontend-time-contract.js` 已防止时间格式化逻辑散落到页面组件。

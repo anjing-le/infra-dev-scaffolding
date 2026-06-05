@@ -30,10 +30,12 @@ public class AuthController {
 前端路径统一写入 `src/api/paths.ts`：
 
 ```typescript
+import { SERVICE_BOUNDARY_ROUTE_PATHS } from '@/contracts/service-boundaries'
+
 export const ApiPaths = {
   auth: {
-    login: '/api/auth/login',
-    me: '/api/auth/me'
+    login: SERVICE_BOUNDARY_ROUTE_PATHS.auth.login,
+    me: SERVICE_BOUNDARY_ROUTE_PATHS.auth.me
   }
 } as const
 ```
@@ -41,7 +43,7 @@ export const ApiPaths = {
 约定：
 
 - API 模块只引用 `ApiPaths`，不要直接写 `url: '/api/...'`。
-- `ApiPaths` 只放 `contracts/service-boundaries.json` 中声明的运行或预留运行路径。
+- `ApiPaths` 只放 `contracts/service-boundaries.json` 中声明的运行或预留运行路径，并优先引用生成的 `SERVICE_BOUNDARY_ROUTE_PATHS`。
 - 旧模板、mock 或尚未由后端运行面承载的路径放入 `ApiLegacyPaths`，并在后续真实实现时迁回 `ApiPaths`。
 - 路径参数使用函数，并通过 `encodeURIComponent` 处理。
 - 页面组件不直接拼接口路径。
@@ -65,7 +67,7 @@ export const ApiPaths = {
 
 ## Future Direction
 
-当后续接入 OpenAPI / 类型生成时，应以 `ApiConstants`、Controller 注解和 `contracts/service-boundaries.json` 作为后端事实来源，生成或校验前端 `ApiPaths`。当前母版先用手写路径注册表和服务边界 manifest 保证可读、可复制、可被 AI 正确复用。
+当后续接入 OpenAPI / 类型生成时，应以 `ApiConstants`、Controller 注解和 `contracts/service-boundaries.json` 作为后端事实来源，生成或校验前端 API client。当前母版先用服务边界 manifest 生成 `SERVICE_BOUNDARY_ROUTE_PATHS`，再由 `ApiPaths` 负责提供前端调用语义和动态参数编码。
 
 ## Verification
 
@@ -95,4 +97,8 @@ node scripts/check-frontend-api-boundaries.js
 node scripts/check-service-boundaries.js
 ```
 
-`check-api-constants.js` 会阻止 `ApiConstants` 内部重新散落 `"/api/..."` 字面量。`check-api-path-parity.js` 会读取 `contracts/service-boundaries.json`，比对 manifest 中声明的稳定运行接口和 `ApiConstants` / `ApiPaths`。`check-frontend-api-boundaries.js` 会阻止旧模板路径混入 `ApiPaths`。后续新增模块进入运行面时，应同步扩展 `service-boundaries.json` 的 route 表。
+```bash
+node scripts/generate-service-boundaries-frontend.js --check
+```
+
+`check-api-constants.js` 会阻止 `ApiConstants` 内部重新散落 `"/api/..."` 字面量。`check-api-path-parity.js` 会读取 `contracts/service-boundaries.json`，比对 manifest 中声明的稳定运行接口和 `ApiConstants` / `ApiPaths`。`check-frontend-api-boundaries.js` 会阻止旧模板路径混入 `ApiPaths`。`generate-service-boundaries-frontend.js --check` 会确保前端生成路由常量与 manifest 一致。后续新增模块进入运行面时，应同步扩展 `service-boundaries.json` 的 route 表。

@@ -13,11 +13,12 @@
 
 ## Generated Artifacts
 
-后端生成服务边界常量：
+生成服务边界常量：
 
 - `backend/src/main/java/com/anjing/model/constants/ServiceBoundaryConstants.java`
+- `frontend/src/contracts/service-boundaries.ts`
 
-它提供 `APPLICATION_ID`、`API_PREFIX`、边界 id、owner、currentHost、basePath 和 route 名称。后端远程调用、默认 caller id、示例代码等需要应用 id 或服务边界元数据时，优先引用该生成常量，不要重复手写 manifest 中的字符串。
+它们提供 `APPLICATION_ID`、`API_PREFIX`、边界 id、owner、currentHost、basePath 和 route path。后端远程调用、默认 caller id、示例代码等需要应用 id 或服务边界元数据时，优先引用 `ServiceBoundaryConstants`；前端 `ApiPaths` 优先引用 `SERVICE_BOUNDARY_ROUTE_PATHS`，不要重复手写 manifest 中的运行路径字符串。
 
 ## Boundary Kinds
 
@@ -43,6 +44,7 @@
 
 - 新增运行模块时，先在 `contracts/service-boundaries.json` 增加 boundary。
 - 运行 `node scripts/generate-service-boundaries-backend.js` 更新后端生成常量。
+- 运行 `node scripts/generate-service-boundaries-frontend.js` 更新前端生成常量。
 - 后端同步新增 `ApiConstants.Xxx.BASE` 和 `*_FULL` 路径。
 - 前端同步新增 `ApiPaths.xxx`，只把真实运行路径加入 manifest route。
 - 旧模板或 mock 路径留在 `ApiLegacyPaths`，不要加入 `ApiPaths` 或 manifest route。
@@ -60,6 +62,10 @@ node scripts/check-service-boundaries.js
 node scripts/generate-service-boundaries-backend.js --check
 ```
 
+```bash
+node scripts/generate-service-boundaries-frontend.js --check
+```
+
 完整检查链路：
 
 ```bash
@@ -74,4 +80,4 @@ node scripts/generate-service-boundaries-backend.js --check
 - manifest 中的 route 与 `ApiConstants.*_FULL`、`ApiPaths` 一致。
 - `ApiPaths` 不混入旧模板路径；旧路径集中在 `ApiLegacyPaths`。
 - 当前 OpenAPI 运行 Controller 使用 `ApiConstants.Xxx.BASE` 并带有 `@Tag`。
-- 后端 `ServiceBoundaryConstants` 与 manifest 保持一致。
+- 后端 `ServiceBoundaryConstants` 和前端 `SERVICE_BOUNDARY_ROUTE_PATHS` 与 manifest 保持一致。

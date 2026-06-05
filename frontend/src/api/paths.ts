@@ -4,7 +4,18 @@
  * Keep endpoint strings here so API modules and generated code reuse one contract.
  */
 
+import { SERVICE_BOUNDARY_ROUTE_PATHS } from '@/contracts/service-boundaries'
+
 const encodePathValue = (value: string | number): string => encodeURIComponent(String(value))
+
+const bindApiPathParams = (
+  apiPath: string,
+  params: Record<string, string | number>
+): string => {
+  return Object.entries(params).reduce((path, [name, value]) => {
+    return path.replace(`{${name}}`, encodePathValue(value))
+  }, apiPath)
+}
 
 const normalizeApiBase = (baseUrl: string | undefined): string => {
   const base = (baseUrl || '').trim()
@@ -20,26 +31,29 @@ export const resolveApiPath = (apiPath: string): string => {
 
 export const ApiPaths = {
   auth: {
-    login: '/api/auth/login',
-    logout: '/api/auth/logout',
-    me: '/api/auth/me',
-    refresh: '/api/auth/refresh'
+    login: SERVICE_BOUNDARY_ROUTE_PATHS.auth.login,
+    logout: SERVICE_BOUNDARY_ROUTE_PATHS.auth.logout,
+    me: SERVICE_BOUNDARY_ROUTE_PATHS.auth.me,
+    refresh: SERVICE_BOUNDARY_ROUTE_PATHS.auth.refresh
   },
   test: {
-    health: '/api/test/health',
-    features: '/api/test/features',
-    ping: '/api/test/ping',
-    bizException: '/api/test/exception/biz',
-    systemException: '/api/test/exception/system',
-    items: '/api/test/items',
-    itemDetail: (id: string | number) => `/api/test/items/${encodePathValue(id)}`
+    health: SERVICE_BOUNDARY_ROUTE_PATHS.test.health,
+    features: SERVICE_BOUNDARY_ROUTE_PATHS.test.features,
+    ping: SERVICE_BOUNDARY_ROUTE_PATHS.test.ping,
+    bizException: SERVICE_BOUNDARY_ROUTE_PATHS.test.bizException,
+    systemException: SERVICE_BOUNDARY_ROUTE_PATHS.test.systemException,
+    items: SERVICE_BOUNDARY_ROUTE_PATHS.test.items,
+    itemDetail: (id: string | number) =>
+      bindApiPathParams(SERVICE_BOUNDARY_ROUTE_PATHS.test.itemDetail, { id })
   },
   common: {
-    upload: '/api/common/upload',
-    uploadImage: '/api/common/upload/image',
-    uploadWangEditor: '/api/common/upload/wangeditor',
-    download: (fileId: string | number) => `/api/common/download/${encodePathValue(fileId)}`,
-    deleteFile: (fileId: string | number) => `/api/common/files/${encodePathValue(fileId)}`
+    upload: SERVICE_BOUNDARY_ROUTE_PATHS.common.upload,
+    uploadImage: SERVICE_BOUNDARY_ROUTE_PATHS.common.uploadImage,
+    uploadWangEditor: SERVICE_BOUNDARY_ROUTE_PATHS.common.uploadWangEditor,
+    download: (fileId: string | number) =>
+      bindApiPathParams(SERVICE_BOUNDARY_ROUTE_PATHS.common.download, { fileId }),
+    deleteFile: (fileId: string | number) =>
+      bindApiPathParams(SERVICE_BOUNDARY_ROUTE_PATHS.common.deleteFile, { fileId })
   }
 } as const
 

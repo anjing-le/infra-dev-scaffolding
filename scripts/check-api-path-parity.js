@@ -106,7 +106,21 @@ function extractJavaConstants(source, className) {
   return constants
 }
 
-function extractTsModule(source, moduleName) {
+function buildFrontendRoutePaths(manifest) {
+  const values = {}
+  for (const boundary of manifest.boundaries || []) {
+    if (!boundary.apiPathsKey) continue
+    values[boundary.apiPathsKey] = values[boundary.apiPathsKey] || {}
+    for (const route of boundary.routes || []) {
+      if (route.frontendKey) {
+        values[boundary.apiPathsKey][route.frontendKey] = route.path
+      }
+    }
+  }
+  return values
+}
+
+function extractTsModule(source, moduleName, routePaths) {
   const block = findBlock(source, `${moduleName}:`)
   const values = {}
 
@@ -114,8 +128,16 @@ function extractTsModule(source, moduleName) {
     values[match[1]] = match[2]
   }
 
+  for (const match of block.matchAll(/(\w+):\s*SERVICE_BOUNDARY_ROUTE_PATHS\.(\w+)\.(\w+)/g)) {
+    values[match[1]] = routePaths[match[2]]?.[match[3]]
+  }
+
   for (const match of block.matchAll(/(\w+):\s*\([^)]*\)\s*=>\s*`([^`]+)`/g)) {
     values[match[1]] = match[2].replace(/\$\{encodePathValue\((\w+)\)\}/g, '{$1}')
+  }
+
+  for (const match of block.matchAll(/(\w+):\s*\([^)]*\)\s*=>\s*bindApiPathParams\(SERVICE_BOUNDARY_ROUTE_PATHS\.(\w+)\.(\w+),/g)) {
+    values[match[1]] = routePaths[match[2]]?.[match[3]]
   }
 
   return values
@@ -124,6 +146,7 @@ function extractTsModule(source, moduleName) {
 const javaSource = read(apiConstantsPath)
 const tsSource = read(apiPathsPath)
 const serviceBoundaries = readJson(serviceBoundaryPath)
+const frontendRoutePaths = buildFrontendRoutePaths(serviceBoundaries)
 
 const routeMappings = []
 const backendClasses = new Set()
@@ -159,7 +182,10 @@ const backend = Object.fromEntries(
 )
 
 const frontend = Object.fromEntries(
-  [...frontendModules].map((moduleName) => [moduleName, extractTsModule(tsSource, moduleName)])
+  [...frontendModules].map((moduleName) => [
+    moduleName,
+    extractTsModule(tsSource, moduleName, frontendRoutePaths)
+  ])
 )
 
 function getBackendValue(key) {

@@ -40,6 +40,7 @@ require_file scripts/check-frontend-time-contract.js
 require_file scripts/generate-platform-contract-backend.js
 require_file scripts/generate-platform-contract-frontend.js
 require_file scripts/generate-service-boundaries-backend.js
+require_file scripts/generate-service-boundaries-frontend.js
 require_file scripts/check-platform-contract.js
 require_file scripts/check-error-codes.js
 require_file scripts/check-openapi-contract.js
@@ -58,6 +59,7 @@ require_file frontend/LICENSE
 require_file frontend/.env
 require_file frontend/.env.development
 require_file frontend/.env.production
+require_file frontend/src/contracts/service-boundaries.ts
 
 status_doc='project_document/STATUS.md'
 for token in \

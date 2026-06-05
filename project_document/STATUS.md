@@ -31,6 +31,7 @@ node scripts/check-frontend-time-contract.js
 node scripts/generate-platform-contract-backend.js --check
 node scripts/generate-platform-contract-frontend.js --check
 node scripts/generate-service-boundaries-backend.js --check
+node scripts/generate-service-boundaries-frontend.js --check
 node scripts/check-platform-contract.js
 node scripts/check-error-codes.js
 node scripts/check-openapi-contract.js
@@ -52,8 +53,8 @@ AI 协作验证：
   - 后端列表响应字段为 `records`、`current`、`size`、`total`。
   - 后端运行 Controller 路径引用 `ApiConstants`，前端路径收口到 `ApiPaths`，路径契约记录在 `project_document/API_PATH_GUIDE.md`。
   - `node scripts/check-api-constants.js` 已校验 `ApiConstants` 内部只保留 `API_PREFIX = "/api"` 一个 API 前缀字面量，模块路径使用 `BASE + 相对路径 + *_FULL`。
-  - `contracts/service-boundaries.json` 已记录 auth、test、common 当前运行/预留边界，以及 user、admin、integration 未来服务边界；`backend/src/main/java/com/anjing/model/constants/ServiceBoundaryConstants.java` 已由 manifest 生成，`node scripts/generate-service-boundaries-backend.js --check` 与 `node scripts/check-service-boundaries.js` 已校验边界 basePath、route、`ApiConstants`、`ApiPaths`、Controller 和 OpenAPI `@Tag` 一致。
-  - `node scripts/check-api-path-parity.js` 已改为读取 `contracts/service-boundaries.json`，校验 manifest 中声明的稳定运行路径和 `ApiConstants` / `ApiPaths` 一致。
+  - `contracts/service-boundaries.json` 已记录 auth、test、common 当前运行/预留边界，以及 user、admin、integration 未来服务边界；后端 `ServiceBoundaryConstants.java` 与前端 `frontend/src/contracts/service-boundaries.ts` 已由 manifest 生成，`node scripts/generate-service-boundaries-backend.js --check`、`node scripts/generate-service-boundaries-frontend.js --check` 与 `node scripts/check-service-boundaries.js` 已校验边界 basePath、route、`ApiConstants`、`ApiPaths`、Controller 和 OpenAPI `@Tag` 一致。
+  - `node scripts/check-api-path-parity.js` 已改为读取 `contracts/service-boundaries.json`，校验 manifest 中声明的稳定运行路径和 `ApiConstants` / `ApiPaths` 一致；前端 `ApiPaths` 已引用生成的 `SERVICE_BOUNDARY_ROUTE_PATHS`，只保留调用语义和动态参数编码。
   - `ApiPaths` 已只保留 service boundary 声明的运行/预留运行路径；旧模板 auth/system 路径集中到 `ApiLegacyPaths`，并由 `node scripts/check-frontend-api-boundaries.js` 防止回流到运行路径。
   - 非 Axios 上传地址通过 `resolveApiPath(ApiPaths.common.uploadWangEditor)` 生成，避免组件手动拼 `VITE_API_URL + '/api/...'`。
   - 前端删除请求使用项目 HTTP 工具的 `request.del`。
