@@ -74,8 +74,8 @@ const fastEnterConfig: FastEnterConfig = {
       routeName: 'ChangeLog'
     },
     {
-      name: '哔哩哔哩',
-      description: '技术分享与交流',
+      name: '教学资料',
+      description: '课程大纲与演示步骤',
       icon: 'ri:bilibili-line',
       iconColor: '#FB7299',
       enabled: true,

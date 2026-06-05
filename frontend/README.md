@@ -1,10 +1,10 @@
-# Frontend Vue Starter
+# Infra Dev Scaffolding Frontend
 
-> 🚀 Anjing AI 企业级 Vue 3 + TypeScript 中后台管理系统脚手架，开箱即用，快速启动您的项目！
+> Anjing 开源项目的 Vue 3 + TypeScript 中后台前端母版。
 
 ## ✨ 功能介绍
 
-这是一个基于 Vue 3 + TypeScript + Vite 的现代化中后台管理系统模板，专为快速开发而设计。项目采用最新的前端技术栈，内置丰富的组件和完善的开发规范，助您高效构建企业级应用。
+这是一个基于 Vue 3 + TypeScript + Vite 的现代化中后台管理系统模板，专为 Anjing 后续 Infra / Agent 项目复用而整理。项目内置权限、路由、状态管理、国际化、主题和 AI 协作资产。
 
 ### 核心特性
 
@@ -110,7 +110,7 @@ Art Design Pro 是一个功能强大的 Vue 3 中后台管理系统解决方案�
 
 ```bash
 git clone <repository-url>
-cd frontend-vue-starter
+cd infra-dev-scaffolding/frontend
 ```
 
 2. **安装依赖**
@@ -125,7 +125,7 @@ pnpm install
 pnpm dev
 ```
 
-项目将自动在浏览器中打开，默认地址：`http://localhost:5173`
+项目将自动在浏览器中打开，默认地址：`http://localhost:13006`
 
 ### 其他命令
 
@@ -142,8 +142,11 @@ pnpm lint
 # 代码格式化
 pnpm fix
 
-# 清理开发缓存
+# 检查复制后旧模板残留（默认 dry-run）
 pnpm clean:dev
+
+# 确认后删除命中的旧残留
+pnpm clean:dev -- --apply
 
 # 提交代码（使用 Commitizen）
 pnpm commit
@@ -152,7 +155,7 @@ pnpm commit
 ## 📂 项目结构
 
 ```
-frontend-vue-starter/
+frontend/
 ├── .cursor/              # Cursor AI 规范和提示词
 ├── public/               # 静态资源
 ├── scripts/              # 构建脚本
@@ -247,4 +250,3 @@ git commit -m "feat: 添加用户管理页面"
 ---
 
 **Happy Coding! 🎉**
-

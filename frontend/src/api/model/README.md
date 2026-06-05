@@ -118,6 +118,7 @@ export type UpdateUserParams = Partial<Omit<CreateUserParams, 'password'>>
 ```typescript
 // src/api/user.ts
 import request from '@/utils/http'
+import { ApiPaths } from '@/api/paths'
 import type {
   UserList,
   UserListItem,
@@ -128,7 +129,7 @@ import type {
 
 export function fetchGetUserList(params: UserSearchParams) {
   return request.get<UserList>({
-    url: '/api/user/list',
+    url: ApiPaths.system.users,
     params
   })
 }
@@ -364,4 +365,3 @@ import type { LoginParams } from '@/api/model/authModel'
 5. ✅ **避免依赖**：Model 文件只导入通用类型
 6. ✅ **命名规范**：遵循统一的命名规则
 7. ✅ **保持简单**：只定义类型，不包含业务逻辑
-

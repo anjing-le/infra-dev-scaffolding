@@ -5,8 +5,9 @@
  */
 
 import request from '@/utils/http'
-import { BaseResult } from '@/types/axios'
-import type { UserInfo } from '@/types/store'
+import { ApiPaths } from './paths'
+import type { BaseResult } from '@/types/common/response'
+import type { UserInfo } from './model/authModel'
 import type {
   LoginParams,
   LoginResponse,
@@ -33,7 +34,7 @@ export class UserService {
    */
   static login(data: LoginParams): Promise<BaseResult<LoginResponse>> {
     return request.post<BaseResult<LoginResponse>>({
-      url: '/api/auth/login',
+      url: ApiPaths.auth.login,
       data
     })
   }
@@ -44,7 +45,7 @@ export class UserService {
    */
   static logout(): Promise<BaseResult<null>> {
     return request.post<BaseResult<null>>({
-      url: '/api/auth/logout'
+      url: ApiPaths.auth.logout
     })
   }
 
@@ -55,7 +56,7 @@ export class UserService {
    */
   static verify2FA(data: Verify2FAParams): Promise<BaseResult<LoginResponse>> {
     return request.post<BaseResult<LoginResponse>>({
-      url: '/auth/login/verify-2fa',
+      url: ApiPaths.auth.verify2FA,
       data
     })
   }
@@ -67,7 +68,7 @@ export class UserService {
    */
   static sendOtp(data: SendOtpParams): Promise<BaseResult<null>> {
     return request.post<BaseResult<null>>({
-      url: '/auth/otp/send',
+      url: ApiPaths.auth.sendOtp,
       data
     })
   }
@@ -79,7 +80,7 @@ export class UserService {
    */
   static smsLogin(data: SmsLoginParams): Promise<BaseResult<LoginResponse>> {
     return request.post<BaseResult<LoginResponse>>({
-      url: '/auth/login/verify-2fa',
+      url: ApiPaths.auth.verify2FA,
       data
     })
   }
@@ -90,7 +91,7 @@ export class UserService {
    */
   static unbindStore(): Promise<BaseResult<null>> {
     return request.del<BaseResult<null>>({
-      url: '/auth/binding'
+      url: ApiPaths.auth.binding
     })
   }
 
@@ -101,7 +102,7 @@ export class UserService {
    */
   static bindStore(storeNo: string): Promise<BaseResult<BindStoreResponse>> {
     return request.put<BaseResult<BindStoreResponse>>({
-      url: `/auth/binding/${storeNo}`
+      url: ApiPaths.auth.bindStore(storeNo)
     })
   }
 
@@ -111,7 +112,7 @@ export class UserService {
    */
   static getTenantMemberList(): Promise<BaseResult<TenantMember[]>> {
     return request.get<BaseResult<TenantMember[]>>({
-      url: '/auth/tenant/account/list'
+      url: ApiPaths.auth.tenantMembers
     })
   }
 
@@ -121,7 +122,7 @@ export class UserService {
    */
   static getUserInfo(): Promise<BaseResult<UserInfo>> {
     return request.get<BaseResult<UserInfo>>({
-      url: '/auth/user/info'
+      url: ApiPaths.auth.userInfo
     })
   }
 
@@ -133,7 +134,7 @@ export class UserService {
     BaseResult<{ isLogin: boolean; userId?: string; tokenTimeout?: number }>
   > {
     return request.get<BaseResult<{ isLogin: boolean; userId?: string; tokenTimeout?: number }>>({
-      url: '/api/auth/verify'
+      url: ApiPaths.auth.verify
     })
   }
 
@@ -143,7 +144,7 @@ export class UserService {
    */
   static getCurrentUser(): Promise<BaseResult<UserInfo>> {
     return request.get<BaseResult<UserInfo>>({
-      url: '/api/auth/current-user'
+      url: ApiPaths.auth.currentUser
     })
   }
   /**
@@ -153,7 +154,7 @@ export class UserService {
    */
   static register(params: UserRegisterParams): Promise<BaseResult<string>> {
     return request.post<BaseResult<string>>({
-      url: '/auth/register',
+      url: ApiPaths.auth.register,
       data: params
     })
   }
@@ -165,7 +166,7 @@ export class UserService {
    */
   static updatePassword(data: UpdatePasswordParams): Promise<BaseResult<null>> {
     return request.put<BaseResult<null>>({
-      url: '/auth/user/password',
+      url: ApiPaths.auth.updatePassword,
       data
     })
   }
@@ -175,7 +176,7 @@ export class UserService {
    */
   static getUserBasic(): Promise<BaseResult<UserBasic>> {
     return request.get<BaseResult<UserBasic>>({
-      url: '/auth/user/basic'
+      url: ApiPaths.auth.userBasic
     })
   }
 
@@ -186,7 +187,7 @@ export class UserService {
    */
   static updateUserBasic(params: UserBasicUpdateParams): Promise<BaseResult<string>> {
     return request.put<BaseResult<string>>({
-      url: '/auth/user/basic',
+      url: ApiPaths.auth.userBasic,
       data: params
     })
   }
@@ -198,7 +199,7 @@ export class UserService {
    */
   static getAvatarUploadSign(params: AvatarUploadParams): Promise<BaseResult<string>> {
     return request.post<BaseResult<string>>({
-      url: '/auth/user/avatar',
+      url: ApiPaths.auth.avatarUpload,
       data: params
     })
   }

@@ -17,7 +17,7 @@
 3. **组件类型**：
    - [ ] Dialog 对话框
    - [ ] Drawer 抽屉
-4. **样式**：使用 SCSS + UnoCSS
+4. **样式**：优先使用 Tailwind CSS，复杂局部样式使用 SCSS
 
 ### 功能要求：
 1. **双向绑定**：
@@ -34,6 +34,7 @@
    - 接收编辑数据（editItem prop）
    - 表单数据初始化和重置
    - API 调用和错误处理
+   - API 调用使用 `src/api/[module-name].ts` 中导出的 `fetchCreate*` / `fetchUpdate*` 函数
 
 ### 表单字段：
 [在此描述表单包含的字段及其类型、验证规则]
@@ -86,12 +87,12 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { ElMessage, ElDialog, ElForm, ElFormItem, ElButton } from 'element-plus'
-import { [ModuleName]Service } from '@/api/[moduleName]Api'
-import { [ModuleName], [ModuleName]Params } from '@/api/model/[moduleName]Model'
+import { fetchCreate[ModuleName], fetchUpdate[ModuleName] } from '@/api/[module-name]'
+import type { [ModuleName]ListItem, Create[ModuleName]Params, Update[ModuleName]Params } from '@/api/model/[moduleName]Model'
 
 // Props 接口定义
 interface Props {
-  editItem?: [ModuleName] | null
+  editItem?: [ModuleName]ListItem | null
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -111,7 +112,7 @@ const loading = ref(false)
 const formRef = ref()
 
 // 表单数据
-const formData = reactive<[ModuleName]Params>({
+const formData = reactive<Create[ModuleName]Params | Update[ModuleName]Params>({
   // 初始化表单数据
 })
 
@@ -164,10 +165,10 @@ const handleSubmit = async () => {
     loading.value = true
 
     if (isEditMode.value) {
-      await [ModuleName]Service.update[ModuleName](props.editItem!.id, formData)
+      await fetchUpdate[ModuleName](props.editItem!.id, formData as Update[ModuleName]Params)
       ElMessage.success('编辑成功')
     } else {
-      await [ModuleName]Service.add[ModuleName](formData)
+      await fetchCreate[ModuleName](formData as Create[ModuleName]Params)
       ElMessage.success('新增成功')
     }
 

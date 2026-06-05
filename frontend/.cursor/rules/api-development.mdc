@@ -66,6 +66,7 @@ src/api/
 ```typescript
 // src/api/user.ts
 import request from '@/utils/http'
+import { ApiPaths } from './paths'
 import type {
   UserList,
   UserListItem,
@@ -81,7 +82,7 @@ import type {
  */
 export function fetchGetUserList(params: UserSearchParams) {
   return request.get<UserList>({
-    url: '/api/user/list',
+    url: ApiPaths.user.list,
     params
   })
 }
@@ -93,7 +94,7 @@ export function fetchGetUserList(params: UserSearchParams) {
  */
 export function fetchGetUserInfo(id: number) {
   return request.get<UserListItem>({
-    url: `/api/user/${id}`
+    url: ApiPaths.user.detail(id)
   })
 }
 
@@ -104,7 +105,7 @@ export function fetchGetUserInfo(id: number) {
  */
 export function fetchCreateUser(data: CreateUserParams) {
   return request.post<void>({
-    url: '/api/user/create',
+    url: ApiPaths.user.create,
     data
   })
 }
@@ -117,7 +118,7 @@ export function fetchCreateUser(data: CreateUserParams) {
  */
 export function fetchUpdateUser(id: number, data: UpdateUserParams) {
   return request.put<void>({
-    url: `/api/user/${id}`,
+    url: ApiPaths.user.update(id),
     data
   })
 }
@@ -128,8 +129,8 @@ export function fetchUpdateUser(id: number, data: UpdateUserParams) {
  * @returns void
  */
 export function fetchDeleteUser(id: number) {
-  return request.delete<void>({
-    url: `/api/user/${id}`
+  return request.del<void>({
+    url: ApiPaths.user.delete(id)
   })
 }
 
@@ -139,12 +140,19 @@ export function fetchDeleteUser(id: number) {
  * @returns void
  */
 export function fetchBatchDeleteUsers(ids: number[]) {
-  return request.delete<void>({
-    url: '/api/user/batch',
+  return request.del<void>({
+    url: ApiPaths.user.batchDelete,
     data: { ids }
   })
 }
 ```
+
+## API 路径集中管理
+
+- 所有运行时代码中的接口路径必须收口到 `src/api/paths.ts` 的 `ApiPaths`。
+- API 文件只引用 `ApiPaths`，不要直接写 `url: '/api/...'` 或模板字符串拼接路径。
+- 路径中包含变量时，在 `ApiPaths` 中提供函数，并使用 `encodeURIComponent` 处理 path 参数。
+- 新增后端接口时，同时确认后端 `ApiConstants` 和前端 `ApiPaths` 命名一致，方便未来 OpenAPI / 类型生成。
 
 ## API 类型定义
 
@@ -239,11 +247,12 @@ export type UpdateRoleParams = Partial<CreateRoleParams>
 
 ```typescript
 import request from '@/utils/http'
+import { ApiPaths } from '@/api/paths'
 
 // ✅ GET 请求
 export function fetchGetUserList(params: UserSearchParams) {
   return request.get<UserList>({
-    url: '/api/user/list',
+    url: ApiPaths.user.list,
     params // 查询参数
   })
 }
@@ -251,7 +260,7 @@ export function fetchGetUserList(params: UserSearchParams) {
 // ✅ POST 请求
 export function fetchCreateUser(data: CreateUserParams) {
   return request.post<void>({
-    url: '/api/user/create',
+    url: ApiPaths.user.create,
     data // 请求体
   })
 }
@@ -259,15 +268,15 @@ export function fetchCreateUser(data: CreateUserParams) {
 // ✅ PUT 请求
 export function fetchUpdateUser(id: number, data: UpdateUserParams) {
   return request.put<void>({
-    url: `/api/user/${id}`,
+    url: ApiPaths.user.update(id),
     data
   })
 }
 
 // ✅ DELETE 请求
 export function fetchDeleteUser(id: number) {
-  return request.delete<void>({
-    url: `/api/user/${id}`
+  return request.del<void>({
+    url: ApiPaths.user.delete(id)
   })
 }
 
@@ -277,7 +286,7 @@ export function fetchUploadAvatar(file: File) {
   formData.append('file', file)
   
   return request.post<{ url: string }>({
-    url: '/api/upload/avatar',
+    url: ApiPaths.file.uploadAvatar,
     data: formData,
     headers: {
       'Content-Type': 'multipart/form-data'
@@ -288,7 +297,7 @@ export function fetchUploadAvatar(file: File) {
 // ✅ 文件下载
 export function fetchDownloadFile(id: number) {
   return request.get({
-    url: `/api/file/download/${id}`,
+    url: ApiPaths.file.download(id),
     responseType: 'blob'
   })
 }
@@ -296,7 +305,7 @@ export function fetchDownloadFile(id: number) {
 // ✅ 自定义请求配置
 export function fetchGetUserWithTimeout(id: number) {
   return request.get<UserInfo>({
-    url: `/api/user/${id}`,
+    url: ApiPaths.user.detail(id),
     timeout: 5000, // 超时时间
     headers: {
       'Custom-Header': 'value'
@@ -304,6 +313,18 @@ export function fetchGetUserWithTimeout(id: number) {
   })
 }
 ```
+
+### 请求上下文
+
+- `request` 拦截器会统一添加 `X-Request-Id`、`X-Trace-Id`、`X-Time-Zone` 和 `Accept-Language`。
+- 业务 API 函数不要手动添加这些上下文请求头，避免覆盖统一链路。
+- 需要排查问题时，优先记录响应体或响应头中的 `requestId`。
+
+### 时间字段
+
+- 后端默认按 UTC/ISO 输出时间，页面展示时使用 `@/utils/time` 的 `formatDateTime` / `formatDate`。
+- API 类型中的时间字段优先声明为 ISO 字符串，例如 `createdAt: string`。
+- 不要在组件中散落 `new Date(...).toLocaleString()`，统一通过时间工具处理时区和语言。
 
 ## 组件中使用 API
 

@@ -25,6 +25,8 @@ DELETE /api/users/{id}      # 删除用户
 ### API 路径常量
 所有路径在 `ApiConstants` 中统一管理，避免硬编码。
 
+Controller 的 `@RequestMapping`、`@GetMapping`、`@PostMapping` 等路径优先引用 `ApiConstants`。如果新增资源路径，也要同步补充 `ApiConstants`，方便后续前端 `ApiPaths` 或 OpenAPI 生成对齐。
+
 ## 请求规范
 
 ### HTTP 方法
@@ -41,6 +43,8 @@ DELETE /api/users/{id}      # 删除用户
 - **POST/PUT**: `@RequestBody`
 - **路径资源 ID**: `@PathVariable`
 - **认证信息**: `@RequestHeader("Authorization")`
+- **请求上下文**: 不要在 Controller 手动生成 requestId。统一由 `RequestContextFilter` 读取或生成 `X-Request-Id` / `X-Trace-Id`，并写入 `GlobalRequestContextHolder`。
+- **请求头常量**: 需要读取 `X-Request-Id`、`X-Trace-Id`、`X-Tenant-Id`、`X-Time-Zone`、`Accept-Language` 等头时，使用 `RequestHeaderConstants`。
 
 ## 响应规范
 
@@ -50,7 +54,8 @@ DELETE /api/users/{id}      # 删除用户
   "code": "0",
   "message": "操作成功",
   "data": {},
-  "timestamp": 1700000000000
+  "timestamp": 1700000000000,
+  "requestId": "0b4b3b0c-7b7b-4ed1-8c53-2ac0e73d2f6a"
 }
 ```
 
@@ -77,3 +82,9 @@ PageResponse.of(list, total, size);  // 手动创建
 
 - 当前使用路径中的 `/api/` 前缀
 - 需要版本化时使用：`/api/v1/`, `/api/v2/`
+
+## 时间与全球化
+
+- 服务端默认按 UTC 处理存储和接口时间，避免依赖部署机器本地时区。
+- 需要当前时间时优先使用 `DateUtils.nowInstant()` / `DateUtils.nowUtc()`，不要直接使用 `LocalDateTime.now()`。
+- 需要用户展示时区时，从 `GlobalRequestContextHolder.current().getTimeZone()` 获取客户端透传的时区，再显式转换。

@@ -22,10 +22,16 @@ backend/logs/
 backend/*.log
 backend/application-local.yml
 
+# ==================== 上传/临时文件 ====================
+uploads/
+temp/
+tmp/
+
 # ==================== 环境变量 ====================
 .env.local
 .env.*.local
 *.env.local
+backend/.env
 
 # ==================== Cursor ====================
 .cursorrules

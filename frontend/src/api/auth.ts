@@ -1,4 +1,5 @@
 import request from '@/utils/http'
+import { ApiPaths } from './paths'
 import type { LoginParams, LoginResponse, UserInfo } from './model/authModel'
 
 /**
@@ -8,7 +9,7 @@ import type { LoginParams, LoginResponse, UserInfo } from './model/authModel'
  */
 export function fetchLogin(params: LoginParams) {
   return request.post<LoginResponse>({
-    url: '/api/auth/login',
+    url: ApiPaths.auth.login,
     params
     // showSuccessMessage: true // 显示成功消息
     // showErrorMessage: false // 不显示错误消息
@@ -21,6 +22,6 @@ export function fetchLogin(params: LoginParams) {
  */
 export function fetchGetUserInfo() {
   return request.get<UserInfo>({
-    url: '/api/auth/me'
+    url: ApiPaths.auth.me
   })
 }

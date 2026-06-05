@@ -27,6 +27,9 @@ export * from './storage'
 // HTTP 相关
 export * from './http'
 
+// 时间相关
+export * from './time'
+
 // 表单相关
 export * from './form'
 

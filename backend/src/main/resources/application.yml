@@ -1,5 +1,5 @@
-# 🚀 Agent Dev Scaffolding 配置文件
-# 企业级Spring Boot脚手架 - 条件化配置版本
+# Infra Dev Scaffolding 配置文件
+# Anjing 开源项目工程母版 - 条件化配置版本
 
 # 基础配置
 server:
@@ -10,7 +10,7 @@ server:
 
 spring:
   application:
-    name: agent-dev-scaffolding
+    name: infra-dev-scaffolding
   
   # 环境配置
   profiles:
@@ -18,7 +18,7 @@ spring:
   
   # 数据源配置
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/anjing?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false&allowPublicKeyRetrieval=true}
+    url: ${DB_URL:jdbc:mysql://localhost:3306/anjing?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true}
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:your_password_here}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -65,7 +65,7 @@ spring:
         url-pattern: "/druid/*"
         # 控制台管理用户名和密码（建议生产环境通过环境变量配置）
         login-username: ${DRUID_USERNAME:admin}
-        login-password: ${DRUID_PASSWORD:admin}
+      login-password: ${DRUID_PASSWORD:change_me}
       filter:
         stat:
           enabled: true
@@ -95,11 +95,11 @@ spring:
   # Redis配置
   data:
     redis:
-      host: localhost
-      port: 6379
-      password:
-      database: 0
-      timeout: 5000
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:0}
+      timeout: ${REDIS_TIMEOUT:5000}
       lettuce:
         pool:
           max-active: 8
@@ -109,8 +109,8 @@ spring:
   
   # Jackson配置
   jackson:
-    time-zone: Asia/Shanghai
-    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: ${APP_TIME_ZONE:UTC}
+    date-format: yyyy-MM-dd'T'HH:mm:ssXXX
     serialization:
       write-dates-as-timestamps: false
     deserialization:
@@ -140,9 +140,9 @@ logging:
     org.apache.http: WARN
   pattern:
     # 控制台格式由logback-spring.xml统一管理
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [rid=%X{requestId} tid=%X{traceId} tenant=%X{tenantId} user=%X{userId}] %logger{36} - %msg%n"
     # 文件格式由logback-spring.xml统一管理
-    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{40} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [rid=%X{requestId} tid=%X{traceId} tenant=%X{tenantId} user=%X{userId}] %logger{40} - %msg%n"
 
 # 🔥 自定义日志配置
 anjing:
@@ -211,7 +211,7 @@ app:
       kafka:
         enabled: false                # 是否启用Kafka
         bootstrap-servers: localhost:9092
-        group-id: agent-dev-scaffolding
+        group-id: infra-dev-scaffolding
       
       # MinIO对象存储
       minio:
@@ -236,4 +236,3 @@ app:
       enable-performance: true        # 是否启用性能监控
       enable-health-check: true       # 是否启用健康检查
       enable-metrics: true            # 是否启用指标收集
-

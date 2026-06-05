@@ -14,16 +14,17 @@
 ### 基础要求：
 1. **技术栈**：Vue 3 + TypeScript + Composition API + Element Plus
 2. **文件位置**：src/views/[模块名称]/index.vue
-3. **样式**：使用 SCSS + UnoCSS
+3. **样式**：优先使用 Tailwind CSS，复杂局部样式使用 SCSS
 
 ### 功能要求：
 1. **数据展示**：
-   - 使用 El-Table 展示数据列表
-   - 包含分页功能（如果需要）
+   - 优先使用 `ArtTable` 展示数据列表
+   - 使用 `ArtTableHeader` 提供刷新、列控制和左侧操作区
+   - 使用 `useTable` 管理分页、loading、刷新和查询参数
    - 支持加载状态显示
 
 2. **搜索功能**：
-   - 包含搜索表单
+   - 搜索表单建议拆到 `src/views/[模块名称]/modules/[module-name]-search.vue`
    - 支持多条件筛选
    - 使用 ArtSearchBar 组件（如果适用）
 
@@ -52,6 +53,10 @@
 
 请遵循项目现有的代码规范，包括：
 - 使用 Composition API script setup 语法
+- API 调用使用 `src/api/[module-name].ts` 中导出的 `fetch*` 函数
+- 类型从 `src/api/model/[moduleName]Model.ts` 或 `Api.*` 命名空间导入
+- API 路径必须由 API 层引用 `ApiPaths`，页面不要直接写接口 URL
+- 时间列使用 `@/utils/time` 的 `formatDateTime` / `formatDate` 展示
 - 合理的组件拆分和复用
 - 完善的错误处理和用户体验
 - 统一的代码风格和命名规范
@@ -78,43 +83,97 @@
 
 ```vue
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { h, ref } from 'vue'
+import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
+import { useTable } from '@/hooks/core/useTable'
+import { fetchGet[ModuleName]List, fetchDelete[ModuleName] } from '@/api/[module-name]'
+import type { [ModuleName]ListItem, [ModuleName]SearchParams } from '@/api/model/[moduleName]Model'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { [相关图标] } from '@element-plus/icons-vue'
-import { [ModuleName]Service } from '@/api/[moduleName]Api'
-import { [ModuleName], [ModuleName]Status } from '@/api/model/[moduleName]Model'
 
-// 响应式数据
-const loading = ref(false)
-const dataList = ref<[ModuleName][]>([])
+defineOptions({ name: '[ModuleName]' })
 
-// 查询参数
-const queryParams = reactive({
-  // 定义查询参数
+const searchForm = ref<[ModuleName]SearchParams>({
+  current: 1,
+  size: 20
 })
 
-// 获取数据列表
-const getDataList = async () => {
-  loading.value = true
-  try {
-    const { data } = await [ModuleName]Service.get[ModuleName]List(queryParams)
-    dataList.value = data || []
-  } catch (error) {
-    console.error('获取数据失败:', error)
-  } finally {
-    loading.value = false
+const {
+  columns,
+  columnChecks,
+  data,
+  loading,
+  pagination,
+  getData,
+  searchParams,
+  resetSearchParams,
+  handleSizeChange,
+  handleCurrentChange,
+  refreshData
+} = useTable({
+  core: {
+    apiFn: fetchGet[ModuleName]List,
+    apiParams: searchForm.value,
+    columnsFactory: () => [
+      { type: 'index', width: 60, label: '序号' },
+      // 按业务字段补充列配置
+      {
+        prop: 'operation',
+        label: '操作',
+        width: 120,
+        fixed: 'right',
+        formatter: (row: [ModuleName]ListItem) =>
+          h('div', [
+            h(ArtButtonTable, { type: 'edit', onClick: () => openDialog('edit', row) }),
+            h(ArtButtonTable, { type: 'delete', onClick: () => handleDelete(row) })
+          ])
+      }
+    ]
   }
+})
+
+const handleSearch = (params: [ModuleName]SearchParams) => {
+  Object.assign(searchParams, params)
+  getData()
 }
 
-// 其他方法...
+const openDialog = (type: 'add' | 'edit', row?: [ModuleName]ListItem) => {
+  // 打开新增/编辑弹窗
+}
 
-onMounted(() => {
-  getDataList()
-})
+const handleDelete = async (row: [ModuleName]ListItem) => {
+  await ElMessageBox.confirm('确认删除这条数据吗？', '提示', { type: 'warning' })
+  await fetchDelete[ModuleName](row.id)
+  ElMessage.success('删除成功')
+  refreshData()
+}
+
+const handleReset = () => {
+  resetSearchParams()
+  getData()
+}
 </script>
 
 <template>
-  <!-- 页面模板 -->
+  <div class="[module-name]-page art-full-height">
+    <!-- 搜索组件：<[ModuleName]Search v-model="searchForm" @search="handleSearch" @reset="handleReset" /> -->
+
+    <ElCard class="art-table-card" shadow="never">
+      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
+        <template #left>
+          <ElButton @click="openDialog('add')" v-ripple>新增[模块名称]</ElButton>
+        </template>
+      </ArtTableHeader>
+
+      <ArtTable
+        :loading="loading"
+        :data="data"
+        :columns="columns"
+        :pagination="pagination"
+        @pagination:size-change="handleSizeChange"
+        @pagination:current-change="handleCurrentChange"
+      />
+    </ElCard>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -125,7 +184,7 @@ onMounted(() => {
 ## 最佳实践
 
 1. **性能优化**：使用 v-loading 指令显示加载状态
-2. **用户体验**：操作前显示确认对话框
+2. **用户体验**：删除等危险操作前显示确认对话框
 3. **错误处理**：合理的 try-catch 和错误提示
 4. **代码复用**：抽取公共逻辑为 composables
 5. **类型安全**：充分利用 TypeScript 类型检查

@@ -20,6 +20,7 @@ import { ApiStatus } from './status'
 import { HttpError, handleError, showError, showSuccess } from './error'
 import { $t } from '@/locales'
 import { BaseResponse } from '@/types'
+import { applyRequestContextHeaders } from './context'
 
 /** 请求配置常量 */
 const REQUEST_TIMEOUT = 15000
@@ -64,8 +65,9 @@ const axiosInstance = axios.create({
 /** 请求拦截器 */
 axiosInstance.interceptors.request.use(
   (request: InternalAxiosRequestConfig) => {
-    const { accessToken } = useUserStore()
+    const { accessToken, language } = useUserStore()
     if (accessToken) request.headers.set('Authorization', accessToken)
+    applyRequestContextHeaders(request.headers, language)
 
     if (request.data && !(request.data instanceof FormData) && !request.headers['Content-Type']) {
       request.headers.set('Content-Type', 'application/json')

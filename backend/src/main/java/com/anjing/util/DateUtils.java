@@ -1,7 +1,10 @@
 package com.anjing.util;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -17,6 +20,7 @@ public class DateUtils {
     public static final String DEFAULT_DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     public static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd";
     public static final String DEFAULT_TIME_PATTERN = "HH:mm:ss";
+    public static final ZoneId UTC_ZONE = ZoneOffset.UTC;
 
     private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern(DEFAULT_DATETIME_PATTERN);
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(DEFAULT_DATE_PATTERN);
@@ -87,10 +91,21 @@ public class DateUtils {
      * @return LocalDateTime
      */
     public static LocalDateTime toLocalDateTime(Date date) {
+        return toLocalDateTime(date, UTC_ZONE);
+    }
+
+    /**
+     * Date to LocalDateTime with explicit zone.
+     *
+     * @param date Date object
+     * @param zoneId target zone
+     * @return LocalDateTime
+     */
+    public static LocalDateTime toLocalDateTime(Date date, ZoneId zoneId) {
         if (date == null) {
             return null;
         }
-        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        return date.toInstant().atZone(zoneId == null ? UTC_ZONE : zoneId).toLocalDateTime();
     }
 
     /**
@@ -100,10 +115,62 @@ public class DateUtils {
      * @return Date
      */
     public static Date toDate(LocalDateTime dateTime) {
+        return toDate(dateTime, UTC_ZONE);
+    }
+
+    /**
+     * LocalDateTime to Date with explicit zone.
+     *
+     * @param dateTime LocalDateTime object
+     * @param zoneId source zone
+     * @return Date
+     */
+    public static Date toDate(LocalDateTime dateTime, ZoneId zoneId) {
         if (dateTime == null) {
             return null;
         }
-        return Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
+        return Date.from(dateTime.atZone(zoneId == null ? UTC_ZONE : zoneId).toInstant());
+    }
+
+    /**
+     * Current instant in UTC.
+     *
+     * @return Instant
+     */
+    public static Instant nowInstant() {
+        return Instant.now();
+    }
+
+    /**
+     * Current offset datetime in UTC.
+     *
+     * @return OffsetDateTime
+     */
+    public static OffsetDateTime nowUtc() {
+        return OffsetDateTime.now(ZoneOffset.UTC);
+    }
+
+    /**
+     * Format instant as ISO-8601 UTC string.
+     *
+     * @param instant instant
+     * @return ISO string
+     */
+    public static String formatIso(Instant instant) {
+        return instant == null ? null : instant.toString();
+    }
+
+    /**
+     * Parse ISO-8601 instant string.
+     *
+     * @param value ISO string
+     * @return Instant
+     */
+    public static Instant parseIso(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        return Instant.parse(value);
     }
 
     /**
@@ -112,7 +179,7 @@ public class DateUtils {
      * @return 当前时间字符串
      */
     public static String now() {
-        return LocalDateTime.now().format(DATETIME_FORMATTER);
+        return LocalDateTime.now(UTC_ZONE).format(DATETIME_FORMATTER);
     }
 
     /**
@@ -121,7 +188,7 @@ public class DateUtils {
      * @return 当前日期字符串
      */
     public static String today() {
-        return LocalDateTime.now().format(DATE_FORMATTER);
+        return LocalDateTime.now(UTC_ZONE).format(DATE_FORMATTER);
     }
 
     /**
@@ -190,7 +257,7 @@ public class DateUtils {
         if (dateTime == null) {
             return false;
         }
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(UTC_ZONE);
         return dateTime.toLocalDate().equals(now.toLocalDate());
     }
 

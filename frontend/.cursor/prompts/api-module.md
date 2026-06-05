@@ -11,7 +11,7 @@
 ```
 请为 [模块名称] 创建完整的 API 接口模块，需要包含：
 
-1. **API 接口文件** (src/api/[模块名称].ts)：
+1. **API 接口文件** (`src/api/[module-name].ts`)：
    - 使用函数导出方式
    - 函数命名统一使用 `fetch` 前缀：
      * GET 请求：fetchGet + 资源名（如 fetchGetUserList、fetchGetUserInfo）
@@ -20,15 +20,17 @@
      * DELETE 删除：fetchDelete + 资源名（如 fetchDeleteUser）
      * 其他操作：fetch + 动词 + 资源名（如 fetchEnableUser、fetchBatchDeleteUsers）
    - 每个函数添加完整的 JSDoc 注释（包含 @param 和 @returns）
-   - 使用 request.get/post/put/delete 方法
+   - 使用 `request.get` / `request.post` / `request.put` / `request.del` 方法
+   - API 路径必须写入并引用 `src/api/paths.ts` 的 `ApiPaths`
+   - 不要在 API 函数里直接手写 `url: '/api/...'`
    - 正确使用泛型指定返回类型
    - 从对应的 Model 文件导入类型定义
 
-2. **类型定义文件** (src/api/model/[模块名称]Model.ts)：
+2. **类型定义文件** (`src/api/model/[moduleName]Model.ts`)：
    - 与 API 文件同名，添加 Model 后缀（如 auth.ts -> authModel.ts）
    - 使用 export interface 或 export type 导出类型
    - 定义接口类型（如 UserListItem）
-   - 定义列表响应类型（如 UserList = Api.Common.PaginatedResponse<UserListItem>）
+   - 定义列表响应类型（如 UserList = PaginatedResponse<UserListItem>）
    - 定义搜索参数类型（如 UserSearchParams）
    - 定义创建参数类型（如 CreateUserParams）
    - 定义更新参数类型（如 UpdateUserParams）
@@ -38,18 +40,20 @@
 [在此描述具体的业务需求，包括字段、功能等]
 
 ### 接口规范：
-- 查询列表：GET /[模块]/list
-- 查询详情：GET /[模块]/{id}
-- 创建：POST /[模块]/create
-- 更新：PUT /[模块]/{id}
-- 删除：DELETE /[模块]/{id}
-- 批量删除：DELETE /[模块]/batch
+- 新业务优先使用 RESTful 路径，并统一带 `/api` 前缀
+- 查询列表：GET /api/[resource]
+- 查询详情：GET /api/[resource]/{id}
+- 创建：POST /api/[resource]
+- 更新：PUT /api/[resource]/{id}
+- 删除：DELETE /api/[resource]/{id}
+- 批量删除：DELETE /api/[resource]/batch
 
 ### 示例代码结构：
 
 **API 文件示例 (src/api/user.ts)：**
 ```typescript
 import request from '@/utils/http'
+import { ApiPaths } from './paths'
 import type { UserList, UserListItem, UserSearchParams, CreateUserParams, UpdateUserParams } from './model/userModel'
 
 /**
@@ -59,7 +63,7 @@ import type { UserList, UserListItem, UserSearchParams, CreateUserParams, Update
  */
 export function fetchGetUserList(params: UserSearchParams) {
   return request.get<UserList>({
-    url: '/api/user/list',
+    url: ApiPaths.user.list,
     params
   })
 }
@@ -71,7 +75,7 @@ export function fetchGetUserList(params: UserSearchParams) {
  */
 export function fetchCreateUser(data: CreateUserParams) {
   return request.post<void>({
-    url: '/api/user/create',
+    url: ApiPaths.user.create,
     data
   })
 }
@@ -84,8 +88,19 @@ export function fetchCreateUser(data: CreateUserParams) {
  */
 export function fetchUpdateUser(id: number, data: UpdateUserParams) {
   return request.put<void>({
-    url: `/api/user/${id}`,
+    url: ApiPaths.user.update(id),
     data
+  })
+}
+
+/**
+ * 删除用户
+ * @param id 用户 ID
+ * @returns void
+ */
+export function fetchDeleteUser(id: number) {
+  return request.del<void>({
+    url: ApiPaths.user.delete(id)
   })
 }
 ```
@@ -145,13 +160,13 @@ export type UpdateUserParams = Partial<Omit<CreateUserParams, 'password'>> & {
 ```
 请更新 [模块名称] 的 API 接口模块，需要：
 
-1. **更新 API 接口文件** (src/api/[模块名称].ts)：
+1. **更新 API 接口文件** (`src/api/[module-name].ts`)：
    [描述需要更新的具体内容]
    - 新增接口：[列出需要新增的接口]
    - 修改接口：[列出需要修改的接口及修改内容]
    - 删除接口：[列出需要删除的接口]
 
-2. **更新类型定义** (src/api/models/[模块名称]Model.ts)：
+2. **更新类型定义** (`src/api/model/[moduleName]Model.ts`)：
    [描述类型定义的更新内容]
    - 新增字段：[列出需要新增的字段]
    - 修改字段：[列出需要修改的字段]
@@ -203,12 +218,16 @@ export type UpdateUserParams = Partial<Omit<CreateUserParams, 'password'>> & {
 
 ### 文件结构
 
-1. **API 文件位置**：`src/api/[模块名].ts`
-2. **类型定义位置**：`src/api/model/[模块名]Model.ts`（与 API 文件对应）
+1. **API 文件位置**：`src/api/[module-name].ts`
+2. **类型定义位置**：`src/api/model/[moduleName]Model.ts`（与 API 文件对应）
 3. **导入顺序**：
    - 第三方库
    - @/ 别名导入
    - 相对路径导入（Model 文件）
+4. **路径定义**：
+   - 先在 `src/api/paths.ts` 添加模块路径
+   - path 参数必须在 `ApiPaths` 的函数中编码
+   - API 文件只引用 `ApiPaths`
 
 ### 类型定义规范
 
@@ -223,8 +242,15 @@ export type UpdateUserParams = Partial<Omit<CreateUserParams, 'password'>> & {
 1. **GET 请求**：使用 `params` 传递查询参数
 2. **POST 请求**：使用 `data` 传递请求体
 3. **PUT 请求**：使用 `data` 传递请求体
-4. **DELETE 请求**：使用 `data` 传递请求体（如需要）
+4. **DELETE 请求**：使用 `request.del<T>()`；批量删除等需要请求体时再传 `data`
 5. **泛型指定**：明确指定返回类型泛型 `request.get<T>()`
+6. **请求上下文**：不要手动设置 `X-Request-Id`、`X-Trace-Id`、`X-Time-Zone`、`Accept-Language`；由 `utils/http` 拦截器统一处理
+
+### 时间与全球化
+
+1. **时间字段**：接口返回时间按 ISO 字符串建模
+2. **展示格式化**：组件使用 `@/utils/time` 的 `formatDateTime` / `formatDate`
+3. **语言和时区**：由请求拦截器从用户语言与浏览器时区透传到后端
 
 ### 注释规范
 

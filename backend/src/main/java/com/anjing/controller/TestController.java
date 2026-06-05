@@ -1,5 +1,6 @@
 package com.anjing.controller;
 
+import com.anjing.annotation.ScaffoldSample;
 import com.anjing.model.errorcode.CommonErrorCode;
 import com.anjing.model.exception.BizException;
 import com.anjing.model.response.APIResponse;
@@ -17,7 +18,8 @@ import java.util.*;
 /**
  * 脚手架功能测试控制器
  *
- * <p>用于测试和演示脚手架的各种功能特性，同时作为学员学习 API 开发的参考示例</p>
+ * <p>用于测试和演示脚手架的各种功能特性，同时作为学员学习 API 开发的参考示例。</p>
+ * <p>复制为业务项目时，请按 {@code project_document/TEMPLATE_BOUNDARIES.md} 明确删除或替换。</p>
  *
  * <h3>测试功能清单：</h3>
  * <ul>
@@ -31,13 +33,14 @@ import java.util.*;
  * @author Backend Template Team
  * @version 1.0
  */
+@ScaffoldSample("教学接口：健康检查、异常处理和内存 CRUD 演示")
 @RestController
 @RequestMapping("/api/test")
 @RequiredArgsConstructor
 @Slf4j
 public class TestController {
 
-    @Value("${spring.application.name:agent-dev-scaffolding}")
+    @Value("${spring.application.name:infra-dev-scaffolding}")
     private String applicationName;
 
     /** 内存数据存储（演示用，实际项目使用数据库） */

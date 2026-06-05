@@ -1,5 +1,6 @@
 package com.anjing.model.response;
 
+import com.anjing.context.GlobalRequestContextHolder;
 import lombok.Data;
 
 /**
@@ -39,8 +40,14 @@ public class APIResponse<T>
      */
     private Long timestamp;
 
+    /**
+     * Request id for frontend and log correlation.
+     */
+    private String requestId;
+
     public APIResponse() {
         this.timestamp = System.currentTimeMillis();
+        this.requestId = GlobalRequestContextHolder.requestIdOrNull();
     }
 
     public APIResponse(String code, String message, T data) {
@@ -48,12 +55,14 @@ public class APIResponse<T>
         this.message = message;
         this.data = data;
         this.timestamp = System.currentTimeMillis();
+        this.requestId = GlobalRequestContextHolder.requestIdOrNull();
     }
 
     public APIResponse(String code, String message) {
         this.code = code;
         this.message = message;
         this.timestamp = System.currentTimeMillis();
+        this.requestId = GlobalRequestContextHolder.requestIdOrNull();
     }
 
     /**

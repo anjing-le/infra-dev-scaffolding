@@ -4,7 +4,7 @@ globs:
 alwaysApply: true
 ---
 
-# Agent Dev Scaffolding - 后端开发规范
+# Infra Dev Scaffolding - 后端开发规范
 
 ## 技术栈
 
@@ -46,6 +46,9 @@ src/main/java/com/anjing/
 3. **错误码管理**: 使用枚举实现 `ErrorCode` 接口，按模块分类
 4. **参数校验**: 使用 Jakarta Validation 注解 + 自定义校验注解
 5. **中间件开关**: 通过 `app.features.*` 配置按需启用
+6. **路径集中管理**: API 路径使用 `ApiConstants`，避免 Controller 散落 URL 字符串
+7. **请求上下文**: requestId、traceId、语言、时区、租户、用户信息通过 `RequestContextFilter` / `GlobalRequestContextHolder` 管理
+8. **时间策略**: 默认 UTC，使用 `DateUtils` 和显式时区，不依赖机器本地时区
 
 ## 可用的 Cursor Rules
 

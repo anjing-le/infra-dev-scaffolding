@@ -1,4 +1,4 @@
-# 讲解大纲 — Agent Dev Scaffolding
+# 讲解大纲 — Infra Dev Scaffolding
 
 > 预估总时长：90-120 分钟  
 > 目标：学员掌握脚手架结构、能独立启动项目、理解 AI 协作开发模式
@@ -89,7 +89,7 @@
 
 ### 4.1 Cursor Rules 讲解（8 分钟）
 - 什么是 Cursor Rules：让 AI 理解项目规范的配置文件
-- 前端 12 条 Rules 概览（`.cursor/rules/`）
+- 前端 11 条 Rules 概览（`.cursor/rules/`）
 - 后端 4 条 Rules 概览
 - 实际效果演示：有 Rules 和没 Rules 的代码质量对比
 

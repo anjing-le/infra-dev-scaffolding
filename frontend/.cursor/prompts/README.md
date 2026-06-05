@@ -79,7 +79,7 @@
 - **前端框架**：Vue 3 + TypeScript
 - **UI 组件库**：Element Plus
 - **状态管理**：Pinia
-- **样式方案**：SCSS + UnoCSS
+- **样式方案**：Tailwind CSS + SCSS
 - **构建工具**：Vite
 - **包管理**：pnpm
 

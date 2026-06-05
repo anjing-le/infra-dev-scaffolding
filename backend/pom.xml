@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.anjing</groupId>
-    <artifactId>agent-dev-scaffolding</artifactId>
+    <artifactId>infra-dev-scaffolding</artifactId>
     <version>1.0.0</version>
-    <name>agent-dev-scaffolding</name>
-    <description>Anjing Agent Dev Scaffolding - 企业级后端开发脚手架</description>
+    <name>infra-dev-scaffolding</name>
+    <description>Anjing Infra Dev Scaffolding - 全栈工程母版后端</description>
 
     <properties>
         <java.version>17</java.version>

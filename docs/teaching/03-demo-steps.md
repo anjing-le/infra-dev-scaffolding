@@ -33,7 +33,7 @@ pnpm dev
 | 响应式 | 缩小浏览器窗口 | 侧边栏自动折叠 |
 | 结果页 | 导航到「结果 → 成功」 | 标准结果页组件 |
 | 异常页 | 导航到「异常 → 404」 | 美观的异常页面 |
-| 权限控制 | 观察菜单 | 游客看不到「控制台」「系统管理」 |
+| 权限控制 | 观察菜单 | 游客看不到「系统管理」 |
 
 ---
 
@@ -144,6 +144,8 @@ curl http://localhost:18080/api/test/items/999 | python3 -m json.tool
 
 ### 演示：用 Prompt 生成后端 CRUD 模块
 
+完整参数、期望文件和验收命令见 `docs/teaching/04-notice-module-demo.md`。
+
 1. `Cmd+Shift+P` → "Use Prompt Template" → 选择 `crud-module.md`
 2. 填写参数：
    - 模块名称：公告管理
@@ -155,6 +157,8 @@ curl http://localhost:18080/api/test/items/999 | python3 -m json.tool
 5. 运行后端，测试新接口
 
 ### 演示：用 Prompt 生成前端列表页
+
+完整 API、列表页、弹窗和路由配置流程见 `docs/teaching/04-notice-module-demo.md`。
 
 1. `Cmd+Shift+P` → "Use Prompt Template" → 选择 `vue-list-page.md`
 2. 填写参数：
@@ -172,7 +176,7 @@ curl http://localhost:18080/api/test/items/999 | python3 -m json.tool
 
 ```bash
 # 1. 复制项目
-cp -r agent-dev-scaffolding my-notice-app
+cp -r infra-dev-scaffolding my-notice-app
 cd my-notice-app
 
 # 2. 修改 backend/pom.xml
@@ -184,18 +188,23 @@ cd my-notice-app
 # 4. 修改 frontend/package.json
 # "name": "my-notice-app"
 
-# 5.（可选）运行前端清理脚本
+# 5.（可选）检查前端旧模板残留
 cd frontend && pnpm clean:dev
 
-# 6. 初始化 Git
+# 确认 dry-run 输出后再删除
+pnpm clean:dev -- --apply
+
+# 6. 按 TEMPLATE_BOUNDARIES.md 删除或替换后端示例代码
+
+# 7. 初始化 Git
 cd .. && git init && git add . && git commit -m "init: 基于脚手架初始化项目"
 ```
 
 ### 讲解要点
 - 为什么用复制而不是 fork：脚手架是起点，不是上游
-- 清理脚本的作用：移除演示页面，保留核心骨架
+- 清理脚本的作用：检查并删除历史模板残留，不代替业务边界判断
 - 保留什么：Cursor Rules、配置类、工具类、异常处理体系
-- 删除什么：TestController、example 目录、演示页面
+- 删除什么：按 `project_document/TEMPLATE_BOUNDARIES.md` 处理 TestController、example 目录和演示数据
 
 ---
 

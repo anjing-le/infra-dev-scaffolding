@@ -170,7 +170,7 @@
     mobile: '18888888888',
     address: '广东省深圳市宝安区西乡街道101栋201',
     sex: '2',
-    des: 'Art Design Pro 是一款兼具设计美学与高效开发的后台系统.'
+    des: 'Anjing Infra Dev Scaffolding 是一套可启动、可演示、可复制的全栈工程母版.'
   })
 
   /**

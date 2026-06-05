@@ -50,7 +50,7 @@ import type { RouteRecordRaw } from 'vue-router'
  */
 export const staticRoutes: RouteRecordRaw[] = [
   {
-    path: '/login',
+    path: '/auth/login',
     name: 'Login',
     component: () => import('@views/auth/login/index.vue'),
     meta: {
@@ -59,7 +59,7 @@ export const staticRoutes: RouteRecordRaw[] = [
     }
   },
   {
-    path: '/register',
+    path: '/auth/register',
     name: 'Register',
     component: () => import('@views/auth/register/index.vue'),
     meta: {
@@ -202,10 +202,10 @@ export function setupBeforeEach(router: Router) {
     const userStore = useUserStore()
 
     // 设置页面标题
-    document.title = `${to.meta.title || ''} - Art Design Pro`
+    document.title = `${to.meta.title || ''} - Anjing AI`
 
     // 白名单路由（不需要登录）
-    const whiteList = ['/login', '/register', '/forget-password', '/404', '/403', '/500']
+    const whiteList = ['/auth/login', '/auth/register', '/auth/forget-password', '/404', '/403', '/500']
 
     if (whiteList.includes(to.path)) {
       next()
@@ -215,7 +215,7 @@ export function setupBeforeEach(router: Router) {
     // 检查是否登录
     if (!userStore.isLoggedIn) {
       next({
-        path: '/login',
+        path: '/auth/login',
         query: { redirect: to.fullPath }
       })
       return
@@ -228,7 +228,7 @@ export function setupBeforeEach(router: Router) {
       } catch (error) {
         // 获取用户信息失败，退出登录
         await userStore.logout()
-        next('/login')
+        next('/auth/login')
         return
       }
     }

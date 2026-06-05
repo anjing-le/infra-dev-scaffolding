@@ -31,4 +31,15 @@ export interface BaseResponse<T = unknown> {
   data: T
   /** 时间戳（后端返回） */
   timestamp?: number
+  /** 请求 ID，用于前后端日志关联 */
+  requestId?: string
 }
+
+/** 旧接口层使用的响应命名，保留为 BaseResponse 的兼容别名 */
+export type BaseResult<T = unknown> = BaseResponse<T>
+
+/** 分页列表响应 */
+export type PaginatedResponse<T = unknown> = Api.Common.PaginatedResponse<T>
+
+/** 通用分页搜索参数 */
+export type CommonSearchParams = Api.Common.CommonSearchParams

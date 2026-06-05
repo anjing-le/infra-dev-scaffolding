@@ -21,6 +21,8 @@ Controller → Service → Repository → Database
 - 调用 Service 处理业务
 - 统一返回 `APIResponse<T>`
 - 不包含业务逻辑
+- API 路径使用 `ApiConstants`，不要在注解中散落硬编码字符串
+- 不手动生成 requestId，统一使用 `RequestContextFilter` / `GlobalRequestContextHolder`
 
 ```java
 @RestController
@@ -109,3 +111,16 @@ app:
 - `application.yml` - 通用配置
 - `application-dev.yml` - 开发环境
 - `application-prod.yml` - 生产环境
+
+## 分布式上下文与日志
+
+- 每个请求由 `RequestContextFilter` 生成或透传 `X-Request-Id` 和 `X-Trace-Id`。
+- 日志通过 MDC 输出 `requestId`、`traceId`、`tenantId`、`userId`，业务代码不需要重复拼这些字段。
+- 需要在 Service 或远程调用中读取上下文时，使用 `GlobalRequestContextHolder.current()`。
+- 服务间调用时应透传 `RequestHeaderConstants.REQUEST_ID`、`TRACE_ID`、`TENANT_ID`、`USER_ID`、`TIME_ZONE` 和 `ACCEPT_LANGUAGE`。
+
+## 时间策略
+
+- 默认使用 UTC，配置项为 `APP_TIME_ZONE`，本地展示时区由前端或用户偏好决定。
+- 新代码优先使用 `Instant` / `OffsetDateTime`，工具方法使用 `DateUtils`。
+- 避免直接使用 `ZoneId.systemDefault()` 或无上下文的 `LocalDateTime.now()`。

@@ -1,5 +1,6 @@
 package com.anjing.example.statemachine;
 
+import com.anjing.annotation.ScaffoldSample;
 import com.anjing.statemachine.BaseStateMachine;
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,6 +50,7 @@ import java.util.Map;
  * @version 1.0
  * @since 1.0.0
  */
+@ScaffoldSample("订单状态机教学示例")
 @Slf4j
 public class OrderStateMachine extends BaseStateMachine<OrderState, OrderEvent> {
 

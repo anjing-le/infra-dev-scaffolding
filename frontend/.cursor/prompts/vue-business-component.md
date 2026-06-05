@@ -16,7 +16,7 @@
 2. **文件位置**：
    - 公共组件：src/components/[组件名称]/index.vue
    - 页面组件：src/views/[页面名称]/components/[组件名称].vue
-3. **样式**：使用 SCSS + UnoCSS
+3. **样式**：优先使用 Tailwind CSS，复杂局部样式使用 SCSS
 
 ### 组件功能：
 [在此描述组件的具体功能和用途]

@@ -1,0 +1,121 @@
+# Roadmap
+
+## 定位
+
+`infra-dev-scaffolding` 是 Anjing 开源项目的工程母版。
+
+它提供一个可启动、可演示、可复制、可被 AI 协作工具理解的全栈基础工程。后续 `agent-aigc`、`agent-customer-service`、`agent-knowledge` 以及 `infra-auth`、`infra-api-gateway`、`infra-llm-gateway`、`infra-skill-hub` 都应从这套工程结构继承或裁剪。
+
+## 目标
+
+1. 开箱能跑：前端游客模式无后端可体验，后端示例 API 可启动和验证。
+2. 工程规范稳定：统一目录、类型、路由、权限、请求、响应、异常、日志和环境配置。
+3. 可复制：新项目能从本仓库复制并快速改名、换端口、换业务模块。
+4. 可教学：能支撑 90-120 分钟脚手架课程和录制演示。
+5. 可被 AI 协作：Cursor Rules 和 Prompts 让 AI 生成代码时遵循本项目结构。
+
+## 非目标
+
+- 不做完整业务系统。
+- 不在底座中沉淀具体 Agent 业务逻辑。
+- 不把认证中心、API 网关、LLM 网关、Skill Hub 的领域能力提前塞进本仓库。
+- 不追求功能越多越好，优先保持清晰、稳定、易复制。
+
+## 阶段规划
+
+### S0: 构建与入口收口
+
+目标：项目可以被可信地启动、构建和演示。
+
+验收：
+- `frontend` 通过 `pnpm build`。
+- `backend` 通过 `mvn -q -DskipTests package`。
+- 前端游客模式进入 `/dashboard/console`。
+- README 中的环境要求、端口、启动命令和验证命令准确。
+- 敏感配置只出现在模板或环境变量说明中。
+
+### S1: 工程母版收口
+
+目标：复制本仓库可以生成一个新项目骨架。
+
+验收：
+- 明确前端、后端、文档、参考资料目录职责。
+- 提供“复制为新项目”的改名清单。
+- 提供复制改名 smoke 验证，证明自检脚本适配新项目名。
+- 前端环境变量模板、后端 `.env.example`、数据库名、端口说明一致。
+- 示例代码和模板代码边界清楚，示例可以删除或替换。
+
+### S2: AI 协作资产收口
+
+目标：Cursor Rules / Prompts 成为本项目的核心差异点。
+
+验收：
+- Rules 能覆盖 Vue、TypeScript、路由、API、Spring Boot、分层结构和错误处理。
+- Prompts 覆盖前端 API、列表页、业务组件、弹窗，以及后端 CRUD 和单端点生成。
+- `project_document/AI_ASSETS.md`、`.cursor/**/README` 和 `scripts/check-template.sh` 中的资产数量一致。
+- 教学资料能通过 `docs/teaching/04-notice-module-demo.md` 演示“用 Prompt 生成公告管理模块”的完整流程。
+
+### S3: 后续项目复用验证
+
+目标：用本脚手架支撑后续开源项目迭代。
+
+验收：
+- `agent-aigc`、`agent-customer-service`、`agent-knowledge` 的共性前端类型问题能回流到底座。
+- 新建 Infra 项目时能复用本仓库的 README 模板、环境模板和发布清单。
+- 记录哪些能力应留在底座，哪些能力应抽到独立 infra 项目。
+
+### S4: 契约与全球化基线
+
+目标：单体仍可运行，但 API、时间、上下文和 URL 已经具备未来拆分基础。
+
+验收：
+- 统一前后端 API path 管理，减少散落 URL 字符串。
+- 请求链路具备 `requestId`、`traceId`、语言和时区上下文。
+- 后端默认 UTC，可通过环境变量覆盖应用时区。
+- 前端具备统一时间工具，新增页面不直接手写日期格式化逻辑。
+- AI Rules / Prompts 纳入 URL、响应、时间和上下文契约。
+
+### S5: 分布式可观测基线
+
+目标：未来拆服务后仍能追踪一次请求从前端到后端再到远程调用的链路。
+
+验收：
+- 日志统一输出 requestId、traceId、用户、租户、路径、耗时和错误码。
+- 远程调用 wrapper 支持上下文透传、调用方身份、超时、重试和审计字段。
+- 中间件状态能区分 disabled、configured、ready、degraded。
+
+### S6: 服务边界与可选适配层
+
+目标：母版能自然裁剪出 `infra-auth`、`infra-api-gateway`、`infra-skill-hub` 等独立项目。
+
+验收：
+- 明确 auth、gateway、common、admin、business 的 API prefix 和包边界。
+- 可选中间件有 profile 示例和验证命令。
+- 下游项目验证出的通用工具回流母版，领域能力留在下游。
+
+### S7: 契约生成与共享包
+
+目标：减少手写重复契约，让 AI 和人都沿着同一套约定生成代码。
+
+验收：
+- 评估 OpenAPI / 类型生成，将后端接口契约生成前端 types 或 API client。
+- 评估抽出共享包，只放稳定工具和类型。
+- AI Prompts 生成模块时自动引用统一 URL、统一响应和统一时间工具。
+
+## 当前优先级
+
+当前阶段状态见 `project_document/STATUS.md`。
+
+1. 保持 S0 / S1 / S2 的验证链路稳定：自检、复制烟测、前端构建、后端打包。
+2. 推进 S4 契约与全球化基线：统一 URL、请求上下文、时间策略和 AI 生成约束。
+3. 用下游 Infra 项目验证 S5 / S6 的分布式、治理和服务边界设计。
+4. 将复用过程中发现的共性类型、路由、环境变量和 Prompt 契约问题回流到底座。
+
+## 成功标准
+
+当一个新项目要从本仓库出发时，开发者应该只需要完成四件事：
+
+1. 复制仓库。
+2. 修改项目名、端口、数据库名和品牌文案。
+3. 按 README 启动前后端。
+4. 用 Prompts 生成第一组业务模块。

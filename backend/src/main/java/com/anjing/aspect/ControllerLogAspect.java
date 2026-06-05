@@ -1,5 +1,6 @@
 package com.anjing.aspect;
 
+import com.anjing.context.GlobalRequestContextHolder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,7 +64,7 @@ public class ControllerLogAspect
             // 创建请求上下文
             RequestContext context = new RequestContext();
             context.setStartTime(System.currentTimeMillis());
-            context.setRequestId(generateRequestId());
+            context.setRequestId(resolveRequestId());
             context.setUrl(request.getRequestURL().toString());
             context.setMethod(request.getMethod());
             context.setIp(getClientIp(request));
@@ -198,10 +199,11 @@ public class ControllerLogAspect
     }
 
     /**
-     * 生成请求ID
+     * Resolve the request id created by RequestContextFilter.
      */
-    private String generateRequestId() {
-        return System.currentTimeMillis() + "-" + Thread.currentThread().getId();
+    private String resolveRequestId() {
+        String requestId = GlobalRequestContextHolder.requestIdOrEmpty();
+        return requestId.isEmpty() ? "unknown" : requestId;
     }
 
     /**

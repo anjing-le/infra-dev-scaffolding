@@ -1,6 +1,7 @@
 package com.anjing.example;
 
 import com.anjing.annotation.Facade;
+import com.anjing.annotation.ScaffoldSample;
 import com.anjing.model.validation.EmailAddress;
 import com.anjing.model.validation.PhoneNumber;
 import com.anjing.model.request.BaseRequest;
@@ -33,6 +34,7 @@ import jakarta.validation.constraints.*;
  * @version 1.0
  * @since 1.0.0
  */
+@ScaffoldSample("参数校验与 Facade 切面教学示例")
 @Service
 public class ValidationExampleService {
 

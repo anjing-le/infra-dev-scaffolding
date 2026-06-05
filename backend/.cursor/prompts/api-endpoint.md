@@ -21,6 +21,7 @@
 {
   "code": "0",
   "message": "操作成功",
+  "requestId": "由后端自动填充",
   "data": {
     // 描述返回的数据结构
   }
@@ -30,7 +31,12 @@
 ## 要求
 
 - 返回 `APIResponse<T>` 格式
+- API 路径优先引用或补充 `ApiConstants`
 - 添加 Javadoc 注释
 - 参数使用 Jakarta Validation 校验
 - 异常使用 BizException 抛出
-- 添加日志记录
+- 添加必要业务日志；不要手动生成 requestId/traceId
+- 需要读取请求上下文时使用 `GlobalRequestContextHolder.current()`
+- 时间处理使用 UTC 默认策略和 `DateUtils`
+- 真实业务端点不要放进 `TestController` 或 `com.anjing.example`
+- 真实业务代码不要添加 `@ScaffoldSample`

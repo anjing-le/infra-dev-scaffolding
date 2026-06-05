@@ -61,7 +61,7 @@ public class Application
         // 获取环境配置
         Environment env = applicationContext.getEnvironment();
         String ip = InetAddress.getLocalHost().getHostAddress();
-        String applicationName = env.getProperty("spring.application.name", "agent-dev-scaffolding");
+        String applicationName = env.getProperty("spring.application.name", "infra-dev-scaffolding");
         String port = env.getProperty("server.port", "8080");
         String contextPath = env.getProperty("server.servlet.context-path", "");
         String profile = String.join(",", env.getActiveProfiles());
@@ -82,7 +82,7 @@ public class Application
                 "🌐  外部访问地址:     http://{}:{}{}\n" +
                 "📚  Swagger文档:     http://{}:{}{}/swagger-ui/index.html\n" +
                 "📋  OpenAPI文档:     http://{}:{}{}/v3/api-docs\n" +
-                "💾  Druid监控:       http://{}:{}{}/druid/index.html (admin/admin123)\n" +
+                "💾  Druid监控:       http://{}:{}{}/druid/index.html\n" +
                 "🔧  运行环境:         {}\n" +
                 "⏱️  启动耗时:         {} 秒\n" +
                 "🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉",

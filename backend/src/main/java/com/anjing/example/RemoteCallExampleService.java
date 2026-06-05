@@ -1,5 +1,6 @@
 package com.anjing.example;
 
+import com.anjing.annotation.ScaffoldSample;
 import com.anjing.model.request.BaseRequest;
 import com.anjing.model.response.APIResponse;
 import com.anjing.util.RemoteCallWrapper;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
  * @version 1.0
  * @since 1.0.0
  */
+@ScaffoldSample("远程调用包装工具教学示例")
 @Service
 @Slf4j
 public class RemoteCallExampleService {
