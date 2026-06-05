@@ -3,6 +3,7 @@ package com.anjing.config.http;
 import com.anjing.context.GlobalRequestContextHolder;
 import com.anjing.model.constants.RequestHeaderConstants;
 import com.anjing.model.request.GlobalRequestContext;
+import com.anjing.util.LocaleUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -54,6 +55,7 @@ public class RequestContextFilter extends OncePerRequestFilter {
         );
         String traceId = firstNonBlank(request.getHeader(RequestHeaderConstants.TRACE_ID), requestId);
         String timeZone = normalizeTimeZone(request.getHeader(RequestHeaderConstants.TIME_ZONE));
+        String locale = LocaleUtils.normalizeAcceptLanguage(request.getHeader(RequestHeaderConstants.ACCEPT_LANGUAGE));
 
         return GlobalRequestContext.builder()
                 .requestId(requestId)
@@ -63,7 +65,7 @@ public class RequestContextFilter extends OncePerRequestFilter {
                 .userName(blankToNull(request.getHeader(RequestHeaderConstants.USER_NAME)))
                 .userRoles(blankToNull(request.getHeader(RequestHeaderConstants.USER_ROLES)))
                 .callerId(blankToNull(request.getHeader(RequestHeaderConstants.CALLER_ID)))
-                .locale(blankToNull(request.getHeader(RequestHeaderConstants.ACCEPT_LANGUAGE)))
+                .locale(locale)
                 .timeZone(timeZone)
                 .ip(resolveClientIp(request))
                 .url(request.getRequestURI())

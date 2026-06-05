@@ -52,6 +52,15 @@ public final class PlatformContractConstants {
         }
     }
 
+    public static final class Locale {
+        public static final String DEFAULT_LOCALE = "zh-CN";
+        public static final String[] SUPPORTED_LOCALES = { "zh-CN", "en-US" };
+        public static final String CLIENT_LOCALE_HEADER = Headers.ACCEPT_LANGUAGE;
+
+        private Locale() {
+        }
+    }
+
     public static final class ErrorCodes {
         public static final String[] RANGES = { "0", "1000-1499", "1500-1599", "1600-1899", "1900-1999", "2000-2099", "2100-2399", "2400-2999", "3000-3999", "4000-4099", "4100-4999", "5000-7999", "8000-8999", "9000-9999" };
         public static final String[] RETRYABLE_RANGES = { "1800-1899" };

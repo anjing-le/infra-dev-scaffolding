@@ -12,6 +12,7 @@
 - 分页 payload：`records`、`current`、`size`、`total`
 - 请求上下文头：requestId、traceId、tenant、user、caller、timezone、language
 - 时间策略：默认 UTC，前端透传 `X-Time-Zone` 和 `Accept-Language`
+- 语言策略：默认 `zh-CN`，支持语言由 `locale.supportedLocales` 统一声明
 - 错误码分段和默认可重试远程错误范围
 
 它不描述具体业务接口。具体接口仍由 Controller、DTO/VO、`ApiConstants`、`ApiPaths` 和未来 OpenAPI 生成链路承载。
@@ -29,6 +30,8 @@
 - `PlatformContractConstants.Response.SUCCESS_CODE`
 - `PlatformContractConstants.Headers.*`
 - `PlatformContractConstants.Time.DEFAULT_TIME_ZONE`
+- `PlatformContractConstants.Locale.DEFAULT_LOCALE`
+- `PlatformContractConstants.Locale.SUPPORTED_LOCALES`
 - `PlatformContractConstants.ErrorCodes.RANGES`
 - `PlatformContractConstants.ErrorCodes.RETRYABLE_RANGES`
 
@@ -39,12 +42,15 @@
 - `REQUEST_HEADERS`
 - `FRONTEND_PROPAGATED_HEADER_KEYS`
 - `DEFAULT_TIME_ZONE`
+- `DEFAULT_LOCALE`
+- `SUPPORTED_LOCALES`
+- `PlatformSupportedLocale`
 
-`ApiConstants`、`RequestHeaderConstants`、`APIResponse`、`frontend/src/utils/http/context.ts`、`frontend/src/utils/http/response.ts`、`frontend/src/utils/time/index.ts` 应引用生成文件，不要重复手写 API 前缀、请求头、前端透传头列表、成功码或默认时区。
+`ApiConstants`、`RequestHeaderConstants`、`APIResponse`、`LocaleUtils`、`frontend/src/utils/http/context.ts`、`frontend/src/utils/http/response.ts`、`frontend/src/utils/time/index.ts` 应引用生成文件，不要重复手写 API 前缀、请求头、前端透传头列表、成功码、默认时区或支持语言。
 
 ## Update Rules
 
-- 修改响应字段、分页字段、请求头或错误码分段时，先更新 `contracts/platform-contract.json`。
+- 修改响应字段、分页字段、请求头、语言策略或错误码分段时，先更新 `contracts/platform-contract.json`。
 - 运行 `node scripts/generate-platform-contract-backend.js` 更新后端生成常量。
 - 运行 `node scripts/generate-platform-contract-frontend.js` 更新前端生成常量。
 - 同步更新 Java/TypeScript 代码、文档和 Cursor Rules / Prompts。
@@ -74,6 +80,10 @@ node scripts/check-error-codes.js
 
 ```bash
 node scripts/generate-platform-contract-frontend.js --check
+```
+
+```bash
+(cd backend && mvn -q -Dtest=LocaleUtilsTest test)
 ```
 
 完整检查链路会通过 `./scripts/check-contracts.sh` 间接运行该脚本。

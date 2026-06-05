@@ -37,7 +37,70 @@ function generateContent(contract) {
     .join('\n')
   const errorRanges = contract.errorCodeRanges.map((item) => item.range)
 
-  return `package com.anjing.model.constants;\n\n/**\n * Generated from contracts/platform-contract.json. Do not edit manually.\n * Run: node scripts/generate-platform-contract-backend.js\n */\npublic final class PlatformContractConstants {\n\n    public static final int SCHEMA_VERSION = ${contract.schemaVersion};\n    public static final String API_PREFIX = ${javaString(contract.apiPrefix)};\n\n    private PlatformContractConstants() {\n    }\n\n    public static final class Response {\n        public static final String SUCCESS_CODE = ${javaString(contract.responseEnvelope.successCode)};\n        public static final String[] FIELDS = ${javaArray(contract.responseEnvelope.fields)};\n\n        private Response() {\n        }\n    }\n\n    public static final class Pagination {\n        public static final String[] FIELDS = ${javaArray(contract.pagination.fields)};\n        public static final int FIRST_PAGE = ${contract.pagination.firstPage};\n\n        private Pagination() {\n        }\n    }\n\n    public static final class Headers {\n${headers}\n\n        private Headers() {\n        }\n    }\n\n    public static final class Time {\n        public static final String DEFAULT_TIME_ZONE = ${javaString(contract.time.defaultTimeZone)};\n        public static final String CLIENT_TIME_ZONE_HEADER = Headers.TIME_ZONE;\n        public static final String LOCALE_HEADER = Headers.ACCEPT_LANGUAGE;\n\n        private Time() {\n        }\n    }\n\n    public static final class ErrorCodes {\n        public static final String[] RANGES = ${javaArray(errorRanges)};\n        public static final String[] RETRYABLE_RANGES = ${javaArray(contract.retryableErrorCodeRanges)};\n\n        private ErrorCodes() {\n        }\n    }\n}\n`
+  return `package com.anjing.model.constants;
+
+/**
+ * Generated from contracts/platform-contract.json. Do not edit manually.
+ * Run: node scripts/generate-platform-contract-backend.js
+ */
+public final class PlatformContractConstants {
+
+    public static final int SCHEMA_VERSION = ${contract.schemaVersion};
+    public static final String API_PREFIX = ${javaString(contract.apiPrefix)};
+
+    private PlatformContractConstants() {
+    }
+
+    public static final class Response {
+        public static final String SUCCESS_CODE = ${javaString(contract.responseEnvelope.successCode)};
+        public static final String[] FIELDS = ${javaArray(contract.responseEnvelope.fields)};
+
+        private Response() {
+        }
+    }
+
+    public static final class Pagination {
+        public static final String[] FIELDS = ${javaArray(contract.pagination.fields)};
+        public static final int FIRST_PAGE = ${contract.pagination.firstPage};
+
+        private Pagination() {
+        }
+    }
+
+    public static final class Headers {
+${headers}
+
+        private Headers() {
+        }
+    }
+
+    public static final class Time {
+        public static final String DEFAULT_TIME_ZONE = ${javaString(contract.time.defaultTimeZone)};
+        public static final String CLIENT_TIME_ZONE_HEADER = Headers.TIME_ZONE;
+        public static final String LOCALE_HEADER = Headers.ACCEPT_LANGUAGE;
+
+        private Time() {
+        }
+    }
+
+    public static final class Locale {
+        public static final String DEFAULT_LOCALE = ${javaString(contract.locale.defaultLocale)};
+        public static final String[] SUPPORTED_LOCALES = ${javaArray(contract.locale.supportedLocales)};
+        public static final String CLIENT_LOCALE_HEADER = Headers.ACCEPT_LANGUAGE;
+
+        private Locale() {
+        }
+    }
+
+    public static final class ErrorCodes {
+        public static final String[] RANGES = ${javaArray(errorRanges)};
+        public static final String[] RETRYABLE_RANGES = ${javaArray(contract.retryableErrorCodeRanges)};
+
+        private ErrorCodes() {
+        }
+    }
+}
+`
 }
 
 if (!fs.existsSync(contractPath)) {

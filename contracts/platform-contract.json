@@ -27,6 +27,11 @@
     "clientTimeZoneHeader": "X-Time-Zone",
     "localeHeader": "Accept-Language"
   },
+  "locale": {
+    "defaultLocale": "zh-CN",
+    "supportedLocales": ["zh-CN", "en-US"],
+    "clientLocaleHeader": "Accept-Language"
+  },
   "errorCodeRanges": [
     { "range": "0", "name": "success" },
     { "range": "1000-1499", "name": "system" },

@@ -1,8 +1,11 @@
 import { LanguageEnum } from '@/enums/appEnum'
 import {
+  DEFAULT_LOCALE,
   FRONTEND_PROPAGATED_HEADER_KEYS,
   REQUEST_HEADERS,
-  type PlatformFrontendPropagatedHeaderKey
+  SUPPORTED_LOCALES,
+  type PlatformFrontendPropagatedHeaderKey,
+  type PlatformSupportedLocale
 } from '@/contracts/platform-contract'
 import { getClientTimeZone } from '@/utils/time'
 
@@ -20,9 +23,20 @@ export interface FrontendRequestContext
   acceptLanguage: string
 }
 
-const LANGUAGE_TAGS: Record<LanguageEnum, string> = {
+const LANGUAGE_TAGS: Record<LanguageEnum, PlatformSupportedLocale> = {
   [LanguageEnum.ZH]: 'zh-CN',
   [LanguageEnum.EN]: 'en-US'
+}
+
+const isSupportedLocale = (locale: string): locale is PlatformSupportedLocale =>
+  (SUPPORTED_LOCALES as readonly string[]).includes(locale)
+
+const matchSupportedLocale = (locale?: string): PlatformSupportedLocale => {
+  if (!locale) return DEFAULT_LOCALE
+  if (isSupportedLocale(locale)) return locale
+
+  const language = locale.split('-')[0]
+  return SUPPORTED_LOCALES.find((supported) => supported.split('-')[0] === language) || DEFAULT_LOCALE
 }
 
 const SESSION_TRACE_ID_KEY = 'anjing-trace-id'
@@ -72,7 +86,7 @@ export const resetTraceId = (): string => {
 
 export const getLanguageTag = (language?: LanguageEnum): string => {
   if (language && LANGUAGE_TAGS[language]) return LANGUAGE_TAGS[language]
-  return navigator.language || LANGUAGE_TAGS[LanguageEnum.ZH]
+  return matchSupportedLocale(globalThis.navigator?.language)
 }
 
 export const buildRequestContext = (language?: LanguageEnum): FrontendRequestContext => ({

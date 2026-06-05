@@ -17,6 +17,7 @@ const files = {
   frontendResponseTypes: 'frontend/src/types/common/response.ts',
   frontendApiTypes: 'frontend/src/types/api/api.d.ts',
   frontendTime: 'frontend/src/utils/time/index.ts',
+  localeUtils: 'backend/src/main/java/com/anjing/util/LocaleUtils.java',
   errorGuide: 'project_document/ERROR_CODE_GUIDE.md',
   apiContractGuide: 'project_document/API_CONTRACT_GUIDE.md'
 }
@@ -124,6 +125,40 @@ requireToken(files.frontendPlatform, `"localeHeader": "${contract.time.localeHea
 requireToken(files.frontendContext, 'timeZone: getClientTimeZone()')
 requireToken(files.frontendContext, 'acceptLanguage: getLanguageTag(language)')
 requireToken(files.apiResponse, contract.time.serverCurrentTimeSource)
+
+const locale = contract.locale || {}
+const supportedLocales = locale.supportedLocales || []
+if (!locale.defaultLocale) {
+  fail('locale.defaultLocale must be defined')
+}
+if (!supportedLocales.length) {
+  fail('locale.supportedLocales must not be empty')
+}
+if (!supportedLocales.includes(locale.defaultLocale)) {
+  fail('locale.supportedLocales must include locale.defaultLocale')
+}
+if (locale.clientLocaleHeader !== requestHeaders.acceptLanguage) {
+  fail('locale.clientLocaleHeader must match requestHeaders.acceptLanguage')
+}
+
+requireToken(files.backendPlatform, `DEFAULT_LOCALE = "${locale.defaultLocale}"`)
+requireToken(files.backendPlatform, 'SUPPORTED_LOCALES')
+requireToken(files.backendPlatform, 'CLIENT_LOCALE_HEADER = Headers.ACCEPT_LANGUAGE')
+requireToken(files.frontendPlatform, `"defaultLocale": "${locale.defaultLocale}"`)
+requireToken(files.frontendPlatform, `"clientLocaleHeader": "${locale.clientLocaleHeader}"`)
+requireToken(files.frontendPlatform, 'DEFAULT_LOCALE = PLATFORM_CONTRACT.locale.defaultLocale')
+requireToken(files.frontendPlatform, 'SUPPORTED_LOCALES = PLATFORM_CONTRACT.locale.supportedLocales')
+requireToken(files.frontendPlatform, 'PlatformSupportedLocale')
+requireToken(files.frontendContext, 'DEFAULT_LOCALE')
+requireToken(files.frontendContext, 'SUPPORTED_LOCALES')
+requireToken(files.frontendContext, 'matchSupportedLocale')
+requireToken(files.localeUtils, 'PlatformContractConstants.Locale.DEFAULT_LOCALE')
+requireToken(files.localeUtils, 'PlatformContractConstants.Locale.SUPPORTED_LOCALES')
+requireToken(files.localeUtils, 'normalizeAcceptLanguage')
+for (const supportedLocale of supportedLocales) {
+  requireToken(files.backendPlatform, `"${supportedLocale}"`)
+  requireToken(files.frontendPlatform, `"${supportedLocale}"`)
+}
 
 for (const item of contract.errorCodeRanges || []) {
   requireToken(files.backendPlatform, `"${item.range}"`)

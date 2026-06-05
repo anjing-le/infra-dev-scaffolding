@@ -47,6 +47,14 @@ export const PLATFORM_CONTRACT = {
     "clientTimeZoneHeader": "X-Time-Zone",
     "localeHeader": "Accept-Language"
   },
+  "locale": {
+    "defaultLocale": "zh-CN",
+    "supportedLocales": [
+      "zh-CN",
+      "en-US"
+    ],
+    "clientLocaleHeader": "Accept-Language"
+  },
   "errorCodeRanges": [
     {
       "range": "0",
@@ -114,7 +122,10 @@ export const API_SUCCESS_CODE = PLATFORM_CONTRACT.responseEnvelope.successCode
 export const REQUEST_HEADERS = PLATFORM_CONTRACT.requestHeaders
 export const FRONTEND_PROPAGATED_HEADER_KEYS = PLATFORM_CONTRACT.frontendPropagatedHeaders
 export const DEFAULT_TIME_ZONE = PLATFORM_CONTRACT.time.defaultTimeZone
+export const DEFAULT_LOCALE = PLATFORM_CONTRACT.locale.defaultLocale
+export const SUPPORTED_LOCALES = PLATFORM_CONTRACT.locale.supportedLocales
 
 export type PlatformContract = typeof PLATFORM_CONTRACT
 export type PlatformRequestHeaderKey = keyof typeof REQUEST_HEADERS
 export type PlatformFrontendPropagatedHeaderKey = (typeof FRONTEND_PROPAGATED_HEADER_KEYS)[number]
+export type PlatformSupportedLocale = (typeof SUPPORTED_LOCALES)[number]

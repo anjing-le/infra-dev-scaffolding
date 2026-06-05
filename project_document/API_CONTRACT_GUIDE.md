@@ -69,6 +69,7 @@ PageResult.of(page.getContent(), page.getTotalElements(), page.getNumber() + 1, 
 - `requestId` 每次请求重新生成，用于精确定位一次 HTTP 调用。
 - `traceId` 在当前浏览器会话内复用，用于把页面内连续请求和后端服务间调用串起来。
 - `X-Time-Zone` 来自统一时间工具，`Accept-Language` 来自用户语言或浏览器语言。
+- 平台语言从 `contracts/platform-contract.json` 的 `locale.defaultLocale` 和 `locale.supportedLocales` 派生；前端只发送支持语言，后端通过 `LocaleUtils.normalizeAcceptLanguage` 归一化，无法匹配时回落到默认语言。
 - 页面、组件和 API 模块不要手写平台上下文请求头；Axios 拦截器和非 Axios 适配层需要复用 `buildRequestContextHeaders`。
 - 前端 `HttpError` 必须从响应体、响应头或请求头提取 `requestId` / `traceId`，业务错误码、HTTP 状态错误、网络错误和 401 分支都不能丢失链路上下文。
 
@@ -112,6 +113,10 @@ node scripts/check-frontend-time-contract.js
 
 ```bash
 node scripts/check-frontend-context-contract.js
+```
+
+```bash
+(cd backend && mvn -q -Dtest=LocaleUtilsTest test)
 ```
 
 该脚本会检查 API path、response envelope、分页字段、请求上下文、远程调用、时间工具和 OpenAPI 的关键契约是否仍然集中管理。

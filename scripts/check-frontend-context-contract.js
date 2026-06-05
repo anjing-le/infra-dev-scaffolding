@@ -17,6 +17,9 @@ const requiredContextTokens = [
   'export const buildRequestContext',
   'export const buildRequestContextHeaders',
   'FRONTEND_PROPAGATED_HEADER_KEYS',
+  'DEFAULT_LOCALE',
+  'SUPPORTED_LOCALES',
+  'matchSupportedLocale',
   'REQUEST_HEADERS[key]',
   'requestId: createRequestId()',
   'traceId: getOrCreateTraceId()',
@@ -122,6 +125,11 @@ for (const token of requiredHttpTokens) {
 const platformSource = read('frontend/src/contracts/platform-contract.ts')
 if (!platformSource.includes('FRONTEND_PROPAGATED_HEADER_KEYS')) {
   fail('frontend/src/contracts/platform-contract.ts is missing FRONTEND_PROPAGATED_HEADER_KEYS')
+}
+for (const token of ['DEFAULT_LOCALE', 'SUPPORTED_LOCALES', 'PlatformSupportedLocale']) {
+  if (!platformSource.includes(token)) {
+    fail(`frontend/src/contracts/platform-contract.ts is missing ${token}`)
+  }
 }
 
 const checkedExtensions = new Set(['.ts', '.tsx', '.vue'])

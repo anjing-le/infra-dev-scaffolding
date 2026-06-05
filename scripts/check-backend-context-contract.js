@@ -12,6 +12,7 @@ const files = {
   aspect: 'backend/src/main/java/com/anjing/aspect/ControllerLogAspect.java',
   logback: 'backend/src/main/resources/logback-spring.xml',
   remoteWrapper: 'backend/src/main/java/com/anjing/util/RemoteCallWrapper.java',
+  localeUtils: 'backend/src/main/java/com/anjing/util/LocaleUtils.java',
   apiResponse: 'backend/src/main/java/com/anjing/model/response/APIResponse.java',
   status: 'project_document/STATUS.md',
   roadmap: 'project_document/ROADMAP.md',
@@ -59,6 +60,7 @@ for (const token of [
   'response.setHeader(RequestHeaderConstants.REQUEST_ID',
   'response.setHeader(RequestHeaderConstants.TRACE_ID',
   'RequestHeaderConstants.ACCEPT_LANGUAGE',
+  'LocaleUtils.normalizeAcceptLanguage',
   'RequestHeaderConstants.TIME_ZONE',
   'normalizeTimeZone',
   'MDC_REQUEST_ID = "requestId"',
@@ -93,6 +95,16 @@ for (const token of [
   'timeZoneOrEmpty'
 ]) {
   requireToken(files.holder, token)
+}
+
+for (const token of [
+  'PlatformContractConstants.Locale.DEFAULT_LOCALE',
+  'PlatformContractConstants.Locale.SUPPORTED_LOCALES',
+  'normalizeAcceptLanguage',
+  'Locale.lookup',
+  'return DEFAULT_LOCALE'
+]) {
+  requireToken(files.localeUtils, token)
 }
 
 for (const token of [
