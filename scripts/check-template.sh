@@ -47,6 +47,7 @@ require_file scripts/check-platform-contract.js
 require_file scripts/check-error-codes.js
 require_file scripts/check-openapi-contract.js
 require_file scripts/check-openapi-runtime-contract.js
+require_file scripts/generate-openapi-frontend-types.js
 require_file scripts/check-service-boundaries.js
 require_file scripts/check-shared-kernel.js
 require_file scripts/check-remote-http-contract.js
@@ -63,6 +64,7 @@ require_file frontend/LICENSE
 require_file frontend/.env
 require_file frontend/.env.development
 require_file frontend/.env.production
+require_file frontend/src/contracts/openapi/schemas.ts
 require_file frontend/src/contracts/service-boundaries.ts
 
 status_doc='project_document/STATUS.md'

@@ -1,6 +1,6 @@
 # OpenAPI Contract Guide
 
-OpenAPI 是后端运行接口给前端、AI Prompts、网关和未来服务调用方看的机器可读契约。母版先提供轻量 JSON 文档入口，不默认引入 Swagger UI；后续可以基于该入口接入前端类型或 API client 生成。
+OpenAPI 是后端运行接口给前端、AI Prompts、网关和未来服务调用方看的机器可读契约。母版提供轻量 JSON 文档入口，不默认引入 Swagger UI；并已基于该入口生成前端 schema 类型，后续可以继续扩展为完整 API client 生成。
 
 服务/模块归属由 `contracts/service-boundaries.json` 记录。OpenAPI 负责描述运行接口细节，service boundary 负责描述这些接口当前由谁承载、未来可能迁到哪个服务。
 
@@ -39,14 +39,23 @@ OPENAPI_API_DOCS_ENABLED=true
 - 教学接口可以保留 Map 演示，但真实业务 Controller 不应复制这种写法。
 - 需要让 OpenAPI 更清晰时，可在 Request / Response 模型上补充 `@Schema`。
 
-## Frontend Direction
+## Frontend Types
 
-当前前端仍保留手写类型，例如：
+运行 OpenAPI JSON 可生成到：
 
-- `frontend/src/api/model/authModel.ts`
-- `frontend/src/types/api/api.d.ts`
+```bash
+node scripts/generate-openapi-frontend-types.js /path/to/openapi.json
+```
 
-后续接入类型生成时，建议从 `/v3/api-docs` 生成到独立目录，例如 `frontend/src/contracts/openapi/`，再由 `src/api/**` 显式引用。不要让页面直接依赖生成目录，避免生成格式变化影响业务页面。
+生成产物：
+
+```text
+frontend/src/contracts/openapi/schemas.ts
+```
+
+`src/api/model/**` 可以从该目录派生请求/响应类型。页面不要直接依赖生成目录，避免生成格式变化影响业务页面；API model 层负责做必要的前端兼容字段和命名适配。
+
+当前 `frontend/src/api/model/authModel.ts` 已从 `LoginRequest`、`AuthTokenResponse`、`CurrentUserResponse` 和 `RefreshTokenRequest` 派生登录相关类型。完整 API client 生成仍作为后续 S7 任务推进。
 
 ## Verification
 
@@ -56,7 +65,13 @@ OPENAPI_API_DOCS_ENABLED=true
 node scripts/check-openapi-contract.js
 ```
 
-开发环境运行检查会通过 `./scripts/probe-backend-dev.sh` 拉取 `/v3/api-docs`，确认 OpenAPI JSON、运行路径和平台请求头可用。
+生成类型静态检查：
+
+```bash
+node scripts/generate-openapi-frontend-types.js /path/to/openapi.json --check
+```
+
+开发环境运行检查会通过 `./scripts/probe-backend-dev.sh` 拉取 `/v3/api-docs`，确认 OpenAPI JSON、运行路径、平台请求头和前端生成 schema 类型可用。
 
 动态契约检查：
 
@@ -64,7 +79,7 @@ node scripts/check-openapi-contract.js
 node scripts/check-openapi-runtime-contract.js /path/to/openapi.json
 ```
 
-该脚本读取 `contracts/service-boundaries.json` 和 `contracts/platform-contract.json`，校验所有 `openapi=true` 的 route/method 都出现在 OpenAPI 中，并校验每个 operation 都包含平台请求头。`./scripts/probe-backend-dev.sh` 会自动调用它。
+该脚本读取 `contracts/service-boundaries.json` 和 `contracts/platform-contract.json`，校验所有 `openapi=true` 的 route/method 都出现在 OpenAPI 中，并校验每个 operation 都包含平台请求头。`./scripts/probe-backend-dev.sh` 会自动调用它，并同步调用 `generate-openapi-frontend-types.js --check` 防止前端生成 schema 过期。
 
 完整母版检查：
 

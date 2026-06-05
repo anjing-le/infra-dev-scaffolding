@@ -13,6 +13,7 @@ const files = {
   applicationClass: 'backend/src/main/java/com/anjing/Application.java',
   config: 'backend/src/main/java/com/anjing/config/openapi/OpenApiConfig.java',
   runtimeCheck: 'scripts/check-openapi-runtime-contract.js',
+  frontendTypesGenerator: 'scripts/generate-openapi-frontend-types.js',
   backendProbe: 'scripts/probe-backend-dev.sh',
   authController: 'backend/src/main/java/com/anjing/controller/AuthController.java',
   testController: 'backend/src/main/java/com/anjing/controller/TestController.java',
@@ -20,6 +21,7 @@ const files = {
   refreshRequest: 'backend/src/main/java/com/anjing/model/request/RefreshTokenRequest.java',
   tokenResponse: 'backend/src/main/java/com/anjing/model/response/AuthTokenResponse.java',
   currentUserResponse: 'backend/src/main/java/com/anjing/model/response/CurrentUserResponse.java',
+  frontendGeneratedSchemas: 'frontend/src/contracts/openapi/schemas.ts',
   frontendAuthModel: 'frontend/src/api/model/authModel.ts',
   frontendAuthApi: 'frontend/src/api/auth.ts',
   guide: 'project_document/OPENAPI_CONTRACT_GUIDE.md',
@@ -100,6 +102,16 @@ for (const token of [
 }
 
 requireToken(files.backendProbe, 'check-openapi-runtime-contract.js')
+requireToken(files.backendProbe, 'generate-openapi-frontend-types.js')
+
+for (const token of [
+  'components?.schemas',
+  'function schemaType',
+  'OpenApiSchemas',
+  'generate-openapi-frontend-types: ok'
+]) {
+  requireToken(files.frontendTypesGenerator, token)
+}
 
 for (const token of [
   '@Tag(name = "Auth"',
@@ -121,11 +133,23 @@ requireToken(files.tokenResponse, '@Schema(description = "Authentication token p
 requireToken(files.currentUserResponse, '@Schema(description = "Current authenticated user payload")')
 
 for (const token of [
-  'captcha?: string',
-  'rememberMe?: boolean',
+  'export interface LoginRequest',
+  'username: string',
+  'export interface AuthTokenResponse',
   'accessToken: string',
-  'refreshToken: string',
-  'RefreshTokenParams'
+  'export interface CurrentUserResponse',
+  'roles: string[]',
+  'export interface OpenApiSchemas'
+]) {
+  requireToken(files.frontendGeneratedSchemas, token)
+}
+
+for (const token of [
+  "from '@/contracts/openapi/schemas'",
+  'export type LoginParams = LoginRequest',
+  'export type LoginResponse = AuthTokenResponse',
+  'export type UserInfo = CurrentUserResponse',
+  'export type RefreshTokenParams = RefreshTokenRequest'
 ]) {
   requireToken(files.frontendAuthModel, token)
 }
@@ -139,6 +163,7 @@ for (const token of [
   'OPENAPI_API_DOCS_ENABLED',
   'node scripts/check-openapi-contract.js',
   'node scripts/check-openapi-runtime-contract.js',
+  'node scripts/generate-openapi-frontend-types.js',
   './scripts/probe-backend-dev.sh'
 ]) {
   requireToken(files.guide, token)

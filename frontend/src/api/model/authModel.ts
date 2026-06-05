@@ -4,37 +4,25 @@
  * @module api/model/authModel
  */
 
+import type {
+  AuthTokenResponse,
+  CurrentUserResponse,
+  LoginRequest,
+  RefreshTokenRequest
+} from '@/contracts/openapi/schemas'
+
 /** 登录参数 */
-export interface LoginParams {
-  username: string
-  password: string
-  captcha?: string
-  rememberMe?: boolean
-}
+export type LoginParams = LoginRequest
 
 /** 登录响应（兼容后端 accessToken/refreshToken 字段） */
-export interface LoginResponse {
+export type LoginResponse = AuthTokenResponse & {
   token?: string
-  accessToken: string
-  refreshToken: string
-  tokenType: string
-  expiresIn: number
 }
 
 /** 用户信息 */
-export interface UserInfo {
+export type UserInfo = CurrentUserResponse & {
   buttons?: string[]
-  permissions?: string[]
-  roles: string[]
-  userId: number
-  userName: string
-  nickName?: string
-  email?: string
-  avatar?: string
-  createTime?: string
 }
 
 /** 刷新 Token 参数 */
-export interface RefreshTokenParams {
-  refreshToken: string
-}
+export type RefreshTokenParams = RefreshTokenRequest

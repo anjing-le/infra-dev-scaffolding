@@ -11,7 +11,7 @@
 - [COPY_GUIDE.md](./COPY_GUIDE.md)：复制为新项目时的改名和验证步骤。
 - [TEMPLATE_BOUNDARIES.md](./TEMPLATE_BOUNDARIES.md)：母版能力、示例能力和旧残留边界。
 - [PLATFORM_CONTRACT_GUIDE.md](./PLATFORM_CONTRACT_GUIDE.md)：机器可读平台契约 manifest 的范围和维护方式。
-- [OPENAPI_CONTRACT_GUIDE.md](./OPENAPI_CONTRACT_GUIDE.md)：OpenAPI 运行接口契约、生产开关和后续前端类型生成方向。
+- [OPENAPI_CONTRACT_GUIDE.md](./OPENAPI_CONTRACT_GUIDE.md)：OpenAPI 运行接口契约、生产开关和前端 schema 类型生成链路。
 - [SERVICE_BOUNDARY_GUIDE.md](./SERVICE_BOUNDARY_GUIDE.md)：服务/模块边界、API 归属和未来微服务拆分方式。
 - [SHARED_KERNEL_GUIDE.md](./SHARED_KERNEL_GUIDE.md)：未来共享包可抽取类和运行时依赖边界。
 - [AI_ASSETS.md](./AI_ASSETS.md)：Cursor Rules / Prompts 的资产清单和维护规则。

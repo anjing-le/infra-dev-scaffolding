@@ -95,6 +95,7 @@ assert(schemas.AuthTokenResponse, 'OpenAPI must include AuthTokenResponse schema
 assert(schemas.CurrentUserResponse, 'OpenAPI must include CurrentUserResponse schema')
 NODE
     node "$ROOT/scripts/check-openapi-runtime-contract.js" "$OPENAPI_FILE"
+    node "$ROOT/scripts/generate-openapi-frontend-types.js" "$OPENAPI_FILE" --check
     echo "probe-backend-dev: ok"
     echo "probe-backend-dev: health=$HEALTH_FILE"
     echo "probe-backend-dev: features=$FEATURES_FILE"
