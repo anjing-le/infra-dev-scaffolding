@@ -103,13 +103,16 @@ for (const field of paginationFields) {
 }
 
 const requestHeaders = contract.requestHeaders || {}
+requireToken(files.frontendPlatform, 'FRONTEND_PROPAGATED_HEADER_KEYS = PLATFORM_CONTRACT.frontendPropagatedHeaders')
 for (const [key, value] of Object.entries(requestHeaders)) {
   requireToken(files.backendPlatform, `"${value}"`)
   requireToken(files.requestHeaders, `PlatformContractConstants.Headers.${key.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toUpperCase()}`)
   requireToken(files.frontendPlatform, `"${key}": "${value}"`)
 
   if (contract.frontendPropagatedHeaders?.includes(key)) {
-    requireToken(files.frontendContext, `REQUEST_HEADERS.${key}`)
+    requireToken(files.frontendContext, 'FRONTEND_PROPAGATED_HEADER_KEYS')
+    requireToken(files.frontendContext, 'REQUEST_HEADERS[key]')
+    requireToken(files.frontendContext, `${key}:`)
   }
 }
 
@@ -118,8 +121,8 @@ requireToken(files.backendPlatform, `DEFAULT_TIME_ZONE = "${contract.time.defaul
 requireToken(files.frontendTime, "import { DEFAULT_TIME_ZONE }")
 requireToken(files.frontendPlatform, `"clientTimeZoneHeader": "${contract.time.clientTimeZoneHeader}"`)
 requireToken(files.frontendPlatform, `"localeHeader": "${contract.time.localeHeader}"`)
-requireToken(files.frontendContext, 'REQUEST_HEADERS.timeZone')
-requireToken(files.frontendContext, 'REQUEST_HEADERS.acceptLanguage')
+requireToken(files.frontendContext, 'timeZone: getClientTimeZone()')
+requireToken(files.frontendContext, 'acceptLanguage: getLanguageTag(language)')
 requireToken(files.apiResponse, contract.time.serverCurrentTimeSource)
 
 for (const item of contract.errorCodeRanges || []) {

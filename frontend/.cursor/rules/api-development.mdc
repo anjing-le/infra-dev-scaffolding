@@ -340,7 +340,9 @@ export function fetchGetUserWithTimeout(id: number) {
 ### 请求上下文
 
 - `request` 拦截器会统一添加 `X-Request-Id`、`X-Trace-Id`、`X-Time-Zone` 和 `Accept-Language`。
+- `requestId` 每次请求生成，`traceId` 在当前浏览器会话内复用，统一由 `@/utils/http/context` 维护。
 - 业务 API 函数不要手动添加这些上下文请求头，避免覆盖统一链路。
+- 非 Axios 适配层需要上下文头时，复用 `buildRequestContextHeaders`。
 - 需要排查问题时，优先记录响应体或响应头中的 `requestId`。
 
 ### 时间字段

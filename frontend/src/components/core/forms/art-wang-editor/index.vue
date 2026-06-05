@@ -25,6 +25,7 @@
   import EmojiText from '@/utils/ui/emojo'
   import { IDomEditor, IToolbarConfig, IEditorConfig } from '@wangeditor/editor'
   import { ApiPaths, resolveApiPath } from '@/api/paths'
+  import { buildRequestContextHeaders } from '@/utils/http/context'
 
   defineOptions({ name: 'ArtWangEditor' })
 
@@ -82,6 +83,11 @@
     ...props.uploadConfig
   }))
 
+  const buildUploadHeaders = () => ({
+    ...buildRequestContextHeaders(userStore.language),
+    ...(userStore.accessToken ? { Authorization: userStore.accessToken } : {})
+  })
+
   // 工具栏配置
   const toolbarConfig = computed((): Partial<IToolbarConfig> => {
     const config: Partial<IToolbarConfig> = {}
@@ -114,9 +120,7 @@
         maxNumberOfFiles: mergedUploadConfig.value.maxNumberOfFiles,
         allowedFileTypes: mergedUploadConfig.value.allowedFileTypes,
         server: uploadServer.value,
-        headers: {
-          Authorization: userStore.accessToken
-        },
+        headers: buildUploadHeaders,
         onSuccess() {
           ElMessage.success(`图片上传成功 ${EmojiText[200]}`)
         },

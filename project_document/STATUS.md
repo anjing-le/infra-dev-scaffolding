@@ -26,6 +26,7 @@
 node scripts/check-api-constants.js
 node scripts/check-api-path-parity.js
 node scripts/check-frontend-api-boundaries.js
+node scripts/check-frontend-context-contract.js
 node scripts/check-frontend-time-contract.js
 node scripts/generate-platform-contract-backend.js --check
 node scripts/generate-platform-contract-frontend.js --check
@@ -60,6 +61,7 @@ AI 协作验证：
   - `OpenApiConfig` 已限制 OpenAPI 只扫描 `com.anjing.controller` 和 `/api/**`，并给每个 operation 补充 requestId、traceId、tenantId、callerId、timeZone、language 等平台请求头。
   - `AuthController` 已将登录、当前用户和刷新 Token 的运行 payload 从 `Map` 收敛为 `LoginRequest`、`RefreshTokenRequest`、`AuthTokenResponse` 和 `CurrentUserResponse`，前端 `authModel.ts` 与全局 `Api.Auth` 类型已同步。
   - `contracts/platform-contract.json` 已记录 API 前缀、响应 envelope、分页字段、请求上下文头、UTC 时间策略和错误码分段，并生成 `backend/src/main/java/com/anjing/model/constants/PlatformContractConstants.java` 与 `frontend/src/contracts/platform-contract.ts` 供前后端基础工具复用；`node scripts/generate-platform-contract-backend.js --check`、`node scripts/generate-platform-contract-frontend.js --check` 和 `node scripts/check-platform-contract.js` 已校验生成产物、Java/TypeScript/文档一致。
+  - 前端 `requestId` 每次请求生成、`traceId` 在浏览器会话内复用；`node scripts/check-frontend-context-contract.js` 已禁止前端源码直接手写平台上下文请求头。
   - `PageResult` 已去除 Spring Data Page 依赖，作为纯分页 payload；Spring Page 需要在业务层展开为 records/total/current/size。
   - 共享内核边界记录在 `project_document/SHARED_KERNEL_GUIDE.md`，`node scripts/check-shared-kernel.js` 已校验候选共享类不依赖 Spring Web、Servlet、JPA 或运行时层。
   - 业务当前时间统一通过 `DateUtils.nowIso()`、`DateUtils.now(pattern)`、`DateUtils.nowEpochMilli()` 等 UTC 出口获取，自检脚本已禁止业务源码直接调用 `Instant.now()` / `LocalDateTime.now()`。

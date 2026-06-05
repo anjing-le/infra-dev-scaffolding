@@ -134,8 +134,11 @@ require_token backend/src/main/java/com/anjing/config/http/RequestContextFilter.
 require_token backend/src/main/java/com/anjing/config/http/RequestContextFilter.java 'response.setHeader(RequestHeaderConstants.REQUEST_ID'
 require_token frontend/src/contracts/platform-contract.ts '"timeZone": "X-Time-Zone"'
 require_token frontend/src/contracts/platform-contract.ts '"acceptLanguage": "Accept-Language"'
-require_token frontend/src/utils/http/context.ts 'REQUEST_HEADERS.timeZone'
-require_token frontend/src/utils/http/context.ts 'REQUEST_HEADERS.acceptLanguage'
+require_token frontend/src/contracts/platform-contract.ts 'FRONTEND_PROPAGATED_HEADER_KEYS = PLATFORM_CONTRACT.frontendPropagatedHeaders'
+require_token frontend/src/utils/http/context.ts 'getOrCreateTraceId'
+require_token frontend/src/utils/http/context.ts 'buildRequestContext'
+require_token frontend/src/utils/http/context.ts 'buildRequestContextHeaders'
+require_token frontend/src/utils/http/context.ts 'REQUEST_HEADERS[key]'
 require_token backend/src/main/java/com/anjing/util/RemoteCallWrapper.java 'serviceCallHeaders'
 require_token backend/src/main/java/com/anjing/util/RemoteCallWrapper.java 'RequestHeaderConstants.CALLER_ID'
 require_token backend/src/main/java/com/anjing/client/RemoteHttpClient.java 'RemoteCallWrapper.callWithRetry'
@@ -158,6 +161,7 @@ require_absent '\b(Instant|LocalDateTime|OffsetDateTime|ZonedDateTime)\.now\(' \
 node scripts/check-api-constants.js
 node scripts/check-api-path-parity.js
 node scripts/check-frontend-api-boundaries.js
+node scripts/check-frontend-context-contract.js
 node scripts/check-frontend-time-contract.js
 node scripts/generate-platform-contract-backend.js --check
 node scripts/generate-platform-contract-frontend.js --check

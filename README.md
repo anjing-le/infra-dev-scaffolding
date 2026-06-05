@@ -78,6 +78,10 @@ node scripts/check-frontend-api-boundaries.js
 ```
 
 ```bash
+node scripts/check-frontend-context-contract.js
+```
+
+```bash
 node scripts/check-frontend-time-contract.js
 ```
 

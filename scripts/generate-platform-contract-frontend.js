@@ -14,7 +14,7 @@ function fail(message) {
 
 function generateContent(contract) {
   const serialized = JSON.stringify(contract, null, 2)
-  return `/* eslint-disable */\n// Generated from contracts/platform-contract.json. Do not edit manually.\n// Run: node scripts/generate-platform-contract-frontend.js\n\nexport const PLATFORM_CONTRACT = ${serialized} as const\n\nexport const API_SUCCESS_CODE = PLATFORM_CONTRACT.responseEnvelope.successCode\nexport const REQUEST_HEADERS = PLATFORM_CONTRACT.requestHeaders\nexport const DEFAULT_TIME_ZONE = PLATFORM_CONTRACT.time.defaultTimeZone\n\nexport type PlatformContract = typeof PLATFORM_CONTRACT\nexport type PlatformRequestHeaderKey = keyof typeof REQUEST_HEADERS\n`
+  return `/* eslint-disable */\n// Generated from contracts/platform-contract.json. Do not edit manually.\n// Run: node scripts/generate-platform-contract-frontend.js\n\nexport const PLATFORM_CONTRACT = ${serialized} as const\n\nexport const API_SUCCESS_CODE = PLATFORM_CONTRACT.responseEnvelope.successCode\nexport const REQUEST_HEADERS = PLATFORM_CONTRACT.requestHeaders\nexport const FRONTEND_PROPAGATED_HEADER_KEYS = PLATFORM_CONTRACT.frontendPropagatedHeaders\nexport const DEFAULT_TIME_ZONE = PLATFORM_CONTRACT.time.defaultTimeZone\n\nexport type PlatformContract = typeof PLATFORM_CONTRACT\nexport type PlatformRequestHeaderKey = keyof typeof REQUEST_HEADERS\nexport type PlatformFrontendPropagatedHeaderKey = (typeof FRONTEND_PROPAGATED_HEADER_KEYS)[number]\n`
 }
 
 if (!fs.existsSync(contractPath)) {

@@ -112,7 +112,9 @@ export const PLATFORM_CONTRACT = {
 
 export const API_SUCCESS_CODE = PLATFORM_CONTRACT.responseEnvelope.successCode
 export const REQUEST_HEADERS = PLATFORM_CONTRACT.requestHeaders
+export const FRONTEND_PROPAGATED_HEADER_KEYS = PLATFORM_CONTRACT.frontendPropagatedHeaders
 export const DEFAULT_TIME_ZONE = PLATFORM_CONTRACT.time.defaultTimeZone
 
 export type PlatformContract = typeof PLATFORM_CONTRACT
 export type PlatformRequestHeaderKey = keyof typeof REQUEST_HEADERS
+export type PlatformFrontendPropagatedHeaderKey = (typeof FRONTEND_PROPAGATED_HEADER_KEYS)[number]

@@ -37,9 +37,10 @@
 - `PLATFORM_CONTRACT`
 - `API_SUCCESS_CODE`
 - `REQUEST_HEADERS`
+- `FRONTEND_PROPAGATED_HEADER_KEYS`
 - `DEFAULT_TIME_ZONE`
 
-`ApiConstants`、`RequestHeaderConstants`、`APIResponse`、`frontend/src/utils/http/context.ts`、`frontend/src/utils/http/response.ts`、`frontend/src/utils/time/index.ts` 应引用生成文件，不要重复手写 API 前缀、请求头、成功码或默认时区。
+`ApiConstants`、`RequestHeaderConstants`、`APIResponse`、`frontend/src/utils/http/context.ts`、`frontend/src/utils/http/response.ts`、`frontend/src/utils/time/index.ts` 应引用生成文件，不要重复手写 API 前缀、请求头、前端透传头列表、成功码或默认时区。
 
 ## Update Rules
 
@@ -61,6 +62,10 @@ node scripts/generate-platform-contract-backend.js --check
 
 ```bash
 node scripts/check-platform-contract.js
+```
+
+```bash
+node scripts/check-frontend-context-contract.js
 ```
 
 ```bash

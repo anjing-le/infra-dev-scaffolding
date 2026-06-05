@@ -63,6 +63,14 @@ PageResult.of(page.getContent(), page.getTotalElements(), page.getNumber() + 1, 
 - 列表类型使用 `PaginatedResponse<T>`，字段为 `records`、`current`、`size`、`total`。
 - 用户反馈或排查日志应保留 `requestId`。
 
+## Request Context Contract
+
+- 前端请求上下文由 `frontend/src/utils/http/context.ts` 统一生成。
+- `requestId` 每次请求重新生成，用于精确定位一次 HTTP 调用。
+- `traceId` 在当前浏览器会话内复用，用于把页面内连续请求和后端服务间调用串起来。
+- `X-Time-Zone` 来自统一时间工具，`Accept-Language` 来自用户语言或浏览器语言。
+- 页面、组件和 API 模块不要手写平台上下文请求头；Axios 拦截器和非 Axios 适配层需要复用 `buildRequestContextHeaders`。
+
 ## Time Contract
 
 - 服务端接口时间默认使用 UTC，不依赖部署机器本地时区。
@@ -99,6 +107,10 @@ node scripts/check-openapi-contract.js
 
 ```bash
 node scripts/check-frontend-time-contract.js
+```
+
+```bash
+node scripts/check-frontend-context-contract.js
 ```
 
 该脚本会检查 API path、response envelope、分页字段、请求上下文、远程调用、时间工具和 OpenAPI 的关键契约是否仍然集中管理。

@@ -251,7 +251,7 @@ export type UpdateUserParams = Partial<Omit<CreateUserParams, 'password'>> & {
 3. **PUT 请求**：使用 `data` 传递请求体
 4. **DELETE 请求**：使用 `request.del<T>()`；批量删除等需要请求体时再传 `data`
 5. **泛型指定**：明确指定返回类型泛型 `request.get<T>()`
-6. **请求上下文**：不要手动设置 `X-Request-Id`、`X-Trace-Id`、`X-Time-Zone`、`Accept-Language`；由 `utils/http` 拦截器统一处理
+6. **请求上下文**：不要手动设置 `X-Request-Id`、`X-Trace-Id`、`X-Time-Zone`、`Accept-Language`；由 `utils/http` 拦截器统一处理，非 Axios 适配层复用 `buildRequestContextHeaders`
 
 ### 时间与全球化
 
