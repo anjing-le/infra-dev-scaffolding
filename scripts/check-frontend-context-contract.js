@@ -25,6 +25,24 @@ const requiredContextTokens = [
   'SESSION_TRACE_ID_KEY'
 ]
 
+const requiredErrorTokens = [
+  'export interface HttpErrorContext',
+  'export const readHttpHeader',
+  'export const buildHttpErrorContext',
+  'REQUEST_HEADERS.requestId',
+  'REQUEST_HEADERS.traceId',
+  'traceId?: string',
+  'traceId: this.traceId'
+]
+
+const requiredHttpTokens = [
+  'buildResponseErrorContext',
+  'buildAxiosErrorContext',
+  'buildHttpErrorContext',
+  'handleUnauthorizedError(message, context)',
+  'createHttpError(message || $t'
+]
+
 function fail(message) {
   console.error(`check-frontend-context-contract: ${message}`)
   process.exit(1)
@@ -84,6 +102,20 @@ const contextSource = read('frontend/src/utils/http/context.ts')
 for (const token of requiredContextTokens) {
   if (!contextSource.includes(token)) {
     fail(`frontend/src/utils/http/context.ts is missing token: ${token}`)
+  }
+}
+
+const errorSource = read('frontend/src/utils/http/error.ts')
+for (const token of requiredErrorTokens) {
+  if (!errorSource.includes(token)) {
+    fail(`frontend/src/utils/http/error.ts is missing token: ${token}`)
+  }
+}
+
+const httpSource = read('frontend/src/utils/http/index.ts')
+for (const token of requiredHttpTokens) {
+  if (!httpSource.includes(token)) {
+    fail(`frontend/src/utils/http/index.ts is missing token: ${token}`)
   }
 }
 

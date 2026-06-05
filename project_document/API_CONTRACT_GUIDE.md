@@ -61,7 +61,7 @@ PageResult.of(page.getContent(), page.getTotalElements(), page.getNumber() + 1, 
 - 标准消息字段是 `message`。
 - `msg` 只允许在 `utils/http/response.ts` 内部兼容旧 mock 或第三方接口。
 - 列表类型使用 `PaginatedResponse<T>`，字段为 `records`、`current`、`size`、`total`。
-- 用户反馈或排查日志应保留 `requestId`。
+- 用户反馈或排查日志应保留 `requestId` 和 `traceId`。
 
 ## Request Context Contract
 
@@ -70,6 +70,7 @@ PageResult.of(page.getContent(), page.getTotalElements(), page.getNumber() + 1, 
 - `traceId` 在当前浏览器会话内复用，用于把页面内连续请求和后端服务间调用串起来。
 - `X-Time-Zone` 来自统一时间工具，`Accept-Language` 来自用户语言或浏览器语言。
 - 页面、组件和 API 模块不要手写平台上下文请求头；Axios 拦截器和非 Axios 适配层需要复用 `buildRequestContextHeaders`。
+- 前端 `HttpError` 必须从响应体、响应头或请求头提取 `requestId` / `traceId`，业务错误码、HTTP 状态错误、网络错误和 401 分支都不能丢失链路上下文。
 
 ## Time Contract
 

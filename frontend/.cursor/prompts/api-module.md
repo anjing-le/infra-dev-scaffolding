@@ -272,7 +272,7 @@ export type UpdateUserParams = Partial<Omit<CreateUserParams, 'password'>> & {
 ### 错误处理
 
 1. **API 层**：只定义接口，不处理错误
-2. **全局拦截器**：统一处理 HTTP 错误和业务错误
+2. **全局拦截器**：统一处理 HTTP 错误和业务错误，并保留 `HttpError.requestId` / `HttpError.traceId`
 3. **组件层**：处理特定的业务逻辑错误
 
 ## 最佳实践
