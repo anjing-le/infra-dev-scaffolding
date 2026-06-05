@@ -33,6 +33,7 @@ public class RemoteHttpClient {
     private final RestClient remoteRestClient;
     private final RemoteHttpClientProperties properties;
     private final ServiceEndpointResolver serviceEndpointResolver;
+    private final RemoteCallPolicy remoteCallPolicy;
 
     public <R> R get(String url, Class<R> responseType) {
         return exchange(RemoteHttpRequest.builder()
@@ -105,10 +106,12 @@ public class RemoteHttpClient {
 
     public <R> R exchange(RemoteHttpRequest request, Class<R> responseType) {
         validateRequest(request, responseType);
+        RemoteCallPolicyContext policyContext = buildPolicyContext(request);
+        remoteCallPolicy.beforeCall(policyContext);
 
         Map<String, Object> descriptor = describeRequest(request);
         return RemoteCallWrapper.callWithRetry(
-                ignored -> doExchange(request, responseType),
+                ignored -> doExchange(request, responseType, policyContext),
                 descriptor,
                 remoteCallName(request),
                 resolveRetryCount(request),
@@ -119,10 +122,12 @@ public class RemoteHttpClient {
 
     public <R> R exchange(RemoteHttpRequest request, ParameterizedTypeReference<R> responseType) {
         validateRequest(request, responseType);
+        RemoteCallPolicyContext policyContext = buildPolicyContext(request);
+        remoteCallPolicy.beforeCall(policyContext);
 
         Map<String, Object> descriptor = describeRequest(request);
         return RemoteCallWrapper.callWithRetry(
-                ignored -> doExchange(request, responseType),
+                ignored -> doExchange(request, responseType, policyContext),
                 descriptor,
                 remoteCallName(request),
                 resolveRetryCount(request),
@@ -131,15 +136,27 @@ public class RemoteHttpClient {
         );
     }
 
-    private <R> R doExchange(RemoteHttpRequest request, Class<R> responseType) {
-        return doExchange(request, responseSpec -> responseSpec.body(responseType));
+    private <R> R doExchange(
+            RemoteHttpRequest request,
+            Class<R> responseType,
+            RemoteCallPolicyContext policyContext
+    ) {
+        return doExchange(request, responseSpec -> responseSpec.body(responseType), policyContext);
     }
 
-    private <R> R doExchange(RemoteHttpRequest request, ParameterizedTypeReference<R> responseType) {
-        return doExchange(request, responseSpec -> responseSpec.body(responseType));
+    private <R> R doExchange(
+            RemoteHttpRequest request,
+            ParameterizedTypeReference<R> responseType,
+            RemoteCallPolicyContext policyContext
+    ) {
+        return doExchange(request, responseSpec -> responseSpec.body(responseType), policyContext);
     }
 
-    private <R> R doExchange(RemoteHttpRequest request, Function<RestClient.ResponseSpec, R> responseReader) {
+    private <R> R doExchange(
+            RemoteHttpRequest request,
+            Function<RestClient.ResponseSpec, R> responseReader,
+            RemoteCallPolicyContext policyContext
+    ) {
         try {
             String url = resolveUrl(request);
             RestClient.RequestBodySpec spec = remoteRestClient
@@ -152,25 +169,29 @@ public class RemoteHttpClient {
                     ? spec.body(request.getBody()).retrieve()
                     : spec.retrieve();
 
-            return responseReader.apply(responseSpec);
+            R response = responseReader.apply(responseSpec);
+            remoteCallPolicy.afterSuccess(policyContext);
+            return response;
         } catch (ResourceAccessException e) {
-            throw new SystemException(
+            throw recordFailure(policyContext, new SystemException(
                     "远程 HTTP 调用网络异常: " + remoteCallName(request),
                     e,
                     RemoteErrorCode.REMOTE_CALL_NETWORK_ERROR
-            );
+            ));
         } catch (RestClientResponseException e) {
-            throw new SystemException(
+            throw recordFailure(policyContext, new SystemException(
                     String.format("远程 HTTP 响应异常: %s, status=%s", remoteCallName(request), e.getStatusCode().value()),
                     e,
                     remoteErrorCode(e.getStatusCode())
-            );
+            ));
         } catch (RestClientException e) {
-            throw new SystemException(
+            throw recordFailure(policyContext, new SystemException(
                     "远程 HTTP 调用失败: " + remoteCallName(request),
                     e,
                     RemoteErrorCode.REMOTE_CALL_FAILED
-            );
+            ));
+        } catch (RuntimeException e) {
+            throw recordFailure(policyContext, e);
         }
     }
 
@@ -195,6 +216,35 @@ public class RemoteHttpClient {
         descriptor.put("url", sanitizedUrl(resolveUrl(request)));
         descriptor.put("callerId", resolveCallerId(request));
         return descriptor;
+    }
+
+    private RemoteCallPolicyContext buildPolicyContext(RemoteHttpRequest request) {
+        String url = resolveUrl(request);
+        return new RemoteCallPolicyContext(
+                resolveMethod(request).name(),
+                resolveTargetService(request),
+                request.getServiceId(),
+                resolvePolicyPath(request, url),
+                sanitizedUrl(url),
+                resolveCallerId(request)
+        );
+    }
+
+    private String resolvePolicyPath(RemoteHttpRequest request, String url) {
+        if (StringUtils.hasText(request.getPath())) {
+            return request.getPath();
+        }
+
+        try {
+            return URI.create(url).getPath();
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    private <E extends RuntimeException> E recordFailure(RemoteCallPolicyContext context, E exception) {
+        remoteCallPolicy.afterFailure(context, exception);
+        return exception;
     }
 
     private void validateRequest(RemoteHttpRequest request, Object responseType) {

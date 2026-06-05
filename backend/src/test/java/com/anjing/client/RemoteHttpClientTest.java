@@ -39,7 +39,8 @@ class RemoteHttpClientTest {
         RemoteHttpClient client = new RemoteHttpClient(
                 builder.build(),
                 properties,
-                new ConfiguredServiceEndpointResolver(properties)
+                new ConfiguredServiceEndpointResolver(properties),
+                new NoopRemoteCallPolicy()
         );
 
         GlobalRequestContextHolder.set(GlobalRequestContext.builder()
@@ -88,6 +89,77 @@ class RemoteHttpClientTest {
     }
 
     @Test
+    void exchangeShouldApplyRemoteCallPolicyBeforeRequest() {
+        RestClient.Builder builder = RestClient.builder();
+        MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
+        RemoteHttpClientProperties properties = properties();
+        RemoteHttpClient client = new RemoteHttpClient(
+                builder.build(),
+                properties,
+                new ConfiguredServiceEndpointResolver(properties),
+                new RemoteCallPolicy() {
+                    @Override
+                    public void beforeCall(RemoteCallPolicyContext context) {
+                        throw new SystemException(
+                                "远程调用策略拒绝: " + context.targetService(),
+                                RemoteErrorCode.REMOTE_CALL_CIRCUIT_BREAKER_OPEN
+                        );
+                    }
+                }
+        );
+
+        SystemException error = assertThrows(
+                SystemException.class,
+                () -> client.exchange(
+                        RemoteHttpRequest.builder()
+                                .serviceId("inventory")
+                                .path("/api/items")
+                                .build(),
+                        String.class
+                )
+        );
+
+        assertEquals(RemoteErrorCode.REMOTE_CALL_CIRCUIT_BREAKER_OPEN, error.getErrorCode());
+        server.verify();
+    }
+
+    @Test
+    void exchangeShouldRecordRemoteCallPolicySuccess() {
+        RestClient.Builder builder = RestClient.builder();
+        MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
+        RemoteHttpClientProperties properties = properties();
+        RecordingRemoteCallPolicy policy = new RecordingRemoteCallPolicy();
+        RemoteHttpClient client = new RemoteHttpClient(
+                builder.build(),
+                properties,
+                new ConfiguredServiceEndpointResolver(properties),
+                policy
+        );
+
+        server.expect(requestTo("http://inventory.local/api/items"))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess("ok", MediaType.TEXT_PLAIN));
+
+        String response = client.exchange(
+                RemoteHttpRequest.builder()
+                        .serviceId("inventory")
+                        .path("/api/items")
+                        .build(),
+                String.class
+        );
+
+        assertEquals("ok", response);
+        assertEquals(1, policy.beforeCount);
+        assertEquals(1, policy.successCount);
+        assertEquals(0, policy.failureCount);
+        assertEquals("GET", policy.context.method());
+        assertEquals("inventory", policy.context.targetService());
+        assertEquals("/api/items", policy.context.path());
+        assertEquals("http://inventory.local/api/items", policy.context.url());
+        server.verify();
+    }
+
+    @Test
     void configuredEndpointResolverShouldResolveServiceIdAndPath() {
         ConfiguredServiceEndpointResolver resolver = new ConfiguredServiceEndpointResolver(properties());
 
@@ -123,6 +195,31 @@ class RemoteHttpClientTest {
 
         public void setName(String name) {
             this.name = name;
+        }
+    }
+
+    static class RecordingRemoteCallPolicy implements RemoteCallPolicy {
+        private int beforeCount;
+        private int successCount;
+        private int failureCount;
+        private RemoteCallPolicyContext context;
+
+        @Override
+        public void beforeCall(RemoteCallPolicyContext context) {
+            this.beforeCount++;
+            this.context = context;
+        }
+
+        @Override
+        public void afterSuccess(RemoteCallPolicyContext context) {
+            this.successCount++;
+            this.context = context;
+        }
+
+        @Override
+        public void afterFailure(RemoteCallPolicyContext context, RuntimeException exception) {
+            this.failureCount++;
+            this.context = context;
         }
     }
 }

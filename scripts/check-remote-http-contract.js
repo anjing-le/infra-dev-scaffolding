@@ -13,6 +13,10 @@ const files = {
   client: 'backend/src/main/java/com/anjing/client/RemoteHttpClient.java',
   endpointResolver: 'backend/src/main/java/com/anjing/client/ServiceEndpointResolver.java',
   configuredEndpointResolver: 'backend/src/main/java/com/anjing/client/ConfiguredServiceEndpointResolver.java',
+  callPolicy: 'backend/src/main/java/com/anjing/client/RemoteCallPolicy.java',
+  callPolicyContext: 'backend/src/main/java/com/anjing/client/RemoteCallPolicyContext.java',
+  noopCallPolicy: 'backend/src/main/java/com/anjing/client/NoopRemoteCallPolicy.java',
+  httpClientConfig: 'backend/src/main/java/com/anjing/config/http/RemoteHttpClientConfig.java',
   remoteWrapper: 'backend/src/main/java/com/anjing/util/RemoteCallWrapper.java',
   application: 'backend/src/main/resources/application.yml',
   example: 'backend/src/main/java/com/anjing/example/RemoteCallExampleService.java',
@@ -52,11 +56,24 @@ requireToken(files.client, 'responseSpec.body(responseType)')
 requireToken(files.client, 'resolveUrl')
 requireToken(files.client, 'ServiceEndpointResolver')
 requireToken(files.client, 'serviceEndpointResolver.resolveUrl')
+requireToken(files.client, 'RemoteCallPolicy')
+requireToken(files.client, 'remoteCallPolicy.beforeCall')
+requireToken(files.client, 'remoteCallPolicy.afterSuccess')
+requireToken(files.client, 'remoteCallPolicy.afterFailure')
+requireToken(files.client, 'buildPolicyContext')
 requireToken(files.endpointResolver, 'interface ServiceEndpointResolver')
 requireToken(files.endpointResolver, 'resolveUrl(String serviceId, String path)')
 requireToken(files.configuredEndpointResolver, 'implements ServiceEndpointResolver')
 requireToken(files.configuredEndpointResolver, 'properties.getServiceBaseUrls()')
 requireToken(files.configuredEndpointResolver, 'joinUrl')
+requireToken(files.callPolicy, 'interface RemoteCallPolicy')
+requireToken(files.callPolicy, 'beforeCall(RemoteCallPolicyContext context)')
+requireToken(files.callPolicy, 'afterSuccess(RemoteCallPolicyContext context)')
+requireToken(files.callPolicy, 'afterFailure(RemoteCallPolicyContext context, RuntimeException exception)')
+requireToken(files.callPolicyContext, 'record RemoteCallPolicyContext')
+requireToken(files.noopCallPolicy, 'implements RemoteCallPolicy')
+requireToken(files.httpClientConfig, '@ConditionalOnMissingBean(RemoteCallPolicy.class)')
+requireToken(files.httpClientConfig, 'new NoopRemoteCallPolicy()')
 requireToken(files.application, 'service-base-urls:')
 requireToken(files.platform, 'BACKEND_PROPAGATED_HEADER_KEYS')
 requireToken(files.remoteWrapper, 'PlatformContractConstants.BACKEND_PROPAGATED_HEADER_KEYS')
@@ -70,6 +87,9 @@ requireToken(files.test, 'MockRestServiceServer')
 requireToken(files.test, 'ParameterizedTypeReference<APIResponse<PageResult<ItemView>>>')
 requireToken(files.test, 'ConfiguredServiceEndpointResolver')
 requireToken(files.test, 'configuredEndpointResolverShouldResolveServiceIdAndPath')
+requireToken(files.test, 'exchangeShouldApplyRemoteCallPolicyBeforeRequest')
+requireToken(files.test, 'REMOTE_CALL_CIRCUIT_BREAKER_OPEN')
+requireToken(files.test, 'RecordingRemoteCallPolicy')
 requireToken(files.guide, 'ServiceBoundaryConstants.Auth.OWNER')
 requireToken(files.guide, '.path(ApiConstants.Auth.ME_FULL)')
 requireToken(files.guide, 'ServiceBoundaryConstants.APPLICATION_ID')

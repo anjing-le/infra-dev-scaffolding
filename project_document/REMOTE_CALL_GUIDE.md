@@ -67,6 +67,16 @@ app:
 
 `ConfiguredServiceEndpointResolver` 是默认的服务解析实现，读取 `service-base-urls` 并拼接 service-relative path。母版不默认引入注册中心；下游项目可以先用环境变量切换服务地址，再在真实微服务项目中替换 `ServiceEndpointResolver`，接入 API Gateway、Service Discovery、区域路由或灰度路由。
 
+## 调用策略扩展点
+
+`RemoteCallPolicy` 是远程调用治理扩展点。母版默认提供 `NoopRemoteCallPolicy`，不会限流或熔断；下游项目可以定义自己的 `RemoteCallPolicy` bean，替换默认实现：
+
+- `beforeCall(context)`: 调用前检查，可用于熔断、限流、白名单、灰度策略。
+- `afterSuccess(context)`: 传输成功后记录指标。
+- `afterFailure(context, exception)`: 传输失败后记录指标或推进熔断状态。
+
+策略拒绝调用时，建议抛出 `SystemException(RemoteErrorCode.REMOTE_CALL_CIRCUIT_BREAKER_OPEN)` 或下游项目自己的治理错误码。`RemoteCallPolicyContext` 只包含 method、targetService、serviceId、path、脱敏 URL 和 callerId，不包含请求体或请求头。
+
 ## 日志与安全
 
 `RemoteHttpClient` 交给 `RemoteCallWrapper` 的日志对象只包含 method、targetService、url 和 callerId，不输出请求体和 headers，避免 Authorization、Cookie、Token 或业务敏感参数进入日志。
