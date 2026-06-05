@@ -42,12 +42,12 @@ export const ApiPaths = {
 
 约定：
 
-- API 模块只引用 `ApiPaths`，不要直接写 `url: '/api/...'`。
+- API 模块优先使用 `openApiRequest(operationId)` 调用 OpenAPI 运行接口；尚未接入 OpenAPI 的运行接口引用 `ApiPaths`，不要直接写 `url: '/api/...'`。
 - `ApiPaths` 只放 `contracts/service-boundaries.json` 中声明的运行或预留运行路径，并优先引用生成的 `SERVICE_BOUNDARY_ROUTE_PATHS`。
 - 旧模板、mock 或尚未由后端运行面承载的路径放入 `ApiLegacyPaths`，并在后续真实实现时迁回 `ApiPaths`。
 - 路径参数使用函数，并通过 `encodeURIComponent` 处理。
 - 页面组件不直接拼接口路径。
-- 非 Axios 场景需要完整上传地址时，使用 `resolveApiPath(ApiPaths.xxx.yyy)`，不要手动拼 `VITE_API_URL + '/api/...'`。
+- 非 Axios 场景需要完整上传地址时，使用 `resolveApiPath(ApiPaths.xxx.yyy)`；OpenAPI 运行接口可使用 `resolveOpenApiPath(operationId, pathParams)`。不要手动拼 `VITE_API_URL + '/api/...'`。
 - 新增后端接口时同步确认 `ApiConstants` 和 `ApiPaths` 命名一致。
 
 ## Current Runtime Paths
@@ -67,7 +67,7 @@ export const ApiPaths = {
 
 ## Future Direction
 
-当后续接入 OpenAPI / 类型生成时，应以 `ApiConstants`、Controller 注解和 `contracts/service-boundaries.json` 作为后端事实来源，生成或校验前端 API client。当前母版先用服务边界 manifest 生成 `SERVICE_BOUNDARY_ROUTE_PATHS`，再由 `ApiPaths` 负责提供前端调用语义和动态参数编码。
+OpenAPI / 类型生成应以 `ApiConstants`、Controller 注解和 `contracts/service-boundaries.json` 作为后端事实来源，生成或校验前端 API client。当前母版先用服务边界 manifest 生成 `SERVICE_BOUNDARY_ROUTE_PATHS`，由 `ApiPaths` 承载未接入 OpenAPI helper 的路径语义和动态参数编码；已接入 OpenAPI 的模块通过 `frontend/src/api/openapiClient.ts` 按 `operationId` 调用。
 
 ## Verification
 
@@ -77,7 +77,7 @@ export const ApiPaths = {
 ./scripts/check-contracts.sh
 ```
 
-该脚本会阻止运行 Controller 直接写 `"/api/..."`，也会阻止前端 API 模块绕过 `ApiPaths` 直接写接口 URL；非 Axios 上传等场景不能手动拼 `VITE_API_URL + '/api/...'`。
+该脚本会阻止运行 Controller 直接写 `"/api/..."`，也会阻止前端 API 模块绕过 `ApiPaths` 或 `openApiRequest` 直接写接口 URL；非 Axios 上传等场景不能手动拼 `VITE_API_URL + '/api/...'`。
 
 如果只想验证前后端运行路径是否一致，可以运行：
 

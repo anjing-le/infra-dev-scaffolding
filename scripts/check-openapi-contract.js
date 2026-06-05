@@ -23,6 +23,7 @@ const files = {
   currentUserResponse: 'backend/src/main/java/com/anjing/model/response/CurrentUserResponse.java',
   frontendGeneratedSchemas: 'frontend/src/contracts/openapi/schemas.ts',
   frontendGeneratedOperations: 'frontend/src/contracts/openapi/operations.ts',
+  frontendOpenApiClient: 'frontend/src/api/openapiClient.ts',
   frontendAuthModel: 'frontend/src/api/model/authModel.ts',
   frontendAuthApi: 'frontend/src/api/auth.ts',
   guide: 'project_document/OPENAPI_CONTRACT_GUIDE.md',
@@ -164,6 +165,19 @@ for (const token of [
 
 for (const token of [
   "from '@/contracts/openapi/operations'",
+  'OPENAPI_OPERATIONS',
+  'OpenApiOperationRequest',
+  'OpenApiOperationData',
+  'bindOpenApiPathParams',
+  'openApiPath',
+  'resolveOpenApiPath',
+  'openApiRequest'
+]) {
+  requireToken(files.frontendOpenApiClient, token)
+}
+
+for (const token of [
+  "from '@/contracts/openapi/operations'",
   "export type LoginParams = OpenApiOperationRequest<'login'>",
   "export type LoginResponse = OpenApiOperationData<'login'>",
   "export type UserInfo = OpenApiOperationData<'getCurrentUser'>",
@@ -172,8 +186,15 @@ for (const token of [
   requireToken(files.frontendAuthModel, token)
 }
 
-requireToken(files.frontendAuthApi, 'fetchRefreshToken')
-requireToken(files.frontendAuthApi, 'ApiPaths.auth.refresh')
+for (const token of [
+  "import { openApiRequest } from './openapiClient'",
+  "openApiRequest('login'",
+  "openApiRequest('getCurrentUser'",
+  "openApiRequest('refreshToken'",
+  'fetchRefreshToken'
+]) {
+  requireToken(files.frontendAuthApi, token)
+}
 
 for (const token of [
   '/v3/api-docs',

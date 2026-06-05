@@ -33,6 +33,7 @@ require_file backend/src/main/java/com/anjing/model/constants/ApiConstants.java
 require_file backend/src/main/java/com/anjing/model/constants/PlatformContractConstants.java
 require_file backend/src/main/java/com/anjing/model/constants/ServiceBoundaryConstants.java
 require_file frontend/src/api/paths.ts
+require_file frontend/src/api/openapiClient.ts
 require_file backend/src/main/java/com/anjing/model/response/APIResponse.java
 require_file backend/src/main/java/com/anjing/model/response/PageResult.java
 require_file frontend/src/utils/http/response.ts
@@ -120,6 +121,9 @@ require_absent 'VITE_API_URL.*\/api' \
 require_token frontend/src/api/paths.ts 'resolveApiPath'
 require_token frontend/src/api/paths.ts 'uploadWangEditor'
 require_token frontend/src/api/paths.ts 'SERVICE_BOUNDARY_ROUTE_PATHS'
+require_token frontend/src/api/openapiClient.ts 'OPENAPI_OPERATIONS'
+require_token frontend/src/api/openapiClient.ts 'openApiRequest'
+require_token frontend/src/api/openapiClient.ts 'resolveOpenApiPath'
 require_token frontend/src/contracts/service-boundaries.ts 'SERVICE_BOUNDARY_ROUTE_PATHS'
 
 # Response contract: new code uses message/code/data; msg compatibility is centralized.

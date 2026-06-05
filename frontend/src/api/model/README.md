@@ -4,7 +4,7 @@
 
 此目录存放所有 API 接口的 TypeScript 类型定义文件。每个 Model 文件与对应的 API 文件配对。
 
-运行接口的后端 DTO/VO schema 会从 OpenAPI JSON 生成到 `frontend/src/contracts/openapi/schemas.ts`，运行接口 operation 会生成到 `frontend/src/contracts/openapi/operations.ts`。API model 层优先从 operation 类型派生请求和响应类型，再补充前端兼容字段或命名适配；页面和组件不要直接依赖生成目录。
+运行接口的后端 DTO/VO schema 会从 OpenAPI JSON 生成到 `frontend/src/contracts/openapi/schemas.ts`，运行接口 operation 会生成到 `frontend/src/contracts/openapi/operations.ts`。API model 层优先从 operation 类型派生请求和响应类型，再补充前端兼容字段或命名适配；API 文件优先通过 `frontend/src/api/openapiClient.ts` 的 `openApiRequest(operationId)` 调用运行接口；页面和组件不要直接依赖生成目录。
 
 ## 命名规范
 
@@ -116,6 +116,20 @@ export type UpdateUserParams = Partial<Omit<CreateUserParams, 'password'>>
 ## 使用方式
 
 ### 在 API 文件中导入
+
+```typescript
+// src/api/auth.ts
+import { openApiRequest } from '@/api/openapiClient'
+import type { LoginParams, LoginResponse } from './model/authModel'
+
+export function fetchLogin(params: LoginParams): Promise<LoginResponse> {
+  return openApiRequest('login', {
+    body: params
+  })
+}
+```
+
+尚未接入 OpenAPI 的旧模板或兼容接口仍可以使用 `ApiLegacyPaths`：
 
 ```typescript
 // src/api/user.ts

@@ -1,5 +1,4 @@
-import request from '@/utils/http'
-import { ApiPaths } from './paths'
+import { openApiRequest } from './openapiClient'
 import type { LoginParams, LoginResponse, RefreshTokenParams, UserInfo } from './model/authModel'
 
 /**
@@ -7,12 +6,9 @@ import type { LoginParams, LoginResponse, RefreshTokenParams, UserInfo } from '.
  * @param params 登录参数
  * @returns 登录响应
  */
-export function fetchLogin(params: LoginParams) {
-  return request.post<LoginResponse>({
-    url: ApiPaths.auth.login,
-    params
-    // showSuccessMessage: true // 显示成功消息
-    // showErrorMessage: false // 不显示错误消息
+export function fetchLogin(params: LoginParams): Promise<LoginResponse> {
+  return openApiRequest('login', {
+    body: params
   })
 }
 
@@ -20,10 +16,8 @@ export function fetchLogin(params: LoginParams) {
  * 获取用户信息
  * @returns 用户信息
  */
-export function fetchGetUserInfo() {
-  return request.get<UserInfo>({
-    url: ApiPaths.auth.me
-  })
+export function fetchGetUserInfo(): Promise<UserInfo> {
+  return openApiRequest('getCurrentUser')
 }
 
 /**
@@ -31,9 +25,8 @@ export function fetchGetUserInfo() {
  * @param params refresh token 参数
  * @returns 登录响应
  */
-export function fetchRefreshToken(params: RefreshTokenParams) {
-  return request.post<LoginResponse>({
-    url: ApiPaths.auth.refresh,
-    params
+export function fetchRefreshToken(params: RefreshTokenParams): Promise<LoginResponse> {
+  return openApiRequest('refreshToken', {
+    body: params
   })
 }
