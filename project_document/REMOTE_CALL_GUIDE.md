@@ -22,10 +22,13 @@ RemoteHttpRequest request = RemoteHttpRequest.builder()
         .checkResponse(true)
         .build();
 
-APIResponse<?> response = remoteHttpClient.exchange(request, APIResponse.class);
+APIResponse<CurrentUserResponse> response = remoteHttpClient.exchange(
+        request,
+        new ParameterizedTypeReference<APIResponse<CurrentUserResponse>>() {}
+);
 ```
 
-> 如果响应类型需要复杂泛型，后续可以在 `RemoteHttpClient` 中补 `ParameterizedTypeReference<T>` 重载；当前母版先保持最小同步调用适配层。
+简单响应可以继续使用 `Class<T>` 重载；标准响应、分页响应或列表响应优先使用 `ParameterizedTypeReference<T>`，避免 `APIResponse<PageResult<Xxx>>` 这类泛型在服务间调用中退化为裸类型。
 
 ## 统一透传头
 

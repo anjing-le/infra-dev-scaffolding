@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
@@ -182,7 +183,7 @@ public class RemoteCallExampleService {
      * 示例7: 统一 HTTP 远程调用适配器
      * 场景：用统一 adapter 调用下游 HTTP 服务，并自动透传上下文请求头
      */
-    public APIResponse<?> remoteHttpClientExample() {
+    public APIResponse<String> remoteHttpClientExample() {
         log.info("=== 示例7: 统一 HTTP 远程调用适配器 ===");
 
         RemoteHttpRequest request = RemoteHttpRequest.builder()
@@ -193,7 +194,8 @@ public class RemoteCallExampleService {
                 .checkResponse(true)
                 .build();
 
-        return remoteHttpClient.exchange(request, APIResponse.class);
+        return remoteHttpClient.exchange(request, new ParameterizedTypeReference<APIResponse<String>>() {
+        });
     }
 
     /**

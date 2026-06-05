@@ -5,6 +5,7 @@ import com.anjing.model.errorcode.RemoteErrorCode;
 import com.anjing.model.exception.SystemException;
 import com.anjing.util.RemoteCallWrapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import org.springframework.web.client.RestClientResponseException;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Central outbound HTTP adapter.
@@ -38,7 +40,22 @@ public class RemoteHttpClient {
                 .build(), responseType);
     }
 
+    public <R> R get(String url, ParameterizedTypeReference<R> responseType) {
+        return exchange(RemoteHttpRequest.builder()
+                .method(HttpMethod.GET)
+                .url(url)
+                .build(), responseType);
+    }
+
     public <T, R> R post(String url, T body, Class<R> responseType) {
+        return exchange(RemoteHttpRequest.builder()
+                .method(HttpMethod.POST)
+                .url(url)
+                .body(body)
+                .build(), responseType);
+    }
+
+    public <T, R> R post(String url, T body, ParameterizedTypeReference<R> responseType) {
         return exchange(RemoteHttpRequest.builder()
                 .method(HttpMethod.POST)
                 .url(url)
@@ -54,7 +71,29 @@ public class RemoteHttpClient {
                 .build(), responseType);
     }
 
+    public <R> R getFromService(String serviceId, String path, ParameterizedTypeReference<R> responseType) {
+        return exchange(RemoteHttpRequest.builder()
+                .method(HttpMethod.GET)
+                .serviceId(serviceId)
+                .path(path)
+                .build(), responseType);
+    }
+
     public <T, R> R postToService(String serviceId, String path, T body, Class<R> responseType) {
+        return exchange(RemoteHttpRequest.builder()
+                .method(HttpMethod.POST)
+                .serviceId(serviceId)
+                .path(path)
+                .body(body)
+                .build(), responseType);
+    }
+
+    public <T, R> R postToService(
+            String serviceId,
+            String path,
+            T body,
+            ParameterizedTypeReference<R> responseType
+    ) {
         return exchange(RemoteHttpRequest.builder()
                 .method(HttpMethod.POST)
                 .serviceId(serviceId)
@@ -77,7 +116,29 @@ public class RemoteHttpClient {
         );
     }
 
+    public <R> R exchange(RemoteHttpRequest request, ParameterizedTypeReference<R> responseType) {
+        validateRequest(request, responseType);
+
+        Map<String, Object> descriptor = describeRequest(request);
+        return RemoteCallWrapper.callWithRetry(
+                ignored -> doExchange(request, responseType),
+                descriptor,
+                remoteCallName(request),
+                resolveRetryCount(request),
+                request.isCheckResponse(),
+                resolveRetryInterval(request)
+        );
+    }
+
     private <R> R doExchange(RemoteHttpRequest request, Class<R> responseType) {
+        return doExchange(request, responseSpec -> responseSpec.body(responseType));
+    }
+
+    private <R> R doExchange(RemoteHttpRequest request, ParameterizedTypeReference<R> responseType) {
+        return doExchange(request, responseSpec -> responseSpec.body(responseType));
+    }
+
+    private <R> R doExchange(RemoteHttpRequest request, Function<RestClient.ResponseSpec, R> responseReader) {
         try {
             String url = resolveUrl(request);
             RestClient.RequestBodySpec spec = remoteRestClient
@@ -90,7 +151,7 @@ public class RemoteHttpClient {
                     ? spec.body(request.getBody()).retrieve()
                     : spec.retrieve();
 
-            return responseSpec.body(responseType);
+            return responseReader.apply(responseSpec);
         } catch (ResourceAccessException e) {
             throw new SystemException(
                     "远程 HTTP 调用网络异常: " + remoteCallName(request),
@@ -135,7 +196,7 @@ public class RemoteHttpClient {
         return descriptor;
     }
 
-    private void validateRequest(RemoteHttpRequest request, Class<?> responseType) {
+    private void validateRequest(RemoteHttpRequest request, Object responseType) {
         if (request == null) {
             throw new SystemException("远程 HTTP 请求不能为空", RemoteErrorCode.REMOTE_CALL_PARAM_ERROR);
         }

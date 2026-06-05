@@ -22,7 +22,7 @@
 - `RequestContextFilter`：Web 请求入口适配。
 - `RequestContextTaskDecorator`、`AsyncConfig`：异步线程池上下文和 MDC 传播适配。
 - `RemoteHttpClient`、`RemoteCallWrapper`：远程调用与重试适配。
-- `JsonUtils`：当前通过 Spring 注入 `ObjectMapper`，未来可拆成纯 JSON helper 与 Spring adapter 两层。
+- `JsonUtils`：已提供无 Spring 容器默认 `ObjectMapper`，运行时仍可由 Spring 注入配置后的 mapper 覆盖；未来可进一步拆成纯 JSON helper 与 Spring adapter 两层。
 - `ExceptionUtils`、`SqlLogUtils`：依赖 Servlet 或 Web 上下文。
 - `PageResponse`：旧分页兼容类，保留给历史响应格式，不作为新共享契约。
 

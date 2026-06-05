@@ -43,7 +43,7 @@
 - 共享内核边界已开始收口，`project_document/SHARED_KERNEL_GUIDE.md` 和 `scripts/check-shared-kernel.js` 已约束未来可抽 `anjing-common` 的契约/工具类不依赖 Spring Web、Servlet、JPA 或运行时层。
 - 前端已有统一时间工具层，后续需要让日期控件、文件名、通知时间等存量逻辑逐步迁移。
 - 中间件状态已能区分 `disabled/configured/ready/degraded`，并通过 `/api/test/features` 输出；dev/test/prod profile 矩阵已落地，后续仍需补真实探测开关。
-- 微服务远程调用已有包装工具和 service id 到 base URL 的配置入口，但还不是接口驱动的 client contract，后续仍需补熔断、真实服务发现、调用方身份治理和审计契约。
+- 微服务远程调用已有包装工具、service id 到 base URL 的配置入口和 `ParameterizedTypeReference<T>` 泛型响应入口，可支撑标准响应、分页响应和列表响应；后续仍需补熔断、真实服务发现、调用方身份治理和审计契约。
 
 ## 母版应该内置
 
@@ -105,7 +105,7 @@
 
 - 日志统一输出 `requestId`、`traceId`、`userId`、`tenantId`、接口路径、耗时、错误码。
 - `RemoteCallWrapper` 支持调用方、上下文请求头、重试和 requestId/traceId 透传。
-- `RemoteHttpClient` 支持统一 HTTP 出站调用、超时配置、上下文透传、目标服务审计描述和可重试错误映射；后续补充熔断和 RPC adapter。
+- `RemoteHttpClient` 支持统一 HTTP 出站调用、超时配置、上下文透传、目标服务审计描述、可重试错误映射和泛型响应反序列化；后续补充熔断和 RPC adapter。
 - 错误码按模块分段，有文档和脚本说明并校验哪些错误能重试、哪些必须提示用户。
 - 健康检查和中间件状态能区分 disabled、configured、ready、degraded。
 
@@ -116,7 +116,7 @@
 - `GlobalRequestContextHolder.capture()` / `setOrClear()` / `runWith()` / `callWith()` 已提供纯 Java 上下文快照能力，`RequestContextTaskDecorator` 和统一 `applicationTaskExecutor` 已支持 `@Async` 线程传播请求上下文与 MDC。
 - `RemoteCallWrapper.serviceCallHeaders(callerId)` 已按 platform contract 的 `backendPropagatedHeaders` 生成服务间调用上下文请求头。
 - `RemoteHttpClient` / `RemoteHttpRequest` 已提供 HTTP 服务间调用适配层。
-- `RemoteHttpRequest` 已支持 `serviceId + path`，`RemoteHttpClient` 通过 `app.remote-http.service-base-urls` 解析内部服务地址，`scripts/check-remote-http-contract.js` 已防止示例重新回到手写本地绝对 URL。
+- `RemoteHttpRequest` 已支持 `serviceId + path`，`RemoteHttpClient` 通过 `app.remote-http.service-base-urls` 解析内部服务地址，并通过 `Class<T>` 与 `ParameterizedTypeReference<T>` 两类重载支持简单和嵌套泛型响应；`scripts/check-remote-http-contract.js` 已防止示例重新回到手写本地绝对 URL 或裸响应类型。
 - `project_document/ERROR_CODE_GUIDE.md` 已记录错误码分段和远程调用重试策略。
 - `scripts/check-error-codes.js` 已把 Java 错误码枚举实现、格式、全局唯一性、manifest 分段和远程可重试范围纳入自动校验。
 - `MiddlewareManager.statusReport()` 和 `/api/test/features` 已提供可选能力状态基线，状态词典记录在 `project_document/FEATURE_STATUS_GUIDE.md`。

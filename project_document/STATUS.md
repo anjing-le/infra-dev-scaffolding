@@ -13,7 +13,7 @@
 | S2 AI 协作资产收口 | Ready | Notice prompt smoke 已在临时复制项目验证，母版只保留演示文档和 Prompt 契约 |
 | S3 后续项目复用验证 | In progress | `infra-skill-hub` 已从本母版接入骨架，完成 H0 / H1 / H2 验证，并推进 H3 HTTP/MCP/INTERNAL 调度层、全局与注册级协议配置、凭据托管与选择体验、权限身份头联动、策略批量管理、默认策略模板、调用治理、审计查询、治理指标与前端治理面 |
 | S4 契约与全球化基线 | In progress | 已落地前端 `ApiPaths`、请求上下文头、统一时间工具、`utils/locale`、响应解析 helper、platform locale contract；后端已落地 `ApiConstants` 运行路径引用、`RequestContextFilter`、`LocaleUtils` 语言归一化、`TimeZoneUtils` 时区归一化、UTC 默认时间策略、响应 `requestId`、`PageResult`、API 契约指南、`contracts/service-boundaries.json` 和 `/v3/api-docs` OpenAPI JSON |
-| S5 分布式可观测基线 | In progress | 已落地 MDC 日志字段、Controller 路径/耗时/错误码访问日志、异步上下文传播、`RemoteCallWrapper.serviceCallHeaders(callerId)`、`RemoteHttpClient`、错误码分段指南、`scripts/check-backend-context-contract.js`、`scripts/check-async-context-contract.js`、`scripts/check-error-codes.js`、`/api/test/features` 可选能力状态接口和 dev/test/prod profile 矩阵 |
+| S5 分布式可观测基线 | In progress | 已落地 MDC 日志字段、Controller 路径/耗时/错误码访问日志、异步上下文传播、`RemoteCallWrapper.serviceCallHeaders(callerId)`、支持 `ParameterizedTypeReference` 泛型响应的 `RemoteHttpClient`、错误码分段指南、`scripts/check-backend-context-contract.js`、`scripts/check-async-context-contract.js`、`scripts/check-error-codes.js`、`/api/test/features` 可选能力状态接口和 dev/test/prod profile 矩阵 |
 | S7 契约生成与共享包 | In progress | 已落地 `project_document/SHARED_KERNEL_GUIDE.md`、`project_document/OPENAPI_CONTRACT_GUIDE.md`、`project_document/SERVICE_BOUNDARY_GUIDE.md`、`scripts/check-openapi-contract.js`、`scripts/check-service-boundaries.js`、`scripts/check-shared-kernel.js` 和 `scripts/check-async-context-contract.js`，先守住未来可抽 `anjing-common`、服务边界、异步上下文传播与前端类型生成的契约边界 |
 
 ## 当前证据链
@@ -46,7 +46,9 @@ node scripts/check-remote-http-contract.js
 (cd backend && mvn -q -Dtest=RequestContextTaskDecoratorTest test)
 (cd backend && mvn -q -Dtest=LocaleUtilsTest test)
 (cd backend && mvn -q -Dtest=TimeZoneUtilsTest test)
+(cd backend && mvn -q -Dtest=JsonUtilsTest test)
 (cd backend && mvn -q -Dtest=RemoteCallWrapperContextHeadersTest test)
+(cd backend && mvn -q -Dtest=RemoteHttpClientTest test)
 (cd backend && mvn -q -DskipTests package)
 (cd frontend && pnpm build)
 (cd frontend && pnpm -s clean:dev)
@@ -76,11 +78,11 @@ AI 协作验证：
   - 后端 `RequestContextFilter` 已统一生成/透传 requestId、traceId、租户、用户、语言和时区上下文，`Accept-Language` 已通过 `LocaleUtils.normalizeAcceptLanguage` 归一化到 platform contract 支持语言，`X-Time-Zone` 已通过 `TimeZoneUtils.normalizeTimeZone` 归一化到默认 UTC 或合法 zone id，`ControllerLogAspect` 访问日志已固定输出接口路径、耗时和错误码；`node scripts/check-backend-context-contract.js` 已校验后端入站上下文、MDC、响应头、访问日志字段和远程调用透传。
   - `GlobalRequestContextHolder` 已提供纯 Java 上下文快照和 `runWith/callWith` 辅助方法；`RequestContextTaskDecorator` 与统一 `applicationTaskExecutor` 已让 `@Async` 线程传播 requestId、traceId、租户、用户、语言、时区和 MDC；`node scripts/check-async-context-contract.js` 已纳入守护。
   - `PageResult` 已去除 Spring Data Page 依赖，作为纯分页 payload；Spring Page 需要在业务层展开为 records/total/current/size。
-  - 共享内核边界记录在 `project_document/SHARED_KERNEL_GUIDE.md`，`LocaleUtils` 和 `TimeZoneUtils` 已作为纯 Java 全球化契约工具纳入共享候选；`node scripts/check-shared-kernel.js` 已校验候选共享类不依赖 Spring Web、Servlet、JPA 或运行时层。
+  - 共享内核边界记录在 `project_document/SHARED_KERNEL_GUIDE.md`，`LocaleUtils` 和 `TimeZoneUtils` 已作为纯 Java 全球化契约工具纳入共享候选，`JsonUtils` 已具备无 Spring 容器默认 mapper；`node scripts/check-shared-kernel.js` 已校验候选共享类不依赖 Spring Web、Servlet、JPA 或运行时层。
   - 业务当前时间统一通过 `DateUtils.nowIso()`、`DateUtils.now(pattern)`、`DateUtils.nowEpochMilli()` 等 UTC 出口获取，默认 zone 来自 `TimeZoneUtils.defaultZoneId()`，自检脚本已禁止业务源码直接调用 `Instant.now()` / `LocalDateTime.now()`。
   - 前端展示时间、展示语言、导出文件名时间戳、错误时间戳和日期 key 已收口到 `frontend/src/utils/time` 与 `frontend/src/utils/locale`；`node scripts/check-frontend-time-contract.js` 已禁止页面/组件直接散落 `toLocale*`、`Intl.DateTimeFormat`、浏览器语言读取和 `useDateFormat`。
-  - HTTP 服务间调用使用 `RemoteHttpClient`，内部服务地址通过 `app.remote-http.service-base-urls` 统一配置，调用侧优先使用 `serviceId + path`；自定义 adapter 使用 `RemoteCallWrapper.serviceCallHeaders(callerId)` 按 `backendPropagatedHeaders` 透传 requestId、traceId、租户、用户、语言和时区。
-  - `node scripts/check-remote-http-contract.js` 已校验后端远程 HTTP 调用具备 service registry、示例不再拼接本地绝对 URL、文档使用 `serviceId + path`，且服务间透传头来自 platform contract。
+  - HTTP 服务间调用使用 `RemoteHttpClient`，内部服务地址通过 `app.remote-http.service-base-urls` 统一配置，调用侧优先使用 `serviceId + path`；标准响应、分页响应或列表响应使用 `ParameterizedTypeReference<T>` 保留嵌套泛型；自定义 adapter 使用 `RemoteCallWrapper.serviceCallHeaders(callerId)` 按 `backendPropagatedHeaders` 透传 requestId、traceId、租户、用户、语言和时区。
+  - `node scripts/check-remote-http-contract.js` 已校验后端远程 HTTP 调用具备 service registry、泛型响应重载、示例不再拼接本地绝对 URL、文档使用 `serviceId + path`，且服务间透传头来自 platform contract。
   - 错误码按 `project_document/ERROR_CODE_GUIDE.md` 分段，`node scripts/check-error-codes.js` 已校验 Java 错误码枚举必须实现 `ErrorCode`、4 位数字、全局唯一并落在 `contracts/platform-contract.json` 分段内。
   - 远程调用默认只重试 `1800-1899`，`RemoteCallWrapper` 已读取 `PlatformContractConstants.ErrorCodes.RETRYABLE_RANGES`，避免在业务代码里硬编码重试范围。
   - `node scripts/check-openapi-contract.js` 已校验 springdoc 依赖、OpenAPI 配置、平台请求头、Auth 明确 DTO/VO 和前端 auth 类型一致性。

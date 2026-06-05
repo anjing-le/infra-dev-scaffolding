@@ -15,7 +15,9 @@ echo "quality-gate: backend contract tests"
   mvn -q -Dtest=RequestContextTaskDecoratorTest test
   mvn -q -Dtest=LocaleUtilsTest test
   mvn -q -Dtest=TimeZoneUtilsTest test
+  mvn -q -Dtest=JsonUtilsTest test
   mvn -q -Dtest=RemoteCallWrapperContextHeadersTest test
+  mvn -q -Dtest=RemoteHttpClientTest test
   mvn -q -DskipTests package
 )
 

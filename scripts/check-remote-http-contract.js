@@ -14,6 +14,7 @@ const files = {
   remoteWrapper: 'backend/src/main/java/com/anjing/util/RemoteCallWrapper.java',
   application: 'backend/src/main/resources/application.yml',
   example: 'backend/src/main/java/com/anjing/example/RemoteCallExampleService.java',
+  test: 'backend/src/test/java/com/anjing/client/RemoteHttpClientTest.java',
   guide: 'project_document/REMOTE_CALL_GUIDE.md'
 }
 
@@ -43,6 +44,9 @@ requireToken(files.request, 'private String serviceId')
 requireToken(files.request, 'private String path')
 requireToken(files.client, 'getFromService')
 requireToken(files.client, 'postToService')
+requireToken(files.client, 'ParameterizedTypeReference')
+requireToken(files.client, 'exchange(RemoteHttpRequest request, ParameterizedTypeReference<R> responseType)')
+requireToken(files.client, 'responseSpec.body(responseType)')
 requireToken(files.client, 'resolveUrl')
 requireToken(files.client, 'joinUrl')
 requireToken(files.client, 'properties.getServiceBaseUrls()')
@@ -53,9 +57,14 @@ requireToken(files.remoteWrapper, 'appendContextHeader')
 requireToken(files.example, 'ServiceBoundaryConstants.APPLICATION_ID')
 requireToken(files.example, '.serviceId(ServiceBoundaryConstants.APPLICATION_ID)')
 requireToken(files.example, '.path(ApiConstants.Test.PING_FULL)')
+requireToken(files.example, 'new ParameterizedTypeReference<APIResponse<String>>()')
+requireToken(files.test, 'APIResponse<PageResult<ItemView>>')
+requireToken(files.test, 'MockRestServiceServer')
+requireToken(files.test, 'ParameterizedTypeReference<APIResponse<PageResult<ItemView>>>')
 requireToken(files.guide, 'ServiceBoundaryConstants.Auth.OWNER')
 requireToken(files.guide, '.path(ApiConstants.Auth.ME_FULL)')
 requireToken(files.guide, 'ServiceBoundaryConstants.APPLICATION_ID')
+requireToken(files.guide, 'new ParameterizedTypeReference<APIResponse<CurrentUserResponse>>()')
 requireToken(files.guide, 'service-base-urls:')
 
 let serviceBoundaries
