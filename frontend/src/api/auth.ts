@@ -1,6 +1,6 @@
 import request from '@/utils/http'
 import { ApiPaths } from './paths'
-import type { LoginParams, LoginResponse, UserInfo } from './model/authModel'
+import type { LoginParams, LoginResponse, RefreshTokenParams, UserInfo } from './model/authModel'
 
 /**
  * 登录
@@ -23,5 +23,17 @@ export function fetchLogin(params: LoginParams) {
 export function fetchGetUserInfo() {
   return request.get<UserInfo>({
     url: ApiPaths.auth.me
+  })
+}
+
+/**
+ * 刷新 Token
+ * @param params refresh token 参数
+ * @returns 登录响应
+ */
+export function fetchRefreshToken(params: RefreshTokenParams) {
+  return request.post<LoginResponse>({
+    url: ApiPaths.auth.refresh,
+    params
   })
 }

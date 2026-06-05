@@ -1,0 +1,133 @@
+#!/usr/bin/env node
+const fs = require('fs')
+const path = require('path')
+
+const root = path.resolve(__dirname, '..')
+
+const files = {
+  pom: 'backend/pom.xml',
+  app: 'backend/src/main/resources/application.yml',
+  dev: 'backend/src/main/resources/application-dev.yml',
+  test: 'backend/src/main/resources/application-test.yml',
+  prod: 'backend/src/main/resources/application-prod.yml',
+  applicationClass: 'backend/src/main/java/com/anjing/Application.java',
+  config: 'backend/src/main/java/com/anjing/config/openapi/OpenApiConfig.java',
+  authController: 'backend/src/main/java/com/anjing/controller/AuthController.java',
+  testController: 'backend/src/main/java/com/anjing/controller/TestController.java',
+  loginRequest: 'backend/src/main/java/com/anjing/model/request/LoginRequest.java',
+  refreshRequest: 'backend/src/main/java/com/anjing/model/request/RefreshTokenRequest.java',
+  tokenResponse: 'backend/src/main/java/com/anjing/model/response/AuthTokenResponse.java',
+  currentUserResponse: 'backend/src/main/java/com/anjing/model/response/CurrentUserResponse.java',
+  frontendAuthModel: 'frontend/src/api/model/authModel.ts',
+  frontendAuthApi: 'frontend/src/api/auth.ts',
+  guide: 'project_document/OPENAPI_CONTRACT_GUIDE.md',
+  status: 'project_document/STATUS.md'
+}
+
+function fail(message) {
+  console.error(`check-openapi-contract: ${message}`)
+  process.exit(1)
+}
+
+function read(relativeFile) {
+  const file = path.join(root, relativeFile)
+  if (!fs.existsSync(file)) {
+    fail(`missing required file: ${relativeFile}`)
+  }
+  return fs.readFileSync(file, 'utf8')
+}
+
+function requireToken(relativeFile, token) {
+  const source = read(relativeFile)
+  if (!source.includes(token)) {
+    fail(`${relativeFile} is missing token: ${token}`)
+  }
+}
+
+function requireAbsent(relativeFile, pattern, description) {
+  const source = read(relativeFile)
+  if (pattern.test(source)) {
+    fail(`${relativeFile} contains ${description}: ${pattern}`)
+  }
+}
+
+requireToken(files.pom, '<springdoc-openapi.version>2.8.17</springdoc-openapi.version>')
+requireToken(files.pom, '<artifactId>springdoc-openapi-starter-webmvc-api</artifactId>')
+requireAbsent(files.pom, /springdoc-openapi-starter-webmvc-ui/, 'Swagger UI dependency')
+requireToken(files.applicationClass, 'OpenAPI JSON')
+requireAbsent(files.applicationClass, /swagger-ui/, 'Swagger UI startup link')
+
+for (const token of [
+  'springdoc:',
+  'api-docs:',
+  'path: /v3/api-docs',
+  'packages-to-scan: com.anjing.controller',
+  'paths-to-match: /api/**'
+]) {
+  requireToken(files.app, token)
+}
+
+requireToken(files.dev, 'enabled: ${OPENAPI_API_DOCS_ENABLED:true}')
+requireToken(files.test, 'enabled: ${OPENAPI_API_DOCS_ENABLED:true}')
+requireToken(files.prod, 'enabled: ${OPENAPI_API_DOCS_ENABLED:false}')
+
+for (const token of [
+  'GroupedOpenApi',
+  'OperationCustomizer',
+  'PlatformContractConstants.API_PREFIX + "/**"',
+  'RequestHeaderConstants.REQUEST_ID',
+  'RequestHeaderConstants.TRACE_ID',
+  'RequestHeaderConstants.TENANT_ID',
+  'RequestHeaderConstants.CALLER_ID',
+  'RequestHeaderConstants.TIME_ZONE',
+  'RequestHeaderConstants.ACCEPT_LANGUAGE'
+]) {
+  requireToken(files.config, token)
+}
+
+for (const token of [
+  '@Tag(name = "Auth"',
+  '@Operation(summary = "Login")',
+  'APIResponse<AuthTokenResponse>',
+  'APIResponse<CurrentUserResponse>',
+  '@RequestBody @Validated RefreshTokenRequest'
+]) {
+  requireToken(files.authController, token)
+}
+
+requireAbsent(files.authController, /APIResponse<Map<String,\s*Object>>/, 'Map based auth response')
+requireAbsent(files.authController, /@RequestBody\s+Map<String,\s*String>/, 'Map based refresh request')
+
+requireToken(files.testController, '@Tag(name = "Scaffold Test"')
+requireToken(files.loginRequest, '@Schema(description = "Login request")')
+requireToken(files.refreshRequest, '@Schema(description = "Refresh token request")')
+requireToken(files.tokenResponse, '@Schema(description = "Authentication token payload")')
+requireToken(files.currentUserResponse, '@Schema(description = "Current authenticated user payload")')
+
+for (const token of [
+  'captcha?: string',
+  'rememberMe?: boolean',
+  'accessToken: string',
+  'refreshToken: string',
+  'RefreshTokenParams'
+]) {
+  requireToken(files.frontendAuthModel, token)
+}
+
+requireToken(files.frontendAuthApi, 'fetchRefreshToken')
+requireToken(files.frontendAuthApi, 'ApiPaths.auth.refresh')
+
+for (const token of [
+  '/v3/api-docs',
+  'springdoc-openapi-starter-webmvc-api',
+  'OPENAPI_API_DOCS_ENABLED',
+  'node scripts/check-openapi-contract.js',
+  './scripts/probe-backend-dev.sh'
+]) {
+  requireToken(files.guide, token)
+}
+
+requireToken(files.status, 'node scripts/check-openapi-contract.js')
+requireToken(files.status, '/v3/api-docs')
+
+console.log('check-openapi-contract: ok')

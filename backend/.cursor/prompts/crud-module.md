@@ -52,6 +52,8 @@
 
 7. **Response VO** - `model/response/[EntityName]VO.java`
    - 返回给前端的数据
+   - 不要用 `Map<String, Object>` 代替真实业务响应模型
+   - 可补充 `@Schema` 说明，方便 `/v3/api-docs` 和后续前端类型生成
 
 8. **Page VO** - `model/response/[EntityName]PageVO.java`
    - 列表响应字段使用 `records`、`current`、`size`、`total`
@@ -64,6 +66,7 @@
 ## 代码规范
 
 - 统一返回 `APIResponse<T>`
+- 真实业务接口使用明确 Request / Response DTO，不要用 `Map<String, Object>` 作为请求体或响应数据
 - 新增或复用 `ApiConstants` 中的路径常量，Controller 注解不要硬编码 URL
 - 同步提醒前端在 `src/api/paths.ts` 的 `ApiPaths` 中补齐对应路径
 - 列表接口 `GET /api/[resource]` 使用 `@ModelAttribute [EntityName]SearchRequest`

@@ -8,15 +8,17 @@
 export interface LoginParams {
   username: string
   password: string
+  captcha?: string
+  rememberMe?: boolean
 }
 
 /** 登录响应（兼容后端 accessToken/refreshToken 字段） */
 export interface LoginResponse {
   token?: string
-  accessToken?: string
-  refreshToken?: string
-  tokenType?: string
-  expiresIn?: number
+  accessToken: string
+  refreshToken: string
+  tokenType: string
+  expiresIn: number
 }
 
 /** 用户信息 */
@@ -29,5 +31,10 @@ export interface UserInfo {
   nickName?: string
   email?: string
   avatar?: string
+  createTime?: string
 }
 
+/** 刷新 Token 参数 */
+export interface RefreshTokenParams {
+  refreshToken: string
+}

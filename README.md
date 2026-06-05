@@ -90,6 +90,10 @@ node scripts/check-error-codes.js
 ```
 
 ```bash
+node scripts/check-openapi-contract.js
+```
+
+```bash
 node scripts/check-shared-kernel.js
 ```
 

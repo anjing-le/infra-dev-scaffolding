@@ -30,6 +30,10 @@ management:
       exposure:
         include: health,info
 
+springdoc:
+  api-docs:
+    enabled: ${OPENAPI_API_DOCS_ENABLED:false}
+
 logging:
   level:
     root: INFO

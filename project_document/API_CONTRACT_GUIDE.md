@@ -1,6 +1,6 @@
 # API Contract Guide
 
-本文档定义前后端共同遵守的 API 契约。脚手架未来可以接 OpenAPI / 类型生成，但当前先以稳定字段和生成规则约束所有新增接口。
+本文档定义前后端共同遵守的 API 契约。运行接口的 OpenAPI JSON 入口和类型生成方向见 `project_document/OPENAPI_CONTRACT_GUIDE.md`；本文关注所有新增接口必须遵守的稳定字段和生成规则。
 
 机器可读版本位于 `contracts/platform-contract.json`，维护方式见 `project_document/PLATFORM_CONTRACT_GUIDE.md`。
 
@@ -29,6 +29,7 @@
 ## Backend Rules
 
 - Controller 返回 `APIResponse<T>`。
+- 真实业务接口使用明确 Request / Response DTO，不要用 `Map<String, Object>` 作为业务 payload；这样 `/v3/api-docs` 才能生成稳定 schema。
 - 有数据：`APIResponse.success(data)`。
 - String 数据：`APIResponse.successData("pong")`，避免和成功消息重载混淆。
 - 无数据自定义消息：`APIResponse.successMessage("删除成功")`。
@@ -91,4 +92,8 @@ PageResult.of(page.getContent(), page.getTotalElements(), page.getNumber() + 1, 
 node scripts/check-platform-contract.js
 ```
 
-该脚本会检查 API path、response envelope、分页字段、请求上下文、远程调用和时间工具的关键契约是否仍然集中管理。
+```bash
+node scripts/check-openapi-contract.js
+```
+
+该脚本会检查 API path、response envelope、分页字段、请求上下文、远程调用、时间工具和 OpenAPI 的关键契约是否仍然集中管理。

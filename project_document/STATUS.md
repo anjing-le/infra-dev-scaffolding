@@ -12,9 +12,9 @@
 | S1 工程母版收口 | Ready | `./scripts/check-template.sh` 和 `./scripts/smoke-copy.sh` 已通过 |
 | S2 AI 协作资产收口 | Ready | Notice prompt smoke 已在临时复制项目验证，母版只保留演示文档和 Prompt 契约 |
 | S3 后续项目复用验证 | In progress | `infra-skill-hub` 已从本母版接入骨架，完成 H0 / H1 / H2 验证，并推进 H3 HTTP/MCP/INTERNAL 调度层、全局与注册级协议配置、凭据托管与选择体验、权限身份头联动、策略批量管理、默认策略模板、调用治理、审计查询、治理指标与前端治理面 |
-| S4 契约与全球化基线 | In progress | 已落地前端 `ApiPaths`、请求上下文头、统一时间工具、响应解析 helper；后端已落地 `ApiConstants` 运行路径引用、`RequestContextFilter`、UTC 默认时间策略、响应 `requestId`、`PageResult` 和 API 契约指南 |
+| S4 契约与全球化基线 | In progress | 已落地前端 `ApiPaths`、请求上下文头、统一时间工具、响应解析 helper；后端已落地 `ApiConstants` 运行路径引用、`RequestContextFilter`、UTC 默认时间策略、响应 `requestId`、`PageResult`、API 契约指南和 `/v3/api-docs` OpenAPI JSON |
 | S5 分布式可观测基线 | In progress | 已落地 MDC 日志字段、`RemoteCallWrapper.serviceCallHeaders(callerId)`、`RemoteHttpClient`、错误码分段指南、`scripts/check-error-codes.js`、`/api/test/features` 可选能力状态接口和 dev/test/prod profile 矩阵 |
-| S7 契约生成与共享包 | In progress | 已落地 `project_document/SHARED_KERNEL_GUIDE.md` 和 `scripts/check-shared-kernel.js`，先守住未来可抽 `anjing-common` 的纯契约/工具边界 |
+| S7 契约生成与共享包 | In progress | 已落地 `project_document/SHARED_KERNEL_GUIDE.md`、`project_document/OPENAPI_CONTRACT_GUIDE.md`、`scripts/check-openapi-contract.js` 和 `scripts/check-shared-kernel.js`，先守住未来可抽 `anjing-common` 与前端类型生成的契约边界 |
 
 ## 当前证据链
 
@@ -29,6 +29,7 @@ node scripts/generate-platform-contract-backend.js --check
 node scripts/generate-platform-contract-frontend.js --check
 node scripts/check-platform-contract.js
 node scripts/check-error-codes.js
+node scripts/check-openapi-contract.js
 node scripts/check-shared-kernel.js
 ./scripts/smoke-copy.sh
 ./scripts/probe-backend-dev.sh
@@ -50,6 +51,9 @@ AI 协作验证：
   - 前端删除请求使用项目 HTTP 工具的 `request.del`。
   - 前端标准响应消息使用 `message`，`msg` 兼容集中在 `utils/http/response.ts`。
   - API envelope 契约记录在 `project_document/API_CONTRACT_GUIDE.md`。
+  - OpenAPI 运行接口契约记录在 `project_document/OPENAPI_CONTRACT_GUIDE.md`；后端通过 `springdoc-openapi-starter-webmvc-api` 暴露 `/v3/api-docs`，dev/test 默认开启，prod 默认关闭并可通过 `OPENAPI_API_DOCS_ENABLED=true` 显式开启。
+  - `OpenApiConfig` 已限制 OpenAPI 只扫描 `com.anjing.controller` 和 `/api/**`，并给每个 operation 补充 requestId、traceId、tenantId、callerId、timeZone、language 等平台请求头。
+  - `AuthController` 已将登录、当前用户和刷新 Token 的运行 payload 从 `Map` 收敛为 `LoginRequest`、`RefreshTokenRequest`、`AuthTokenResponse` 和 `CurrentUserResponse`，前端 `authModel.ts` 与全局 `Api.Auth` 类型已同步。
   - `contracts/platform-contract.json` 已记录 API 前缀、响应 envelope、分页字段、请求上下文头、UTC 时间策略和错误码分段，并生成 `backend/src/main/java/com/anjing/model/constants/PlatformContractConstants.java` 与 `frontend/src/contracts/platform-contract.ts` 供前后端基础工具复用；`node scripts/generate-platform-contract-backend.js --check`、`node scripts/generate-platform-contract-frontend.js --check` 和 `node scripts/check-platform-contract.js` 已校验生成产物、Java/TypeScript/文档一致。
   - `PageResult` 已去除 Spring Data Page 依赖，作为纯分页 payload；Spring Page 需要在业务层展开为 records/total/current/size。
   - 共享内核边界记录在 `project_document/SHARED_KERNEL_GUIDE.md`，`node scripts/check-shared-kernel.js` 已校验候选共享类不依赖 Spring Web、Servlet、JPA 或运行时层。
@@ -57,10 +61,11 @@ AI 协作验证：
   - HTTP 服务间调用使用 `RemoteHttpClient`，自定义 adapter 使用 `RemoteCallWrapper.serviceCallHeaders(callerId)` 透传 requestId、traceId、租户、用户、语言和时区。
   - 错误码按 `project_document/ERROR_CODE_GUIDE.md` 分段，`node scripts/check-error-codes.js` 已校验 Java 错误码枚举必须实现 `ErrorCode`、4 位数字、全局唯一并落在 `contracts/platform-contract.json` 分段内。
   - 远程调用默认只重试 `1800-1899`，`RemoteCallWrapper` 已读取 `PlatformContractConstants.ErrorCodes.RETRYABLE_RANGES`，避免在业务代码里硬编码重试范围。
-  - `./scripts/check-contracts.sh` 已将 API 路径、响应 envelope、分页字段、请求上下文、远程调用、时间工具和错误码的关键约束纳入可执行检查。
+  - `node scripts/check-openapi-contract.js` 已校验 springdoc 依赖、OpenAPI 配置、平台请求头、Auth 明确 DTO/VO 和前端 auth 类型一致性。
+  - `./scripts/check-contracts.sh` 已将 API 路径、响应 envelope、分页字段、请求上下文、远程调用、时间工具、错误码和 OpenAPI 的关键约束纳入可执行检查。
   - 可选中间件状态按 `project_document/FEATURE_STATUS_GUIDE.md` 使用 `disabled/configured/ready/degraded`，并通过 `/api/test/features` 输出。
   - 后端 profile 矩阵按 `project_document/ENVIRONMENT_PROFILE_GUIDE.md` 管理，`dev/test` 使用 H2 轻启动，`prod` 通过环境变量显式开启 MySQL 和外部中间件。
-  - 本地轻启动验证记录在 `project_document/LOCAL_STARTUP_GUIDE.md`，已验证 `dev` profile 下 `/api/test/health` 和 `/api/test/features` 可返回。
+  - 本地轻启动验证记录在 `project_document/LOCAL_STARTUP_GUIDE.md`，已验证 `dev` profile 下 `/api/test/health`、`/api/test/features` 和 `/v3/api-docs` 可返回。
 
 下游复用验证：
 

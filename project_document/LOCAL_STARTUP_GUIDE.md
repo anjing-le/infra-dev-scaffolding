@@ -46,6 +46,7 @@ SPRING_PROFILES_ACTIVE=dev SERVER_PORT=18180 mvn spring-boot:run
 ```bash
 curl -fsS http://localhost:18180/api/test/health
 curl -fsS http://localhost:18180/api/test/features
+curl -fsS http://localhost:18180/v3/api-docs
 ```
 
 期望关键字段：
@@ -81,6 +82,7 @@ curl -fsS http://localhost:18180/api/test/features
 - `SPRING_PROFILES_ACTIVE=dev SERVER_PORT=18180 mvn -q spring-boot:run` 能启动。
 - `/api/test/health` 返回 `status=UP`、`activeProfiles=["dev"]`。
 - `/api/test/features` 返回 `status=ready`，Database 为 `H2 (MySQL mode)`，Redis/Kafka/MinIO/OSS 为 `disabled`。
+- `/v3/api-docs` 返回 OpenAPI 3 JSON，并包含 `/api/auth/login`、`/api/auth/me`、`/api/test/health` 和平台请求头。
 - `./scripts/probe-backend-dev.sh` 启动后会自动停止进程，避免留下后台服务。
 
 ## MySQL Integration

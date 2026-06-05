@@ -4,14 +4,20 @@ import com.anjing.model.constants.ApiConstants;
 import com.anjing.model.errorcode.AuthErrorCode;
 import com.anjing.model.exception.BizException;
 import com.anjing.model.request.LoginRequest;
+import com.anjing.model.request.RefreshTokenRequest;
 import com.anjing.model.response.APIResponse;
+import com.anjing.model.response.AuthTokenResponse;
+import com.anjing.model.response.CurrentUserResponse;
 import com.anjing.util.DateUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * 认证控制器
@@ -27,6 +33,7 @@ import java.util.*;
 @RequestMapping(ApiConstants.Auth.BASE)
 @RequiredArgsConstructor
 @Validated
+@Tag(name = "Auth", description = "Authentication and current-user APIs")
 public class AuthController {
 
     /**
@@ -39,7 +46,8 @@ public class AuthController {
      * @return 包含 Token 的登录响应
      */
     @PostMapping(ApiConstants.Auth.LOGIN)
-    public APIResponse<Map<String, Object>> login(@RequestBody @Validated LoginRequest request) {
+    @Operation(summary = "Login")
+    public APIResponse<AuthTokenResponse> login(@RequestBody @Validated LoginRequest request) {
         log.info("用户登录请求: username={}", request.getUsername());
 
         // Mock 校验：仅 admin/admin123 可登录
@@ -51,14 +59,8 @@ public class AuthController {
         String token = "token_" + UUID.randomUUID().toString().replace("-", "");
         String refreshToken = "refresh_" + UUID.randomUUID().toString().replace("-", "");
 
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("accessToken", token);
-        data.put("refreshToken", refreshToken);
-        data.put("tokenType", "Bearer");
-        data.put("expiresIn", 7200);
-
         log.info("用户登录成功: username={}", request.getUsername());
-        return APIResponse.success(data, "登录成功");
+        return APIResponse.success(AuthTokenResponse.bearer(token, refreshToken, 7200), "登录成功");
     }
 
     /**
@@ -71,21 +73,23 @@ public class AuthController {
      * @return 用户信息
      */
     @GetMapping(ApiConstants.Auth.ME)
-    public APIResponse<Map<String, Object>> getCurrentUser(
+    @Operation(summary = "Get current user")
+    public APIResponse<CurrentUserResponse> getCurrentUser(
             @RequestHeader(value = "Authorization", required = false) String authorization) {
 
         log.info("获取当前用户信息");
 
         // Mock 用户信息
-        Map<String, Object> userInfo = new LinkedHashMap<>();
-        userInfo.put("userId", 1);
-        userInfo.put("userName", "admin");
-        userInfo.put("nickName", "系统管理员");
-        userInfo.put("email", "admin@example.com");
-        userInfo.put("avatar", "");
-        userInfo.put("roles", List.of("R_SUPER", "R_ADMIN"));
-        userInfo.put("permissions", List.of("*:*:*"));
-        userInfo.put("createTime", DateUtils.nowIso());
+        CurrentUserResponse userInfo = CurrentUserResponse.builder()
+                .userId(1L)
+                .userName("admin")
+                .nickName("系统管理员")
+                .email("admin@example.com")
+                .avatar("")
+                .roles(List.of("R_SUPER", "R_ADMIN"))
+                .permissions(List.of("*:*:*"))
+                .createTime(DateUtils.nowIso())
+                .build();
 
         return APIResponse.success(userInfo);
     }
@@ -98,6 +102,7 @@ public class AuthController {
      * @return 登出结果
      */
     @PostMapping(ApiConstants.Auth.LOGOUT)
+    @Operation(summary = "Logout")
     public APIResponse<Void> logout() {
         log.info("用户登出");
         return APIResponse.successMessage("登出成功");
@@ -108,12 +113,13 @@ public class AuthController {
      *
      * <p>Mock 实现：返回新的模拟 Token</p>
      *
-     * @param body 包含 refreshToken 的请求体
+     * @param request 包含 refreshToken 的请求体
      * @return 新的 Token
      */
     @PostMapping(ApiConstants.Auth.REFRESH)
-    public APIResponse<Map<String, Object>> refreshToken(@RequestBody Map<String, String> body) {
-        String refreshToken = body.get("refreshToken");
+    @Operation(summary = "Refresh token")
+    public APIResponse<AuthTokenResponse> refreshToken(@RequestBody @Validated RefreshTokenRequest request) {
+        String refreshToken = request.getRefreshToken();
         log.info("刷新 Token 请求");
 
         if (refreshToken == null || refreshToken.isBlank()) {
@@ -123,12 +129,6 @@ public class AuthController {
         String newToken = "token_" + UUID.randomUUID().toString().replace("-", "");
         String newRefreshToken = "refresh_" + UUID.randomUUID().toString().replace("-", "");
 
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("accessToken", newToken);
-        data.put("refreshToken", newRefreshToken);
-        data.put("tokenType", "Bearer");
-        data.put("expiresIn", 7200);
-
-        return APIResponse.success(data, "Token 刷新成功");
+        return APIResponse.success(AuthTokenResponse.bearer(newToken, newRefreshToken, 7200), "Token 刷新成功");
     }
 }

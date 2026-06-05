@@ -177,6 +177,15 @@ management:
     health:
       show-details: when-authorized
 
+# OpenAPI contract endpoint.
+# Dev/test expose it for frontend type generation and integration checks; prod disables it by default.
+springdoc:
+  api-docs:
+    enabled: ${OPENAPI_API_DOCS_ENABLED:true}
+    path: /v3/api-docs
+  packages-to-scan: com.anjing.controller
+  paths-to-match: /api/**
+
 # 🎛️ 功能特性配置 - 条件化启用各种功能
 app:
   # 远程 HTTP 调用默认配置：用于未来服务间调用或外部 API 适配

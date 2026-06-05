@@ -59,6 +59,7 @@ public class NoticeController {
 - **认证信息**: `@RequestHeader("Authorization")`
 - **请求上下文**: 不要在 Controller 手动生成 requestId。统一由 `RequestContextFilter` 读取或生成 `X-Request-Id` / `X-Trace-Id`，并写入 `GlobalRequestContextHolder`。
 - **请求头常量**: 需要读取 `X-Request-Id`、`X-Trace-Id`、`X-Tenant-Id`、`X-Time-Zone`、`Accept-Language` 等头时，使用 `RequestHeaderConstants`。
+- **OpenAPI 契约**: 真实业务接口使用明确 Request / Response DTO，不要用 `Map<String, Object>` 承载业务 payload。需要让 `/v3/api-docs` 更清楚时，在 DTO/VO 上补充 `@Schema`。
 
 ## 响应规范
 

@@ -48,6 +48,7 @@ mvn spring-boot:run
 | MinIO | disabled | disabled | disabled | `FEATURE_MINIO_ENABLED=true` |
 | OSS | disabled | disabled | disabled | `FEATURE_OSS_ENABLED=true` |
 | Monitoring | enabled | enabled, metrics off | enabled | `FEATURE_MONITORING_METRICS_ENABLED=true` |
+| OpenAPI API Docs | enabled | enabled | disabled | `OPENAPI_API_DOCS_ENABLED=true` |
 
 能力运行状态通过：
 

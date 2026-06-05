@@ -74,6 +74,7 @@
 - 请求链路具备 `requestId`、`traceId`、语言和时区上下文。
 - 后端默认 UTC，可通过环境变量覆盖应用时区。
 - 前端具备统一时间工具，新增页面不直接手写日期格式化逻辑。
+- 后端提供 OpenAPI JSON 作为前端类型生成、网关和服务调用方的接口契约入口。
 - AI Rules / Prompts 纳入 URL、响应、时间和上下文契约。
 
 ### S5: 分布式可观测基线
@@ -110,6 +111,7 @@
 - `frontend/src/contracts/platform-contract.ts` 已由 manifest 生成并被前端 HTTP、响应和时间工具复用。
 - `scripts/generate-platform-contract-backend.js --check`、`scripts/generate-platform-contract-frontend.js --check` 和 `scripts/check-platform-contract.js` 已校验生成产物、前后端代码及文档一致。
 - `scripts/check-error-codes.js` 已校验 Java 错误码枚举和 platform contract 分段一致，`RemoteCallWrapper` 已读取生成的可重试范围。
+- `springdoc-openapi-starter-webmvc-api` 已提供 `/v3/api-docs`，`scripts/check-openapi-contract.js` 与 `./scripts/probe-backend-dev.sh` 已校验 OpenAPI 配置、平台请求头和 auth DTO/VO 契约。
 - `project_document/SHARED_KERNEL_GUIDE.md` 已定义共享内核边界。
 - `scripts/check-shared-kernel.js` 已守护可抽取契约/工具类不能依赖 Spring Web、Servlet、JPA 或运行时层。
 

@@ -34,6 +34,7 @@
 
 - 前端 API URL 已开始收口到 `ApiPaths`，后端运行 Controller 已开始引用 `ApiConstants`；`ApiConstants` 内部也已收口为 `API_PREFIX`、模块 `BASE`、相对子路径和 `*_FULL`，并由 `scripts/check-api-constants.js` 守护。路径规则已记录到 `project_document/API_PATH_GUIDE.md`；后续需要继续扩大覆盖面，并评估与 OpenAPI 的生成关系。
 - 响应契约已开始收敛到 `APIResponse` + `message` + `PageResult(records/current/size/total)`，并已记录到 `project_document/API_CONTRACT_GUIDE.md`；`msg`、`BaseResponse`、`PageResponse` 仅作为旧接口或远程响应兼容入口。
+- OpenAPI 运行接口契约已开始落地，`/v3/api-docs` 由 `springdoc-openapi-starter-webmvc-api` 暴露，dev/test 默认开启、prod 默认关闭；`project_document/OPENAPI_CONTRACT_GUIDE.md` 和 `scripts/check-openapi-contract.js` 已守护后续前端类型生成入口。
 - 平台级契约已沉淀为 `contracts/platform-contract.json`，覆盖 API 前缀、响应 envelope、分页字段、请求头、时间策略、错误码分段和可重试范围；后端生成 `PlatformContractConstants.java`，前端生成 `frontend/src/contracts/platform-contract.ts`，供路径、请求头、响应解析、时间工具和远程重试判断复用，并由 `scripts/generate-platform-contract-backend.js --check`、`scripts/generate-platform-contract-frontend.js --check`、`scripts/check-platform-contract.js` 校验生成产物、前后端与文档一致性。
 - 时间策略已开始转向 UTC 默认和客户端时区展示，后续需要继续把存量页面时间展示迁移到统一工具。
 - 请求上下文已开始具备 `requestId`、`traceId`、语言和时区透传，并已接入日志格式、远程调用请求头生成和统一 HTTP client adapter；后续需要继续接入权限上下文和真实 RPC client adapter。
@@ -48,6 +49,7 @@
 这些是脚手架层面的长期资产，应该逐步落地：
 
 - 统一 API 契约：`code`、`message`、`data`、`timestamp`、`requestId`、分页字段、错误码命名。
+- 统一接口文档契约：后端运行接口暴露 OpenAPI JSON，前端类型生成和 AI Prompts 都从同一入口理解 DTO/VO。
 - 统一 URL 管理：后端 `ApiConstants` 与前端 `ApiPaths` / `apiUrl()`，禁止业务页面手写 URL 字符串。
 - 统一请求上下文：请求进入后生成或透传 `X-Request-Id`，保留 `X-Trace-Id`、`X-Tenant-Id`、`X-User-Id`、`X-Time-Zone`、`Accept-Language`。
 - 统一时间策略：服务端存储 UTC，接口输出 ISO-8601，前端按用户时区格式化展示。
@@ -91,6 +93,7 @@
 - 后端时间配置支持 `APP_TIME_ZONE`，默认建议 UTC；展示时区由前端或用户配置决定。
 - 前端新增 `utils/time`，所有新增页面通过统一工具格式化时间。
 - Cursor Rules / Prompts 增加 API path、时间和请求上下文约束。
+- OpenAPI 文档入口能输出 `/api/**` 运行接口，并为后续前端类型生成提供稳定入口。
 
 ### S5: 分布式可观测基线
 
@@ -121,6 +124,7 @@
 - `scripts/generate-platform-contract-backend.js --check` 已确保后端平台契约生成文件与 manifest 一致。
 - `scripts/generate-platform-contract-frontend.js --check` 已确保前端平台契约生成文件与 manifest 一致。
 - `scripts/check-platform-contract.js` 已把 `contracts/platform-contract.json` 与 Java/TypeScript/文档的一致性纳入自动校验。
+- `scripts/check-openapi-contract.js` 已把 springdoc 依赖、OpenAPI 配置、平台请求头、Auth DTO/VO 和前端 auth 类型一致性纳入自动校验。
 - `RemoteCallWrapper` 已通过 `PlatformContractConstants.ErrorCodes.RETRYABLE_RANGES` 判断可重试错误码，避免重试范围散落在业务代码。
 
 ### S6: 服务边界与可选适配层

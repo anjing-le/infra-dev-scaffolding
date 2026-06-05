@@ -26,6 +26,7 @@ require_file project_document/AI_ASSETS.md
 require_file project_document/ENVIRONMENT_PROFILE_GUIDE.md
 require_file project_document/LOCAL_STARTUP_GUIDE.md
 require_file project_document/PLATFORM_CONTRACT_GUIDE.md
+require_file project_document/OPENAPI_CONTRACT_GUIDE.md
 require_file project_document/SHARED_KERNEL_GUIDE.md
 require_file contracts/platform-contract.json
 require_file docs/teaching/04-notice-module-demo.md
@@ -35,6 +36,7 @@ require_file scripts/generate-platform-contract-backend.js
 require_file scripts/generate-platform-contract-frontend.js
 require_file scripts/check-platform-contract.js
 require_file scripts/check-error-codes.js
+require_file scripts/check-openapi-contract.js
 require_file scripts/check-shared-kernel.js
 require_file scripts/check-contracts.sh
 require_file scripts/probe-backend-dev.sh

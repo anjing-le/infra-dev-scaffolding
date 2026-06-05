@@ -8,7 +8,9 @@
 
 ```bash
 ./scripts/check-template.sh
+./scripts/check-contracts.sh
 ./scripts/smoke-copy.sh
+./scripts/probe-backend-dev.sh
 ```
 
 前端：
@@ -39,6 +41,7 @@ mvn -q -DskipTests package
 - `backend/.env.example` 中的变量名和 `application.yml` 对应。
 - 数据库连接、Druid 账号、Redis 配置都可通过环境变量覆盖。
 - 健康检查、登录示例、测试 CRUD 接口能按文档验证。
+- `/v3/api-docs` 在 dev/test 可返回 OpenAPI 3 JSON，prod 默认关闭。
 - 日志目录、上传目录、target 产物不会被提交。
 
 ## 文档检查

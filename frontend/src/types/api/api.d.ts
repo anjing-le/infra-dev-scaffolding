@@ -66,15 +66,17 @@ declare namespace Api {
     interface LoginParams {
       username: string
       password: string
+      captcha?: string
+      rememberMe?: boolean
     }
 
     /** 登录响应（兼容后端 accessToken 字段） */
     interface LoginResponse {
       token?: string
-      accessToken?: string
-      refreshToken?: string
-      tokenType?: string
-      expiresIn?: number
+      accessToken: string
+      refreshToken: string
+      tokenType: string
+      expiresIn: number
     }
 
     /** 用户信息 */
@@ -87,6 +89,12 @@ declare namespace Api {
       buttons?: string[]
       email?: string
       avatar?: string
+      createTime?: string
+    }
+
+    /** 刷新 Token 参数 */
+    interface RefreshTokenParams {
+      refreshToken: string
     }
   }
 

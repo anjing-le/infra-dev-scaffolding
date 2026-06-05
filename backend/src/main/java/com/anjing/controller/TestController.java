@@ -7,6 +7,8 @@ import com.anjing.model.errorcode.CommonErrorCode;
 import com.anjing.model.exception.BizException;
 import com.anjing.model.response.APIResponse;
 import com.anjing.util.DateUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,6 +43,7 @@ import java.util.*;
 @RequestMapping(ApiConstants.Test.BASE)
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Scaffold Test", description = "Teaching, health-check, and scaffold sample APIs")
 public class TestController {
 
     @Value("${spring.application.name:infra-dev-scaffolding}")
@@ -63,6 +66,7 @@ public class TestController {
      * @return 服务状态信息
      */
     @GetMapping(ApiConstants.Test.HEALTH)
+    @Operation(summary = "Health check")
     public APIResponse<Map<String, Object>> health() {
         RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
         Duration uptime = Duration.ofMillis(runtime.getUptime());
@@ -88,6 +92,7 @@ public class TestController {
      * @return 可选能力状态报告
      */
     @GetMapping(ApiConstants.Test.FEATURES)
+    @Operation(summary = "Feature status")
     public APIResponse<MiddlewareManager.MiddlewareStatusReport> features() {
         return APIResponse.success(middlewareManager.statusReport());
     }
@@ -98,6 +103,7 @@ public class TestController {
      * @return pong
      */
     @GetMapping(ApiConstants.Test.PING)
+    @Operation(summary = "Ping")
     public APIResponse<String> ping() {
         return APIResponse.successData("pong");
     }
@@ -112,6 +118,7 @@ public class TestController {
      * @return 不会正常返回
      */
     @GetMapping(ApiConstants.Test.EXCEPTION_BIZ)
+    @Operation(summary = "Business exception sample")
     public APIResponse<Void> testBizException() {
         log.info("测试业务异常处理");
         throw new BizException(CommonErrorCode.PARAMETER_ERROR);
@@ -125,6 +132,7 @@ public class TestController {
      * @return 不会正常返回
      */
     @GetMapping(ApiConstants.Test.EXCEPTION_SYSTEM)
+    @Operation(summary = "System exception sample")
     public APIResponse<Void> testSystemException() {
         log.info("测试系统异常处理");
         throw new RuntimeException("这是一个模拟的系统异常");
@@ -141,6 +149,7 @@ public class TestController {
      * @return 创建结果
      */
     @PostMapping(ApiConstants.Test.ITEMS)
+    @Operation(summary = "Create sample item")
     public APIResponse<Map<String, Object>> createItem(@RequestBody Map<String, Object> body) {
         long id = idSequence++;
         String now = DateUtils.nowIso();
@@ -162,6 +171,7 @@ public class TestController {
      * @return 记录列表
      */
     @GetMapping(ApiConstants.Test.ITEMS)
+    @Operation(summary = "List sample items")
     public APIResponse<Map<String, Object>> listItems(
             @RequestParam(required = false) String keyword) {
 
@@ -190,6 +200,7 @@ public class TestController {
      * @return 记录详情
      */
     @GetMapping(ApiConstants.Test.ITEM_DETAIL)
+    @Operation(summary = "Get sample item")
     public APIResponse<Map<String, Object>> getItem(@PathVariable Long id) {
         Map<String, Object> item = memoryStore.get(id);
         if (item == null) {
@@ -208,6 +219,7 @@ public class TestController {
      * @return 更新结果
      */
     @PutMapping(ApiConstants.Test.ITEM_DETAIL)
+    @Operation(summary = "Update sample item")
     public APIResponse<Map<String, Object>> updateItem(
             @PathVariable Long id,
             @RequestBody Map<String, Object> body) {
@@ -235,6 +247,7 @@ public class TestController {
      * @return 删除结果
      */
     @DeleteMapping(ApiConstants.Test.ITEM_DETAIL)
+    @Operation(summary = "Delete sample item")
     public APIResponse<Void> deleteItem(@PathVariable Long id) {
         Map<String, Object> removed = memoryStore.remove(id);
         if (removed == null) {

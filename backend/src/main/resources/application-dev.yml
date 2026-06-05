@@ -36,6 +36,10 @@ management:
       exposure:
         include: health,info,metrics
 
+springdoc:
+  api-docs:
+    enabled: ${OPENAPI_API_DOCS_ENABLED:true}
+
 logging:
   level:
     com.anjing: DEBUG

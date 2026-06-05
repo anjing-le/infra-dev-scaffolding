@@ -46,6 +46,7 @@ require_file contracts/platform-contract.json
 require_file project_document/API_CONTRACT_GUIDE.md
 require_file project_document/API_PATH_GUIDE.md
 require_file project_document/PLATFORM_CONTRACT_GUIDE.md
+require_file project_document/OPENAPI_CONTRACT_GUIDE.md
 require_file project_document/REMOTE_CALL_GUIDE.md
 require_file project_document/ENVIRONMENT_PROFILE_GUIDE.md
 require_file project_document/FEATURE_STATUS_GUIDE.md
@@ -57,6 +58,7 @@ require_file scripts/generate-platform-contract-backend.js
 require_file scripts/generate-platform-contract-frontend.js
 require_file scripts/check-platform-contract.js
 require_file scripts/check-error-codes.js
+require_file scripts/check-openapi-contract.js
 require_file scripts/check-shared-kernel.js
 
 # URL contract: backend Controller mappings use ApiConstants; frontend API modules use ApiPaths.
@@ -154,6 +156,7 @@ node scripts/generate-platform-contract-backend.js --check
 node scripts/generate-platform-contract-frontend.js --check
 node scripts/check-platform-contract.js
 node scripts/check-error-codes.js
+node scripts/check-openapi-contract.js
 node scripts/check-shared-kernel.js
 
 echo "check-contracts: ok"
