@@ -5,24 +5,22 @@
  */
 
 import type {
-  AuthTokenResponse,
-  CurrentUserResponse,
-  LoginRequest,
-  RefreshTokenRequest
-} from '@/contracts/openapi/schemas'
+  OpenApiOperationData,
+  OpenApiOperationRequest
+} from '@/contracts/openapi/operations'
 
 /** 登录参数 */
-export type LoginParams = LoginRequest
+export type LoginParams = OpenApiOperationRequest<'login'>
 
 /** 登录响应（兼容后端 accessToken/refreshToken 字段） */
-export type LoginResponse = AuthTokenResponse & {
+export type LoginResponse = OpenApiOperationData<'login'> & {
   token?: string
 }
 
 /** 用户信息 */
-export type UserInfo = CurrentUserResponse & {
+export type UserInfo = OpenApiOperationData<'getCurrentUser'> & {
   buttons?: string[]
 }
 
 /** 刷新 Token 参数 */
-export type RefreshTokenParams = RefreshTokenRequest
+export type RefreshTokenParams = OpenApiOperationRequest<'refreshToken'>

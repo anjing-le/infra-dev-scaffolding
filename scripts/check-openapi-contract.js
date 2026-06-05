@@ -22,6 +22,7 @@ const files = {
   tokenResponse: 'backend/src/main/java/com/anjing/model/response/AuthTokenResponse.java',
   currentUserResponse: 'backend/src/main/java/com/anjing/model/response/CurrentUserResponse.java',
   frontendGeneratedSchemas: 'frontend/src/contracts/openapi/schemas.ts',
+  frontendGeneratedOperations: 'frontend/src/contracts/openapi/operations.ts',
   frontendAuthModel: 'frontend/src/api/model/authModel.ts',
   frontendAuthApi: 'frontend/src/api/auth.ts',
   guide: 'project_document/OPENAPI_CONTRACT_GUIDE.md',
@@ -106,6 +107,9 @@ requireToken(files.backendProbe, 'generate-openapi-frontend-types.js')
 
 for (const token of [
   'components?.schemas',
+  'function renderOperations',
+  'OpenApiOperationTypes',
+  'operationsOutputPath',
   'function schemaType',
   'OpenApiSchemas',
   'generate-openapi-frontend-types: ok'
@@ -145,11 +149,25 @@ for (const token of [
 }
 
 for (const token of [
-  "from '@/contracts/openapi/schemas'",
-  'export type LoginParams = LoginRequest',
-  'export type LoginResponse = AuthTokenResponse',
-  'export type UserInfo = CurrentUserResponse',
-  'export type RefreshTokenParams = RefreshTokenRequest'
+  'export const OPENAPI_OPERATIONS',
+  'login: {',
+  'getCurrentUser: {',
+  'refreshToken: {',
+  'OpenApiOperationRequest',
+  'OpenApiOperationData',
+  'Schemas.LoginRequest',
+  'Schemas.APIResponseAuthTokenResponse',
+  'Schemas.APIResponseCurrentUserResponse'
+]) {
+  requireToken(files.frontendGeneratedOperations, token)
+}
+
+for (const token of [
+  "from '@/contracts/openapi/operations'",
+  "export type LoginParams = OpenApiOperationRequest<'login'>",
+  "export type LoginResponse = OpenApiOperationData<'login'>",
+  "export type UserInfo = OpenApiOperationData<'getCurrentUser'>",
+  "export type RefreshTokenParams = OpenApiOperationRequest<'refreshToken'>"
 ]) {
   requireToken(files.frontendAuthModel, token)
 }

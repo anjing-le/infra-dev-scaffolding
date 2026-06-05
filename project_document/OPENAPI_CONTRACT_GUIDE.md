@@ -1,6 +1,6 @@
 # OpenAPI Contract Guide
 
-OpenAPI 是后端运行接口给前端、AI Prompts、网关和未来服务调用方看的机器可读契约。母版提供轻量 JSON 文档入口，不默认引入 Swagger UI；并已基于该入口生成前端 schema 类型，后续可以继续扩展为完整 API client 生成。
+OpenAPI 是后端运行接口给前端、AI Prompts、网关和未来服务调用方看的机器可读契约。母版提供轻量 JSON 文档入口，不默认引入 Swagger UI；并已基于该入口生成前端 schema 类型和 operation 类型目录，后续可以继续扩展为完整 API client 生成。
 
 服务/模块归属由 `contracts/service-boundaries.json` 记录。OpenAPI 负责描述运行接口细节，service boundary 负责描述这些接口当前由谁承载、未来可能迁到哪个服务。
 
@@ -51,11 +51,12 @@ node scripts/generate-openapi-frontend-types.js /path/to/openapi.json
 
 ```text
 frontend/src/contracts/openapi/schemas.ts
+frontend/src/contracts/openapi/operations.ts
 ```
 
-`src/api/model/**` 可以从该目录派生请求/响应类型。页面不要直接依赖生成目录，避免生成格式变化影响业务页面；API model 层负责做必要的前端兼容字段和命名适配。
+`schemas.ts` 保存 DTO / VO schema 类型；`operations.ts` 保存运行接口的 operationId、method、path、request 类型、response envelope 类型和 data 类型。`src/api/model/**` 优先从 operation 类型派生请求/响应类型。页面不要直接依赖生成目录，避免生成格式变化影响业务页面；API model 层负责做必要的前端兼容字段和命名适配。
 
-当前 `frontend/src/api/model/authModel.ts` 已从 `LoginRequest`、`AuthTokenResponse`、`CurrentUserResponse` 和 `RefreshTokenRequest` 派生登录相关类型。完整 API client 生成仍作为后续 S7 任务推进。
+当前 `frontend/src/api/model/authModel.ts` 已从 `OpenApiOperationRequest<'login'>`、`OpenApiOperationData<'login'>`、`OpenApiOperationData<'getCurrentUser'>` 和 `OpenApiOperationRequest<'refreshToken'>` 派生登录相关类型。完整 API client 生成仍作为后续 S7 任务推进。
 
 ## Verification
 

@@ -78,6 +78,7 @@ require_file frontend/.env
 require_file frontend/.env.development
 require_file frontend/.env.production
 require_file frontend/src/contracts/openapi/schemas.ts
+require_file frontend/src/contracts/openapi/operations.ts
 require_file frontend/src/contracts/service-boundaries.ts
 
 status_doc='project_document/STATUS.md'

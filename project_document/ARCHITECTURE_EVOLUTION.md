@@ -34,7 +34,7 @@
 
 - 前端 API URL 已开始收口到 `ApiPaths`，后端运行 Controller 已开始引用 `ApiConstants`；`ApiConstants` 内部也已收口为 `API_PREFIX`、模块 `BASE`、相对子路径和 `*_FULL`，并由 `scripts/check-api-constants.js` 守护。路径规则已记录到 `project_document/API_PATH_GUIDE.md`；`contracts/service-boundaries.json` 已进一步记录 auth、test、common 当前边界和 user、admin、integration 未来服务边界，生成后端 `ServiceBoundaryConstants.java` 与前端 `service-boundaries.ts`，并由 `scripts/check-service-boundaries.js` 校验。旧模板 auth/system 路径已从 `ApiPaths` 拆到 `ApiLegacyPaths`，由 `scripts/check-frontend-api-boundaries.js` 防止回流。
 - 响应契约已开始收敛到 `APIResponse` + `message` + `PageResult(records/current/size/total)`，并已记录到 `project_document/API_CONTRACT_GUIDE.md`；`msg`、`BaseResponse`、`PageResponse` 仅作为旧接口或远程响应兼容入口。
-- OpenAPI 运行接口契约已开始落地，`/v3/api-docs` 由 `springdoc-openapi-starter-webmvc-api` 暴露，dev/test 默认开启、prod 默认关闭；`scripts/generate-openapi-frontend-types.js` 已把运行 schema 生成到 `frontend/src/contracts/openapi/schemas.ts`，`project_document/OPENAPI_CONTRACT_GUIDE.md`、`scripts/check-openapi-contract.js` 和 `scripts/check-openapi-runtime-contract.js` 已守护前端类型生成入口。
+- OpenAPI 运行接口契约已开始落地，`/v3/api-docs` 由 `springdoc-openapi-starter-webmvc-api` 暴露，dev/test 默认开启、prod 默认关闭；`scripts/generate-openapi-frontend-types.js` 已把运行 schema 和 operation 类型生成到 `frontend/src/contracts/openapi/schemas.ts` 与 `frontend/src/contracts/openapi/operations.ts`，`project_document/OPENAPI_CONTRACT_GUIDE.md`、`scripts/check-openapi-contract.js` 和 `scripts/check-openapi-runtime-contract.js` 已守护前端类型生成入口。
 - `scripts/quality-gate.sh` 已把契约脚本、复制烟测、关键后端单测、后端打包、前端构建和 dev runtime probe 串成可接入 CI 的母版质量门禁。
 - 平台级契约已沉淀为 `contracts/platform-contract.json`，覆盖 API 前缀、响应 envelope、分页字段、请求头、前端/后端透传头、时间策略、语言策略、错误码分段和可重试范围；后端生成 `PlatformContractConstants.java`，前端生成 `frontend/src/contracts/platform-contract.ts`，供路径、请求头、响应解析、时间工具、语言上下文和远程重试判断复用，并由 `scripts/generate-platform-contract-backend.js --check`、`scripts/generate-platform-contract-frontend.js --check`、`scripts/check-platform-contract.js` 校验生成产物、前后端与文档一致性。
 - 时间策略已开始转向 UTC 默认和客户端时区展示；后端 `TimeZoneUtils` 已把 `X-Time-Zone` 归一化到合法 zone id 或 platform contract 默认 UTC，前端展示时间、导出文件名时间戳、错误时间戳和日期 key 已收口到 `frontend/src/utils/time`，展示语言和请求语言已收口到 `frontend/src/utils/locale`，并由 `scripts/check-frontend-time-contract.js` 阻止新的散落格式化。
@@ -158,7 +158,7 @@
 
 验收：
 
-- OpenAPI schema 已生成前端 types；后续评估进一步生成 API client。
+- OpenAPI schema 与 operation 已生成前端 types；后续评估进一步生成完整 API client。
 - 评估抽出 `anjing-common` / `anjing-web-common`，只放稳定工具和类型。
 - AI Prompts 生成模块时可以自动引用统一 URL、统一响应和统一时间工具。
 
@@ -167,7 +167,7 @@
 - `project_document/SHARED_KERNEL_GUIDE.md` 已定义共享内核、运行时适配层和领域代码边界。
 - `scripts/check-shared-kernel.js` 已检查共享内核候选类不能引入 Spring Web、Servlet、JPA 或 Controller/Config/Aspect 等运行时层。
 - `contracts/platform-contract.json` 已成为后续生成基础响应类型、分页类型、请求头常量和 OpenAPI 全局约束的机器可读入口；前后端常量生成链路已落地。
-- `scripts/generate-openapi-frontend-types.js` 已从运行 OpenAPI JSON 生成 `frontend/src/contracts/openapi/schemas.ts`，auth API model 已从生成的 `LoginRequest`、`AuthTokenResponse`、`CurrentUserResponse` 和 `RefreshTokenRequest` 派生类型。
+- `scripts/generate-openapi-frontend-types.js` 已从运行 OpenAPI JSON 生成 `frontend/src/contracts/openapi/schemas.ts` 与 `frontend/src/contracts/openapi/operations.ts`，auth API model 已从生成的 operation request/data 类型派生类型。
 - `PageResult` 已去除 Spring Data Page 依赖，保持标准分页 payload 可抽取。
 
 ## 近期推荐任务

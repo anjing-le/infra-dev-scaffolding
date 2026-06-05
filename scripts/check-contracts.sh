@@ -60,6 +60,7 @@ require_file backend/src/main/java/com/anjing/util/RemoteCallWrapper.java
 require_file frontend/src/contracts/platform-contract.ts
 require_file frontend/src/contracts/service-boundaries.ts
 require_file frontend/src/contracts/openapi/schemas.ts
+require_file frontend/src/contracts/openapi/operations.ts
 require_file frontend/src/utils/time/index.ts
 require_file contracts/platform-contract.json
 require_file contracts/service-boundaries.json
