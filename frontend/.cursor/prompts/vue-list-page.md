@@ -56,6 +56,8 @@
 - API 调用使用 `src/api/[module-name].ts` 中导出的 `fetch*` 函数
 - 类型从 `src/api/model/[moduleName]Model.ts` 或 `Api.*` 命名空间导入
 - API 路径必须由 API 层引用 `ApiPaths`，页面不要直接写接口 URL
+- 列表 API 返回 `PaginatedResponse<T>`，字段为 `records`、`current`、`size`、`total`
+- 页面不解析响应 envelope；`request` 已经返回后端 `data`
 - 时间列使用 `@/utils/time` 的 `formatDateTime` / `formatDate` 展示
 - 合理的组件拆分和复用
 - 完善的错误处理和用户体验

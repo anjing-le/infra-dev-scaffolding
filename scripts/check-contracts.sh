@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
+
+fail() {
+  echo "check-contracts: $*" >&2
+  exit 1
+}
+
+require_file() {
+  local file="$1"
+  [[ -f "$file" ]] || fail "missing required file: $file"
+}
+
+require_token() {
+  local file="$1"
+  local token="$2"
+  rg -q --fixed-strings "$token" "$file" \
+    || fail "$file is missing required token: $token"
+}
+
+require_absent() {
+  local pattern="$1"
+  shift
+  if rg -n "$pattern" "$@"; then
+    fail "contract violation found for pattern: $pattern"
+  fi
+}
+
+require_file backend/src/main/java/com/anjing/model/constants/ApiConstants.java
+require_file frontend/src/api/paths.ts
+require_file backend/src/main/java/com/anjing/model/response/APIResponse.java
+require_file backend/src/main/java/com/anjing/model/response/PageResult.java
+require_file frontend/src/utils/http/response.ts
+require_file backend/src/main/java/com/anjing/model/constants/RequestHeaderConstants.java
+require_file backend/src/main/java/com/anjing/config/http/RequestContextFilter.java
+require_file frontend/src/utils/http/context.ts
+require_file backend/src/main/java/com/anjing/client/RemoteHttpClient.java
+require_file backend/src/main/java/com/anjing/util/RemoteCallWrapper.java
+require_file frontend/src/utils/time/index.ts
+require_file project_document/API_CONTRACT_GUIDE.md
+require_file project_document/API_PATH_GUIDE.md
+require_file project_document/REMOTE_CALL_GUIDE.md
+require_file project_document/ENVIRONMENT_PROFILE_GUIDE.md
+require_file project_document/FEATURE_STATUS_GUIDE.md
+require_file project_document/LOCAL_STARTUP_GUIDE.md
+require_file scripts/check-api-path-parity.js
+
+# URL contract: backend Controller mappings use ApiConstants; frontend API modules use ApiPaths.
+require_absent '@(RequestMapping|GetMapping|PostMapping|PutMapping|DeleteMapping|PatchMapping)\(\s*"/api' \
+  backend/src/main/java \
+  --glob '*Controller.java' \
+  --glob '!backend/target/**'
+
+require_absent 'url:\s*['"'"'"]/api' \
+  frontend/src/api \
+  --glob '*.ts' \
+  --glob '!paths.ts'
+
+require_absent 'request\.(get|post|put|del|delete)\([^)]*['"'"'"]/api' \
+  frontend/src \
+  --glob '*.ts' \
+  --glob '*.vue' \
+  --glob '!frontend/src/api/paths.ts'
+
+# Response contract: new code uses message/code/data; msg compatibility is centralized.
+require_absent '\bmsg\??:' \
+  frontend/src \
+  --glob '*.ts' \
+  --glob '!frontend/src/utils/http/response.ts' \
+  --glob '!frontend/src/utils/http/error.ts' \
+  --glob '!frontend/src/types/common/response.ts'
+
+require_token backend/src/main/java/com/anjing/model/response/APIResponse.java 'public static final String SUCCESS_CODE = "0"'
+require_token backend/src/main/java/com/anjing/model/response/APIResponse.java 'private String message'
+require_token backend/src/main/java/com/anjing/model/response/APIResponse.java 'private String requestId'
+require_token backend/src/main/java/com/anjing/model/response/APIResponse.java 'successData'
+require_token backend/src/main/java/com/anjing/model/response/APIResponse.java 'successMessage'
+require_token backend/src/main/java/com/anjing/model/response/PageResult.java 'private List<T> records'
+require_token backend/src/main/java/com/anjing/model/response/PageResult.java 'current'
+require_token backend/src/main/java/com/anjing/model/response/PageResult.java 'size'
+require_token backend/src/main/java/com/anjing/model/response/PageResult.java 'total'
+require_token frontend/src/utils/http/response.ts "API_SUCCESS_CODE = '0'"
+require_token frontend/src/utils/table/tableConfig.ts 'records'
+
+# Context and remote-call contract: request identity, locale, timezone and caller identity are centralized.
+for header in \
+  'X-Request-Id' \
+  'X-Trace-Id' \
+  'X-Tenant-Id' \
+  'X-User-Id' \
+  'X-Time-Zone' \
+  'Accept-Language'
+do
+  require_token backend/src/main/java/com/anjing/model/constants/RequestHeaderConstants.java "$header"
+done
+
+require_token backend/src/main/java/com/anjing/config/http/RequestContextFilter.java 'GlobalRequestContextHolder.set(context)'
+require_token backend/src/main/java/com/anjing/config/http/RequestContextFilter.java 'response.setHeader(RequestHeaderConstants.REQUEST_ID'
+require_token frontend/src/utils/http/context.ts 'X-Time-Zone'
+require_token frontend/src/utils/http/context.ts 'Accept-Language'
+require_token backend/src/main/java/com/anjing/util/RemoteCallWrapper.java 'serviceCallHeaders'
+require_token backend/src/main/java/com/anjing/util/RemoteCallWrapper.java 'RequestHeaderConstants.CALLER_ID'
+require_token backend/src/main/java/com/anjing/client/RemoteHttpClient.java 'RemoteCallWrapper.callWithRetry'
+
+# Time contract: shared utilities exist; avoid system default timezone in backend business code.
+require_token frontend/src/utils/time/index.ts 'getClientTimeZone'
+require_token frontend/src/utils/time/index.ts 'formatDateTime'
+require_token backend/src/main/java/com/anjing/util/DateUtils.java 'nowIso'
+require_token backend/src/main/java/com/anjing/util/DateUtils.java 'nowEpochMilli'
+require_absent 'ZoneId\.systemDefault\(' \
+  backend/src/main/java \
+  --glob '*.java'
+
+require_absent '\b(Instant|LocalDateTime|OffsetDateTime|ZonedDateTime)\.now\(' \
+  backend/src/main/java \
+  --glob '*.java' \
+  --glob '!backend/src/main/java/com/anjing/util/DateUtils.java'
+
+node scripts/check-api-path-parity.js
+
+echo "check-contracts: ok"

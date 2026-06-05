@@ -1,15 +1,16 @@
 package com.anjing.controller;
 
+import com.anjing.model.constants.ApiConstants;
 import com.anjing.model.errorcode.AuthErrorCode;
 import com.anjing.model.exception.BizException;
 import com.anjing.model.request.LoginRequest;
 import com.anjing.model.response.APIResponse;
+import com.anjing.util.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -23,7 +24,7 @@ import java.util.*;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping(ApiConstants.Auth.BASE)
 @RequiredArgsConstructor
 @Validated
 public class AuthController {
@@ -37,7 +38,7 @@ public class AuthController {
      * @param request 登录请求
      * @return 包含 Token 的登录响应
      */
-    @PostMapping("/login")
+    @PostMapping(ApiConstants.Auth.LOGIN)
     public APIResponse<Map<String, Object>> login(@RequestBody @Validated LoginRequest request) {
         log.info("用户登录请求: username={}", request.getUsername());
 
@@ -69,7 +70,7 @@ public class AuthController {
      * @param authorization 请求头中的 Token
      * @return 用户信息
      */
-    @GetMapping("/me")
+    @GetMapping(ApiConstants.Auth.ME)
     public APIResponse<Map<String, Object>> getCurrentUser(
             @RequestHeader(value = "Authorization", required = false) String authorization) {
 
@@ -84,7 +85,7 @@ public class AuthController {
         userInfo.put("avatar", "");
         userInfo.put("roles", List.of("R_SUPER", "R_ADMIN"));
         userInfo.put("permissions", List.of("*:*:*"));
-        userInfo.put("createTime", LocalDateTime.now().toString());
+        userInfo.put("createTime", DateUtils.nowIso());
 
         return APIResponse.success(userInfo);
     }
@@ -96,10 +97,10 @@ public class AuthController {
      *
      * @return 登出结果
      */
-    @PostMapping("/logout")
+    @PostMapping(ApiConstants.Auth.LOGOUT)
     public APIResponse<Void> logout() {
         log.info("用户登出");
-        return APIResponse.success("登出成功");
+        return APIResponse.successMessage("登出成功");
     }
 
     /**
@@ -110,7 +111,7 @@ public class AuthController {
      * @param body 包含 refreshToken 的请求体
      * @return 新的 Token
      */
-    @PostMapping("/refresh")
+    @PostMapping(ApiConstants.Auth.REFRESH)
     public APIResponse<Map<String, Object>> refreshToken(@RequestBody Map<String, String> body) {
         String refreshToken = body.get("refreshToken");
         log.info("刷新 Token 请求");

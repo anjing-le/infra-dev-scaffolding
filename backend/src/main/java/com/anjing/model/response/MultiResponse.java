@@ -13,7 +13,9 @@ import java.util.List;
  * @param <T> 数据类型
  * @author Backend Template Team  
  * @version 1.0
+ * @deprecated 新分页接口使用 {@link APIResponse} 包裹 {@link PageResult}；该类仅用于兼容历史响应格式。
  */
+@Deprecated(since = "1.1.0", forRemoval = false)
 @Setter
 @Getter
 public class MultiResponse<T> extends BaseResponse

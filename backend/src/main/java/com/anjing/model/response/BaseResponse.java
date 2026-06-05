@@ -19,7 +19,9 @@ import java.io.Serializable;
  * 
  * @author Backend Template Team  
  * @version 1.0
+ * @deprecated 新业务接口统一返回 {@link APIResponse}；该类仅用于兼容外部或历史远程响应格式。
  */
+@Deprecated(since = "1.1.0", forRemoval = false)
 @Setter
 @Getter
 public class BaseResponse implements Serializable

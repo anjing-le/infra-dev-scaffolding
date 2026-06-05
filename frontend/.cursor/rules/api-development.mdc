@@ -153,6 +153,7 @@ export function fetchBatchDeleteUsers(ids: number[]) {
 - API 文件只引用 `ApiPaths`，不要直接写 `url: '/api/...'` 或模板字符串拼接路径。
 - 路径中包含变量时，在 `ApiPaths` 中提供函数，并使用 `encodeURIComponent` 处理 path 参数。
 - 新增后端接口时，同时确认后端 `ApiConstants` 和前端 `ApiPaths` 命名一致，方便未来 OpenAPI / 类型生成。
+- 路径契约见 `project_document/API_PATH_GUIDE.md`；页面组件不要直接拼接口路径。
 
 ## API 类型定义
 
@@ -242,6 +243,26 @@ export type UpdateRoleParams = Partial<CreateRoleParams>
 ```
 
 ## HTTP 请求封装
+
+### 响应契约
+
+后端标准响应结构固定为：
+
+```typescript
+{
+  code: '0',
+  message: '操作成功',
+  data: {},
+  timestamp: 1700000000000,
+  requestId: '...'
+}
+```
+
+- API 模块函数通过 `request.get<T>()` / `request.post<T>()` 返回 `data`，页面不要直接解析 envelope。
+- 成功和错误消息使用标准字段 `message`。
+- `msg` 只在 `utils/http/response.ts` 中作为旧 mock / 第三方接口兼容，业务代码和新类型不要新增 `msg`。
+- 列表数据使用 `PaginatedResponse<T>`，字段固定为 `records`、`current`、`size`、`total`。
+- 排查问题时保留或记录 `requestId`，用于前后端日志关联。
 
 ### request 工具使用
 

@@ -1,13 +1,20 @@
 package com.anjing.util;
 
+import com.anjing.context.GlobalRequestContextHolder;
+import com.anjing.model.constants.RequestHeaderConstants;
 import com.anjing.model.exception.SystemException;
 import com.anjing.model.errorcode.RemoteErrorCode;
+import com.anjing.model.request.GlobalRequestContext;
 import com.anjing.model.response.APIResponse;
 import com.anjing.model.response.BaseResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StopWatch;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -64,6 +71,9 @@ import java.util.function.Supplier;
  *     () -> configService.getConfig(),
  *     "getSystemConfig"
  * );
+ *
+ * // HTTP/WebClient/Feign 调用前准备上下文请求头
+ * Map&lt;String, String&gt; headers = RemoteCallWrapper.serviceCallHeaders("infra-dev-scaffolding");
  * </pre>
  * 
  * <h3>📊 自动日志输出：</h3>
@@ -97,6 +107,38 @@ public class RemoteCallWrapper {
      * 默认重试间隔（毫秒）
      */
     private static final long DEFAULT_RETRY_INTERVAL = 1000L;
+
+    /**
+     * Builds outbound headers from the current request context.
+     *
+     * <p>Use this when an HTTP client, RPC filter, or gateway adapter needs to
+     * forward request identity, trace identity, tenant, user, locale, and time
+     * zone to the next service.</p>
+     *
+     * @return headers collected from {@link GlobalRequestContextHolder}; empty when no context exists
+     */
+    public static Map<String, String> currentContextHeaders() {
+        Map<String, String> headers = new LinkedHashMap<>();
+        GlobalRequestContextHolder.current().ifPresent(context -> appendContextHeaders(headers, context));
+        return headers;
+    }
+
+    /**
+     * Builds service-to-service headers and guarantees a request/trace id pair.
+     *
+     * <p>When the call starts from a scheduler, async job, or other non-web
+     * entrypoint, there may be no inbound request context. In that case this
+     * method creates a root request id so downstream logs can still be traced.</p>
+     *
+     * @param callerId current application or service id
+     * @return outbound headers for a remote service call
+     */
+    public static Map<String, String> serviceCallHeaders(String callerId) {
+        Map<String, String> headers = currentContextHeaders();
+        putIfHasText(headers, RequestHeaderConstants.CALLER_ID, callerId);
+        ensureRequestTraceHeaders(headers);
+        return headers;
+    }
 
     /**
      * 🚀 基础远程调用 - 最简单的用法
@@ -379,6 +421,39 @@ public class RemoteCallWrapper {
     private static void logRetryAttempt(String methodName, int currentAttempt, int maxRetry, String errorMessage) {
         log.warn("🔄 [RemoteCall] 重试调用: {} | 第{}次重试 (最多{}次) | 原因: {}", 
                 methodName, currentAttempt, maxRetry, errorMessage);
+    }
+
+    /**
+     * Adds all non-empty request context fields to outbound headers.
+     */
+    private static void appendContextHeaders(Map<String, String> headers, GlobalRequestContext context) {
+        putIfHasText(headers, RequestHeaderConstants.REQUEST_ID, context.getRequestId());
+        putIfHasText(headers, RequestHeaderConstants.TRACE_ID, context.getTraceId());
+        putIfHasText(headers, RequestHeaderConstants.TENANT_ID, context.getTenantId());
+        putIfHasText(headers, RequestHeaderConstants.USER_ID, context.getUserId());
+        putIfHasText(headers, RequestHeaderConstants.USER_NAME, context.getUserName());
+        putIfHasText(headers, RequestHeaderConstants.USER_ROLES, context.getUserRoles());
+        putIfHasText(headers, RequestHeaderConstants.CALLER_ID, context.getCallerId());
+        putIfHasText(headers, RequestHeaderConstants.TIME_ZONE, context.getTimeZone());
+        putIfHasText(headers, RequestHeaderConstants.ACCEPT_LANGUAGE, context.getLocale());
+    }
+
+    private static void ensureRequestTraceHeaders(Map<String, String> headers) {
+        String requestId = headers.get(RequestHeaderConstants.REQUEST_ID);
+        if (!StringUtils.hasText(requestId)) {
+            requestId = UUID.randomUUID().toString();
+            headers.put(RequestHeaderConstants.REQUEST_ID, requestId);
+        }
+
+        if (!StringUtils.hasText(headers.get(RequestHeaderConstants.TRACE_ID))) {
+            headers.put(RequestHeaderConstants.TRACE_ID, requestId);
+        }
+    }
+
+    private static void putIfHasText(Map<String, String> headers, String name, String value) {
+        if (StringUtils.hasText(value)) {
+            headers.put(name, value);
+        }
     }
 
     /**

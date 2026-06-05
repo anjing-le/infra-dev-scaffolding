@@ -19,7 +19,7 @@ import java.util.UUID;
 /**
  * Builds a request context that can survive future gateway and microservice hops.
  */
-@Component
+@Component("globalRequestContextFilter")
 public class RequestContextFilter extends OncePerRequestFilter {
 
     private static final String MDC_REQUEST_ID = "requestId";

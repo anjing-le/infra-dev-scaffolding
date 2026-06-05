@@ -25,6 +25,7 @@ public enum CommonErrorCode implements ErrorCode {
     DATABASE_ERROR("1002", "数据库异常"),
     NETWORK_ERROR("1003", "网络异常"),
     SERVICE_UNAVAILABLE("1004", "服务不可用"),
+    RESOURCE_NOT_FOUND("1005", "请求资源不存在"),
 
     // 业务通用 2xxx
     DATA_NOT_FOUND("2000", "数据不存在"),

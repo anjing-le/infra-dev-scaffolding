@@ -59,6 +59,13 @@
             <version>8.2.0</version>
         </dependency>
 
+        <!-- H2: dev/test 轻启动数据库，生产仍使用 MySQL -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- Druid数据库连接池 -->
         <dependency>
             <groupId>com.alibaba</groupId>

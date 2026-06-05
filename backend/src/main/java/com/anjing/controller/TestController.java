@@ -1,18 +1,21 @@
 package com.anjing.controller;
 
 import com.anjing.annotation.ScaffoldSample;
+import com.anjing.config.middleware.MiddlewareManager;
+import com.anjing.model.constants.ApiConstants;
 import com.anjing.model.errorcode.CommonErrorCode;
 import com.anjing.model.exception.BizException;
 import com.anjing.model.response.APIResponse;
+import com.anjing.util.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -35,13 +38,16 @@ import java.util.*;
  */
 @ScaffoldSample("教学接口：健康检查、异常处理和内存 CRUD 演示")
 @RestController
-@RequestMapping("/api/test")
+@RequestMapping(ApiConstants.Test.BASE)
 @RequiredArgsConstructor
 @Slf4j
 public class TestController {
 
     @Value("${spring.application.name:infra-dev-scaffolding}")
     private String applicationName;
+
+    private final MiddlewareManager middlewareManager;
+    private final Environment environment;
 
     /** 内存数据存储（演示用，实际项目使用数据库） */
     private final Map<Long, Map<String, Object>> memoryStore = new LinkedHashMap<>();
@@ -56,7 +62,7 @@ public class TestController {
      *
      * @return 服务状态信息
      */
-    @GetMapping("/health")
+    @GetMapping(ApiConstants.Test.HEALTH)
     public APIResponse<Map<String, Object>> health() {
         RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
         Duration uptime = Duration.ofMillis(runtime.getUptime());
@@ -64,13 +70,26 @@ public class TestController {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("status", "UP");
         data.put("application", applicationName);
-        data.put("timestamp", LocalDateTime.now().toString());
+        data.put("timestamp", DateUtils.nowIso());
         data.put("uptime", String.format("%d小时%d分%d秒",
                 uptime.toHours(), uptime.toMinutesPart(), uptime.toSecondsPart()));
         data.put("javaVersion", System.getProperty("java.version"));
-        data.put("activeProfiles", System.getProperty("spring.profiles.active", "default"));
+        String[] activeProfiles = environment.getActiveProfiles();
+        data.put("activeProfiles", activeProfiles.length == 0 ? List.of("default") : Arrays.asList(activeProfiles));
 
         return APIResponse.success(data);
+    }
+
+    /**
+     * 可选能力状态接口
+     *
+     * <p>用于展示中间件和基础能力当前处于 disabled / configured / ready / degraded 哪种状态。</p>
+     *
+     * @return 可选能力状态报告
+     */
+    @GetMapping(ApiConstants.Test.FEATURES)
+    public APIResponse<MiddlewareManager.MiddlewareStatusReport> features() {
+        return APIResponse.success(middlewareManager.statusReport());
     }
 
     /**
@@ -78,9 +97,9 @@ public class TestController {
      *
      * @return pong
      */
-    @GetMapping("/ping")
+    @GetMapping(ApiConstants.Test.PING)
     public APIResponse<String> ping() {
-        return APIResponse.success("pong");
+        return APIResponse.successData("pong");
     }
 
     // ==================== 异常处理演示 ====================
@@ -92,7 +111,7 @@ public class TestController {
      *
      * @return 不会正常返回
      */
-    @GetMapping("/exception/biz")
+    @GetMapping(ApiConstants.Test.EXCEPTION_BIZ)
     public APIResponse<Void> testBizException() {
         log.info("测试业务异常处理");
         throw new BizException(CommonErrorCode.PARAMETER_ERROR);
@@ -105,7 +124,7 @@ public class TestController {
      *
      * @return 不会正常返回
      */
-    @GetMapping("/exception/system")
+    @GetMapping(ApiConstants.Test.EXCEPTION_SYSTEM)
     public APIResponse<Void> testSystemException() {
         log.info("测试系统异常处理");
         throw new RuntimeException("这是一个模拟的系统异常");
@@ -121,12 +140,13 @@ public class TestController {
      * @param body 记录数据
      * @return 创建结果
      */
-    @PostMapping("/items")
+    @PostMapping(ApiConstants.Test.ITEMS)
     public APIResponse<Map<String, Object>> createItem(@RequestBody Map<String, Object> body) {
         long id = idSequence++;
+        String now = DateUtils.nowIso();
         body.put("id", id);
-        body.put("createTime", LocalDateTime.now().toString());
-        body.put("updateTime", LocalDateTime.now().toString());
+        body.put("createTime", now);
+        body.put("updateTime", now);
         memoryStore.put(id, body);
 
         log.info("创建记录成功: id={}", id);
@@ -141,7 +161,7 @@ public class TestController {
      * @param keyword 搜索关键词（可选）
      * @return 记录列表
      */
-    @GetMapping("/items")
+    @GetMapping(ApiConstants.Test.ITEMS)
     public APIResponse<Map<String, Object>> listItems(
             @RequestParam(required = false) String keyword) {
 
@@ -169,7 +189,7 @@ public class TestController {
      * @param id 记录 ID
      * @return 记录详情
      */
-    @GetMapping("/items/{id}")
+    @GetMapping(ApiConstants.Test.ITEM_DETAIL)
     public APIResponse<Map<String, Object>> getItem(@PathVariable Long id) {
         Map<String, Object> item = memoryStore.get(id);
         if (item == null) {
@@ -187,7 +207,7 @@ public class TestController {
      * @param body 更新数据
      * @return 更新结果
      */
-    @PutMapping("/items/{id}")
+    @PutMapping(ApiConstants.Test.ITEM_DETAIL)
     public APIResponse<Map<String, Object>> updateItem(
             @PathVariable Long id,
             @RequestBody Map<String, Object> body) {
@@ -199,7 +219,7 @@ public class TestController {
 
         body.put("id", id);
         body.put("createTime", existing.get("createTime"));
-        body.put("updateTime", LocalDateTime.now().toString());
+        body.put("updateTime", DateUtils.nowIso());
         memoryStore.put(id, body);
 
         log.info("更新记录成功: id={}", id);
@@ -214,7 +234,7 @@ public class TestController {
      * @param id 记录 ID
      * @return 删除结果
      */
-    @DeleteMapping("/items/{id}")
+    @DeleteMapping(ApiConstants.Test.ITEM_DETAIL)
     public APIResponse<Void> deleteItem(@PathVariable Long id) {
         Map<String, Object> removed = memoryStore.remove(id);
         if (removed == null) {
@@ -222,6 +242,6 @@ public class TestController {
         }
 
         log.info("删除记录成功: id={}", id);
-        return APIResponse.success("删除成功");
+        return APIResponse.successMessage("删除成功");
     }
 }

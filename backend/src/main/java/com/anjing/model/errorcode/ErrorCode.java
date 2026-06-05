@@ -13,6 +13,9 @@ package com.anjing.model.errorcode;
  *   <li>参数错误: 3xxx</li>
  *   <li>权限错误: 4xxx</li>
  * </ul>
+ *
+ * <p>完整分段、重试策略和新模块分配方式见
+ * {@code project_document/ERROR_CODE_GUIDE.md}。</p>
  * 
  * @author Backend Template Team
  * @version 1.0

@@ -142,6 +142,15 @@ public class DateUtils {
     }
 
     /**
+     * Current timestamp in epoch milliseconds.
+     *
+     * @return epoch milliseconds
+     */
+    public static long nowEpochMilli() {
+        return nowInstant().toEpochMilli();
+    }
+
+    /**
      * Current offset datetime in UTC.
      *
      * @return OffsetDateTime
@@ -158,6 +167,15 @@ public class DateUtils {
      */
     public static String formatIso(Instant instant) {
         return instant == null ? null : instant.toString();
+    }
+
+    /**
+     * Current instant as ISO-8601 UTC string.
+     *
+     * @return ISO UTC string
+     */
+    public static String nowIso() {
+        return formatIso(nowInstant());
     }
 
     /**
@@ -180,6 +198,16 @@ public class DateUtils {
      */
     public static String now() {
         return LocalDateTime.now(UTC_ZONE).format(DATETIME_FORMATTER);
+    }
+
+    /**
+     * 获取当前 UTC 时间字符串（自定义格式）
+     *
+     * @param pattern 格式
+     * @return 当前 UTC 时间字符串
+     */
+    public static String now(String pattern) {
+        return LocalDateTime.now(UTC_ZONE).format(DateTimeFormatter.ofPattern(pattern));
     }
 
     /**

@@ -174,6 +174,7 @@ tags: [项目规范, Vue 3, TypeScript, Element Plus]
 3. **类型定义**: 统一在 `Api` 命名空间下定义
 4. **样式优先**: Tailwind CSS > SCSS 自定义样式
 5. **请求上下文**: `utils/http` 统一透传 requestId、traceId、语言和时区，业务代码不要重复设置
+6. **响应契约**: 后端标准 envelope 为 `code/message/data/timestamp/requestId`，`msg` 仅在 `utils/http/response.ts` 内部兼容旧接口
 6. **时间展示**: 使用 `src/utils/time`，不要在页面中散落日期格式化逻辑
 
 ## 工具支持

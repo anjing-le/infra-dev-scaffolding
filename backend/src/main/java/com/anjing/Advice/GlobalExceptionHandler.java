@@ -1,5 +1,6 @@
 package com.anjing.Advice;
 
+import com.anjing.model.errorcode.CommonErrorCode;
 import com.anjing.model.exception.BizException;
 import com.anjing.model.exception.SystemException;
 import com.anjing.model.response.APIResponse;
@@ -41,7 +42,7 @@ public class GlobalExceptionHandler
     public APIResponse<Object> handleBizException(BizException e, HttpServletRequest request)
     {
         ExceptionUtils.printException(e, request);
-        return APIResponse.error(e.getErrorCode().getCode(), e.getErrorCode().getMessage());
+        return APIResponse.error(e.getErrorCode());
     }
 
     /**
@@ -50,7 +51,7 @@ public class GlobalExceptionHandler
     @ExceptionHandler(SystemException.class)
     public APIResponse<Object> handleSystemException(SystemException e, HttpServletRequest request) {
         ExceptionUtils.printException(e, request);
-        return APIResponse.error(e.getErrorCode().getCode(), e.getErrorCode().getMessage());
+        return APIResponse.error(e.getErrorCode());
     }
 
     /**
@@ -63,7 +64,7 @@ public class GlobalExceptionHandler
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .reduce((msg1, msg2) -> msg1 + "; " + msg2)
                 .orElse("参数校验失败");
-        return APIResponse.error("3000", errorMessage);
+        return APIResponse.error(CommonErrorCode.PARAMETER_ERROR.getCode(), errorMessage);
     }
 
     /**
@@ -77,7 +78,7 @@ public class GlobalExceptionHandler
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .reduce((msg1, msg2) -> msg1 + "; " + msg2)
                 .orElse("参数绑定失败");
-        return APIResponse.error("3001", errorMessage);
+        return APIResponse.error(CommonErrorCode.PARAM_MISSING.getCode(), errorMessage);
     }
 
     /**
@@ -90,7 +91,7 @@ public class GlobalExceptionHandler
                 .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
                 .reduce((msg1, msg2) -> msg1 + "; " + msg2)
                 .orElse("约束校验失败");
-        return APIResponse.error("3002", errorMessage);
+        return APIResponse.error(CommonErrorCode.PARAM_FORMAT_ERROR.getCode(), errorMessage);
     }
 
     /**
@@ -103,11 +104,11 @@ public class GlobalExceptionHandler
         
         // 忽略favicon.ico的404异常，不记录日志
         if (requestURI != null && requestURI.endsWith("/favicon.ico")) {
-            return APIResponse.error("404", "资源未找到");
+            return APIResponse.error(CommonErrorCode.RESOURCE_NOT_FOUND);
         }
         
         log.warn("资源未找到: {}", requestURI);
-        return APIResponse.error("404", "请求的资源不存在: " + requestURI);
+        return APIResponse.error(CommonErrorCode.RESOURCE_NOT_FOUND.getCode(), "请求的资源不存在: " + requestURI);
     }
 
     /**
@@ -117,6 +118,6 @@ public class GlobalExceptionHandler
     public APIResponse<Object> handleException(Exception e, HttpServletRequest request)
     {
         ExceptionUtils.printException(e, request);
-        return APIResponse.error("1000", "系统内部错误，请稍后重试");
+        return APIResponse.error(CommonErrorCode.SYSTEM_ERROR.getCode(), "系统内部错误，请稍后重试");
     }
 }

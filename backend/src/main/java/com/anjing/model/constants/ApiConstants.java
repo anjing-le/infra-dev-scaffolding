@@ -20,6 +20,54 @@ package com.anjing.model.constants;
  */
 public class ApiConstants {
 
+    public static final String API_PREFIX = "/api";
+
+    /**
+     * 🔐 认证模块
+     */
+    public static class Auth {
+        public static final String BASE = API_PREFIX + "/auth";
+
+        public static final String LOGIN = "/login";
+        public static final String LOGOUT = "/logout";
+        public static final String ME = "/me";
+        public static final String REFRESH = "/refresh";
+
+        public static final String LOGIN_FULL = BASE + LOGIN;
+        public static final String LOGOUT_FULL = BASE + LOGOUT;
+        public static final String ME_FULL = BASE + ME;
+        public static final String REFRESH_FULL = BASE + REFRESH;
+
+        private Auth() {
+        }
+    }
+
+    /**
+     * 🧪 脚手架教学和自检接口
+     */
+    public static class Test {
+        public static final String BASE = API_PREFIX + "/test";
+
+        public static final String HEALTH = "/health";
+        public static final String FEATURES = "/features";
+        public static final String PING = "/ping";
+        public static final String EXCEPTION_BIZ = "/exception/biz";
+        public static final String EXCEPTION_SYSTEM = "/exception/system";
+        public static final String ITEMS = "/items";
+        public static final String ITEM_DETAIL = "/items/{id}";
+
+        public static final String HEALTH_FULL = BASE + HEALTH;
+        public static final String FEATURES_FULL = BASE + FEATURES;
+        public static final String PING_FULL = BASE + PING;
+        public static final String EXCEPTION_BIZ_FULL = BASE + EXCEPTION_BIZ;
+        public static final String EXCEPTION_SYSTEM_FULL = BASE + EXCEPTION_SYSTEM;
+        public static final String ITEMS_FULL = BASE + ITEMS;
+        public static final String ITEM_DETAIL_FULL = BASE + ITEM_DETAIL;
+
+        private Test() {
+        }
+    }
+
     /**
      * 🎯 用户业务模块
      * 
@@ -28,10 +76,10 @@ public class ApiConstants {
     public static class User {
         
         /** 🔐 认证相关 */
-        public static final String LOGIN = "/api/auth/login";
-        public static final String LOGOUT = "/api/auth/logout";
-        public static final String REFRESH_TOKEN = "/api/auth/refresh";
-        public static final String CURRENT_USER = "/api/auth/me";
+        public static final String LOGIN = Auth.LOGIN_FULL;
+        public static final String LOGOUT = Auth.LOGOUT_FULL;
+        public static final String REFRESH_TOKEN = Auth.REFRESH_FULL;
+        public static final String CURRENT_USER = Auth.ME_FULL;
         
         /** 👤 用户管理 */
         public static final String CREATE_USER = "/api/users";

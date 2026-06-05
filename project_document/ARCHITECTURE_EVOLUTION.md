@@ -32,12 +32,13 @@
 
 主要缺口：
 
-- 前端 API URL 已开始收口到 `ApiPaths`，后续需要继续扩大覆盖面，并评估与后端 `ApiConstants` / OpenAPI 的生成关系。
-- 响应字段仍处于兼容期，存在 `msg` / `message`、`BaseResponse` / `APIResponse` 两套语义。
+- 前端 API URL 已开始收口到 `ApiPaths`，后端运行 Controller 已开始引用 `ApiConstants`，路径规则已记录到 `project_document/API_PATH_GUIDE.md`；后续需要继续扩大覆盖面，并评估与 OpenAPI 的生成关系。
+- 响应契约已开始收敛到 `APIResponse` + `message` + `PageResult(records/current/size/total)`，并已记录到 `project_document/API_CONTRACT_GUIDE.md`；`msg`、`BaseResponse`、`PageResponse` 仅作为旧接口或远程响应兼容入口。
 - 时间策略已开始转向 UTC 默认和客户端时区展示，后续需要继续把存量页面时间展示迁移到统一工具。
-- 请求上下文已开始具备 `requestId`、`traceId`、语言和时区透传，并已接入日志格式；后续需要继续接入远程调用和权限上下文。
+- 请求上下文已开始具备 `requestId`、`traceId`、语言和时区透传，并已接入日志格式、远程调用请求头生成和统一 HTTP client adapter；后续需要继续接入权限上下文和真实 RPC client adapter。
+- 错误码已补充分段指南，后续新模块应按 `project_document/ERROR_CODE_GUIDE.md` 分配 code。
 - 前端已有统一时间工具层，后续需要让日期控件、文件名、通知时间等存量逻辑逐步迁移。
-- 中间件开关已有，但缺少 dev/test/prod/profile 矩阵和“启用后必须满足什么验证”的清单。
+- 中间件状态已能区分 `disabled/configured/ready/degraded`，并通过 `/api/test/features` 输出；dev/test/prod profile 矩阵已落地，后续仍需补真实探测开关。
 - 微服务远程调用已有包装工具，但还不是接口驱动的 client contract，没有统一超时、重试、熔断、调用方身份和审计契约。
 
 ## 母版应该内置
@@ -81,7 +82,7 @@
 
 验收：
 
-- 后端统一响应只保留一个标准结构，前端无需同时兼容 `msg` 和 `message`。
+- 后端新增接口只使用 `APIResponse` 标准结构和 `PageResult` 分页 payload；前端将 `msg` 兼容集中在 HTTP helper 内部。
 - 前后端新增统一 API path 管理，不再新增散落 URL 字符串。
 - 后端新增请求上下文过滤器或拦截器，生成并返回 `X-Request-Id`。
 - 后端时间配置支持 `APP_TIME_ZONE`，默认建议 UTC；展示时区由前端或用户配置决定。
@@ -95,7 +96,8 @@
 验收：
 
 - 日志统一输出 `requestId`、`traceId`、`userId`、`tenantId`、接口路径、耗时、错误码。
-- `RemoteCallWrapper` 支持调用方、目标服务、超时、重试和 requestId 透传。
+- `RemoteCallWrapper` 支持调用方、上下文请求头、重试和 requestId/traceId 透传。
+- `RemoteHttpClient` 支持统一 HTTP 出站调用、超时配置、上下文透传、目标服务审计描述和可重试错误映射；后续补充熔断和 RPC adapter。
 - 错误码按模块分段，有文档说明哪些错误能重试、哪些必须提示用户。
 - 健康检查和中间件状态能区分 disabled、configured、ready、degraded。
 
@@ -103,6 +105,14 @@
 
 - `logback-spring.xml` 已输出 MDC 中的 `requestId`、`traceId`、`tenantId`、`userId`。
 - `ControllerLogAspect` 已复用 `RequestContextFilter` 生成的 requestId。
+- `RemoteCallWrapper.serviceCallHeaders(callerId)` 已提供服务间调用的上下文请求头生成。
+- `RemoteHttpClient` / `RemoteHttpRequest` 已提供 HTTP 服务间调用适配层。
+- `project_document/ERROR_CODE_GUIDE.md` 已记录错误码分段和远程调用重试策略。
+- `MiddlewareManager.statusReport()` 和 `/api/test/features` 已提供可选能力状态基线，状态词典记录在 `project_document/FEATURE_STATUS_GUIDE.md`。
+- `application-dev.yml`、`application-test.yml`、`application-prod.yml` 已提供环境矩阵，dev/test 使用 H2 轻启动，生产 MySQL 和外部能力由环境变量显式开启。
+- `project_document/LOCAL_STARTUP_GUIDE.md` 已记录无 MySQL/Redis 的后端本地启动验证方式和当前证据。
+- `scripts/check-contracts.sh` 已把路径、响应、分页、上下文、远程调用和时间工具约束变成可执行守护检查。
+- `scripts/check-api-path-parity.js` 已把后端 `ApiConstants.Auth/Test` 与前端 `ApiPaths.auth/test` 的运行路径一致性纳入自动校验。
 
 ### S6: 服务边界与可选适配层
 
@@ -112,7 +122,7 @@
 
 - 明确 auth、gateway、common、admin、business 的 API prefix 和包边界。
 - 新项目复制后可以只保留需要的模块，不破坏构建。
-- 可选中间件有 profile 示例和验证命令。
+- 可选中间件有 profile 示例、验证命令和状态接口。
 - 下游项目验证出的通用工具回流母版，领域能力留在下游。
 
 ### S7: 契约生成与共享包
@@ -129,7 +139,7 @@
 
 1. 收敛 API 响应结构。
 
-   统一为 `code`、`message`、`data`、`timestamp`、`requestId`。前端保留一次兼容期，之后删除 `msg` 兼容。
+   统一为 `code`、`message`、`data`、`timestamp`、`requestId`。前端已将 `msg` 兼容集中到 HTTP helper，后续删除旧 mock / 第三方兼容后移除 `msg`。
 
 2. 建立前端 `ApiPaths`。
 
@@ -137,7 +147,7 @@
 
 3. 建立时间策略。
 
-   后端新增 `TimeZoneProperties` 或 `AppProperties`，默认 UTC；`DateUtils` 增加 `Instant` / `OffsetDateTime` 支持。前端新增 `utils/time`。
+   后端默认 UTC，`DateUtils` 已提供 `nowInstant()`、`nowUtc()`、`nowIso()`、`now(pattern)`、`nowEpochMilli()`；前端已新增 `utils/time`，并通过请求头透传客户端时区。
 
 4. 建立请求上下文。
 

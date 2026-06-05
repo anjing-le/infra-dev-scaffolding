@@ -25,6 +25,7 @@ cd my-new-project
 
 - `backend/pom.xml`：修改 `artifactId`、`name`、`description`。
 - `backend/src/main/resources/application.yml`：修改 `spring.application.name`、`server.port`、默认数据库名。
+- `backend/src/main/resources/application-dev.yml` / `application-test.yml` / `application-prod.yml`：按新项目确认 profile 默认开关。
 - `backend/.env.example`：同步数据库 URL、账号变量说明和 Druid 默认说明。
 - `backend/src/main/resources/logback-spring.xml`：确认日志文件名和 app id。
 
@@ -60,6 +61,8 @@ pnpm dev
 cd backend
 mvn spring-boot:run
 ```
+
+默认使用 `SPRING_PROFILES_ACTIVE=dev` 和内存 H2，可选中间件保持轻启动。需要连接 MySQL 或验证 profile 矩阵时参考 `project_document/ENVIRONMENT_PROFILE_GUIDE.md`。
 
 ## 5. 验证
 

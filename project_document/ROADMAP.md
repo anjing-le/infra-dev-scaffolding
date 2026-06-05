@@ -70,6 +70,7 @@
 
 验收：
 - 统一前后端 API path 管理，减少散落 URL 字符串。
+- 统一响应 envelope 和分页 payload，新增接口只使用 `code/message/data/timestamp/requestId` 与 `records/current/size/total`。
 - 请求链路具备 `requestId`、`traceId`、语言和时区上下文。
 - 后端默认 UTC，可通过环境变量覆盖应用时区。
 - 前端具备统一时间工具，新增页面不直接手写日期格式化逻辑。
@@ -81,8 +82,9 @@
 
 验收：
 - 日志统一输出 requestId、traceId、用户、租户、路径、耗时和错误码。
-- 远程调用 wrapper 支持上下文透传、调用方身份、超时、重试和审计字段。
-- 中间件状态能区分 disabled、configured、ready、degraded。
+- 远程调用 wrapper 和 HTTP client adapter 支持上下文透传、调用方身份、超时、重试和审计字段。
+- 错误码按分段指南分配，明确可重试错误与用户可见错误。
+- 中间件状态能区分 disabled、configured、ready、degraded，并提供可被前端/运维页消费的状态接口。
 
 ### S6: 服务边界与可选适配层
 
@@ -90,7 +92,7 @@
 
 验收：
 - 明确 auth、gateway、common、admin、business 的 API prefix 和包边界。
-- 可选中间件有 profile 示例和验证命令。
+- 可选中间件有 dev/test/prod profile 示例、状态接口和验证命令。
 - 下游项目验证出的通用工具回流母版，领域能力留在下游。
 
 ### S7: 契约生成与共享包

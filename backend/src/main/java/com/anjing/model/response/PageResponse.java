@@ -21,7 +21,9 @@ import java.util.List;
  * @param <T> 数据类型
  * @author Backend Template Team
  * @version 1.0
+ * @deprecated 新分页接口使用 {@code APIResponse<PageResult<T>>}，字段固定为 records/current/size/total。
  */
+@Deprecated(since = "1.1.0", forRemoval = false)
 @Setter
 @Getter
 public class PageResponse<T> extends MultiResponse<T>

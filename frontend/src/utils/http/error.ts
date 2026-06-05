@@ -24,15 +24,20 @@
 import { AxiosError } from 'axios'
 import { ApiStatus } from './status'
 import { $t } from '@/locales'
+import { extractResponseMessage } from './response'
 
 // 错误响应接口
 export interface ErrorResponse {
   /** 错误状态码 */
-  code: number
-  /** 错误消息 */
-  msg: string
+  code: number | string
+  /** 错误消息（标准字段） */
+  message?: string
+  /** @deprecated 使用 message；仅用于旧 mock / 第三方接口过渡 */
+  msg?: string
   /** 错误附加数据 */
   data?: unknown
+  /** 请求 ID */
+  requestId?: string
 }
 
 // 错误日志数据接口
@@ -51,6 +56,8 @@ export interface ErrorLogData {
   method?: string
   /** 错误堆栈信息 */
   stack?: string
+  /** 请求 ID */
+  requestId?: string
 }
 
 // 自定义 HttpError 类
@@ -60,6 +67,7 @@ export class HttpError extends Error {
   public readonly timestamp: string
   public readonly url?: string
   public readonly method?: string
+  public readonly requestId?: string
 
   constructor(
     message: string,
@@ -68,6 +76,7 @@ export class HttpError extends Error {
       data?: unknown
       url?: string
       method?: string
+      requestId?: string
     }
   ) {
     super(message)
@@ -77,6 +86,7 @@ export class HttpError extends Error {
     this.timestamp = new Date().toISOString()
     this.url = options?.url
     this.method = options?.method
+    this.requestId = options?.requestId
   }
 
   public toLogData(): ErrorLogData {
@@ -87,6 +97,7 @@ export class HttpError extends Error {
       timestamp: this.timestamp,
       url: this.url,
       method: this.method,
+      requestId: this.requestId,
       stack: this.stack
     }
   }
@@ -126,7 +137,7 @@ export function handleError(error: AxiosError<ErrorResponse>): never {
   }
 
   const statusCode = error.response?.status
-  const errorMessage = error.response?.data?.msg || error.message
+  const errorMessage = extractResponseMessage(error.response?.data) || error.message
   const requestConfig = error.config
 
   // 处理网络错误
@@ -144,7 +155,8 @@ export function handleError(error: AxiosError<ErrorResponse>): never {
   throw new HttpError(message, statusCode || ApiStatus.error, {
     data: error.response.data,
     url: requestConfig?.url,
-    method: requestConfig?.method?.toUpperCase()
+    method: requestConfig?.method?.toUpperCase(),
+    requestId: error.response.data?.requestId
   })
 }
 

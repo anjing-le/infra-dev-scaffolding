@@ -12,6 +12,8 @@
 | S1 工程母版收口 | Ready | `./scripts/check-template.sh` 和 `./scripts/smoke-copy.sh` 已通过 |
 | S2 AI 协作资产收口 | Ready | Notice prompt smoke 已在临时复制项目验证，母版只保留演示文档和 Prompt 契约 |
 | S3 后续项目复用验证 | In progress | `infra-skill-hub` 已从本母版接入骨架，完成 H0 / H1 / H2 验证，并推进 H3 HTTP/MCP/INTERNAL 调度层、全局与注册级协议配置、凭据托管与选择体验、权限身份头联动、策略批量管理、默认策略模板、调用治理、审计查询、治理指标与前端治理面 |
+| S4 契约与全球化基线 | In progress | 已落地前端 `ApiPaths`、请求上下文头、统一时间工具、响应解析 helper；后端已落地 `ApiConstants` 运行路径引用、`RequestContextFilter`、UTC 默认时间策略、响应 `requestId`、`PageResult` 和 API 契约指南 |
+| S5 分布式可观测基线 | In progress | 已落地 MDC 日志字段、`RemoteCallWrapper.serviceCallHeaders(callerId)`、`RemoteHttpClient`、错误码分段指南、`/api/test/features` 可选能力状态接口和 dev/test/prod profile 矩阵 |
 
 ## 当前证据链
 
@@ -19,7 +21,10 @@
 
 ```bash
 ./scripts/check-template.sh
+./scripts/check-contracts.sh
+node scripts/check-api-path-parity.js
 ./scripts/smoke-copy.sh
+./scripts/probe-backend-dev.sh
 (cd backend && mvn -q -DskipTests package)
 (cd frontend && pnpm build)
 (cd frontend && pnpm -s clean:dev)
@@ -31,7 +36,18 @@ AI 协作验证：
 - Notice prompt smoke 已验证后端 CRUD、前端 API、列表页、搜索组件、弹窗和路由能在复制项目中通过构建。
 - 验证后回补的关键契约：
   - 后端列表响应字段为 `records`、`current`、`size`、`total`。
+  - 后端运行 Controller 路径引用 `ApiConstants`，前端路径收口到 `ApiPaths`，路径契约记录在 `project_document/API_PATH_GUIDE.md`。
+  - `node scripts/check-api-path-parity.js` 已校验 `ApiConstants.Auth/Test` 与 `ApiPaths.auth/test` 的稳定运行路径一致。
   - 前端删除请求使用项目 HTTP 工具的 `request.del`。
+  - 前端标准响应消息使用 `message`，`msg` 兼容集中在 `utils/http/response.ts`。
+  - API envelope 契约记录在 `project_document/API_CONTRACT_GUIDE.md`。
+  - 业务当前时间统一通过 `DateUtils.nowIso()`、`DateUtils.now(pattern)`、`DateUtils.nowEpochMilli()` 等 UTC 出口获取，自检脚本已禁止业务源码直接调用 `Instant.now()` / `LocalDateTime.now()`。
+  - HTTP 服务间调用使用 `RemoteHttpClient`，自定义 adapter 使用 `RemoteCallWrapper.serviceCallHeaders(callerId)` 透传 requestId、traceId、租户、用户、语言和时区。
+  - 错误码按 `project_document/ERROR_CODE_GUIDE.md` 分段，远程调用默认只重试 `1800-1899`。
+  - `./scripts/check-contracts.sh` 已将 API 路径、响应 envelope、分页字段、请求上下文、远程调用和时间工具的关键约束纳入可执行检查。
+  - 可选中间件状态按 `project_document/FEATURE_STATUS_GUIDE.md` 使用 `disabled/configured/ready/degraded`，并通过 `/api/test/features` 输出。
+  - 后端 profile 矩阵按 `project_document/ENVIRONMENT_PROFILE_GUIDE.md` 管理，`dev/test` 使用 H2 轻启动，`prod` 通过环境变量显式开启 MySQL 和外部中间件。
+  - 本地轻启动验证记录在 `project_document/LOCAL_STARTUP_GUIDE.md`，已验证 `dev` profile 下 `/api/test/health` 和 `/api/test/features` 可返回。
 
 下游复用验证：
 

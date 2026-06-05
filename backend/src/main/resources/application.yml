@@ -11,10 +11,14 @@ server:
 spring:
   application:
     name: infra-dev-scaffolding
+
+  autoconfigure:
+    exclude:
+      - org.redisson.spring.starter.RedissonAutoConfigurationV2
   
   # 环境配置
   profiles:
-    active:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
   
   # 数据源配置
   datasource:
@@ -175,6 +179,14 @@ management:
 
 # 🎛️ 功能特性配置 - 条件化启用各种功能
 app:
+  # 远程 HTTP 调用默认配置：用于未来服务间调用或外部 API 适配
+  remote-http:
+    default-caller-id: ${APP_REMOTE_CALLER_ID:infra-dev-scaffolding}
+    connect-timeout-ms: ${REMOTE_HTTP_CONNECT_TIMEOUT_MS:3000}
+    read-timeout-ms: ${REMOTE_HTTP_READ_TIMEOUT_MS:5000}
+    default-retry-count: ${REMOTE_HTTP_DEFAULT_RETRY_COUNT:0}
+    default-retry-interval-ms: ${REMOTE_HTTP_DEFAULT_RETRY_INTERVAL_MS:1000}
+
   features:
     # Redis功能配置
     redis:

@@ -26,13 +26,13 @@ Controller → Service → Repository → Database
 
 ```java
 @RestController
-@RequestMapping("/api/xxx")
+@RequestMapping(ApiConstants.Xxx.BASE)
 @RequiredArgsConstructor
 @Slf4j
 public class XxxController {
     private final XxxService xxxService;
     
-    @PostMapping
+    @PostMapping(ApiConstants.Xxx.CREATE)
     public APIResponse<XxxVO> create(@RequestBody @Validated XxxRequest request) {
         return APIResponse.success(xxxService.create(request));
     }
@@ -77,6 +77,18 @@ public enum XxxErrorCode implements ErrorCode {
 }
 ```
 
+错误码分段必须参考 `project_document/ERROR_CODE_GUIDE.md`：
+
+- 系统通用 `1000-1499`
+- 分布式锁 `1500-1599`
+- 远程调用 `1600-1899`，其中 `1800-1899` 默认可重试
+- 状态机 `1900-1999`
+- 通用业务 `2000-2099`
+- 认证授权 `2100-2399`
+- 新业务模块 `2400-2999`
+- 参数校验 `3000-3999`
+- 网关/安全 `4000-4999`
+
 ## 参数校验
 
 ### 内置校验注解
@@ -107,20 +119,26 @@ app:
         enabled: false # 未配置不启动
 ```
 
+可选能力状态统一由 `MiddlewareManager` 表达，状态值使用 `disabled`、`configured`、`ready`、`degraded`。新增可选中间件时，不要让它成为默认启动依赖；同步补充状态检查、配置模板和 `project_document/FEATURE_STATUS_GUIDE.md`。
+
 ### 环境分离
-- `application.yml` - 通用配置
-- `application-dev.yml` - 开发环境
-- `application-prod.yml` - 生产环境
+- `application.yml` - 通用配置，默认 `SPRING_PROFILES_ACTIVE=dev`
+- `application-dev.yml` - 开发环境，H2 轻启动，Redis/Kafka/对象存储默认关闭
+- `application-test.yml` - 测试环境，H2 + 确定性优先，避免外部依赖
+- `application-prod.yml` - 生产环境，通过环境变量显式开启外部中间件
+- 环境矩阵必须参考 `project_document/ENVIRONMENT_PROFILE_GUIDE.md`
 
 ## 分布式上下文与日志
 
 - 每个请求由 `RequestContextFilter` 生成或透传 `X-Request-Id` 和 `X-Trace-Id`。
 - 日志通过 MDC 输出 `requestId`、`traceId`、`tenantId`、`userId`，业务代码不需要重复拼这些字段。
 - 需要在 Service 或远程调用中读取上下文时，使用 `GlobalRequestContextHolder.current()`。
-- 服务间调用时应透传 `RequestHeaderConstants.REQUEST_ID`、`TRACE_ID`、`TENANT_ID`、`USER_ID`、`TIME_ZONE` 和 `ACCEPT_LANGUAGE`。
+- HTTP 服务间调用优先使用 `RemoteHttpClient` 和 `RemoteHttpRequest`，由脚手架统一处理上下文头、超时、重试和安全日志描述。
+- 自定义 Feign / Dubbo / WebClient adapter 时使用 `RemoteCallWrapper.serviceCallHeaders(callerId)` 生成透传头；直接写 adapter 时也要使用 `RequestHeaderConstants`，不要手写 header 名称。
 
 ## 时间策略
 
 - 默认使用 UTC，配置项为 `APP_TIME_ZONE`，本地展示时区由前端或用户偏好决定。
 - 新代码优先使用 `Instant` / `OffsetDateTime`，工具方法使用 `DateUtils`。
-- 避免直接使用 `ZoneId.systemDefault()` 或无上下文的 `LocalDateTime.now()`。
+- 接口时间字符串使用 `DateUtils.nowIso()`，自定义 UTC 格式使用 `DateUtils.now(pattern)`，毫秒时间戳使用 `DateUtils.nowEpochMilli()`。
+- 避免直接使用 `ZoneId.systemDefault()` 或无上下文的 `Instant.now()` / `LocalDateTime.now()`。

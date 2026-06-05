@@ -25,7 +25,21 @@ DELETE /api/users/{id}      # 删除用户
 ### API 路径常量
 所有路径在 `ApiConstants` 中统一管理，避免硬编码。
 
-Controller 的 `@RequestMapping`、`@GetMapping`、`@PostMapping` 等路径优先引用 `ApiConstants`。如果新增资源路径，也要同步补充 `ApiConstants`，方便后续前端 `ApiPaths` 或 OpenAPI 生成对齐。
+Controller 的 `@RequestMapping`、`@GetMapping`、`@PostMapping` 等路径必须引用 `ApiConstants`。如果新增资源路径，也要同步补充 `ApiConstants`，方便后续前端 `ApiPaths` 或 OpenAPI 生成对齐。
+
+推荐结构：
+
+```java
+@RequestMapping(ApiConstants.Notice.BASE)
+public class NoticeController {
+    @GetMapping(ApiConstants.Notice.LIST)
+    public APIResponse<PageResult<NoticeVO>> list(...) {
+        ...
+    }
+}
+```
+
+模块路径约定见 `project_document/API_PATH_GUIDE.md`：每个模块提供 `BASE`，子路径使用相对路径，需要给远程调用或文档使用时提供 `*_FULL`。
 
 ## 请求规范
 
@@ -64,19 +78,38 @@ Controller 的 `@RequestMapping`、`@GetMapping`、`@PostMapping` 等路径优�
 APIResponse.success(data);           // 有数据
 APIResponse.success(data, "创建成功"); // 有数据 + 自定义消息
 APIResponse.success();               // 无数据
+APIResponse.successMessage("删除成功"); // 无数据 + 自定义消息
+APIResponse.successData("pong");       // String 等容易和消息混淆的数据
 ```
 
 ### 错误响应
 ```java
 throw new BizException(XxxErrorCode.SOME_ERROR);  // 业务异常
-APIResponse.error("操作失败");                       // 直接返回错误
+APIResponse.error(XxxErrorCode.SOME_ERROR);        // 直接返回错误
 ```
+
+### 错误码分段
+错误码必须遵循 `project_document/ERROR_CODE_GUIDE.md`。
+
+- `1000-1499`: 系统、数据库、缓存、配置等通用基础设施错误
+- `1500-1599`: 分布式锁
+- `1600-1899`: 远程调用，其中 `1800-1899` 默认可重试
+- `1900-1999`: 状态机和流程编排
+- `2000-2099`: 通用业务错误
+- `2100-2399`: 登录、权限、账号、Token
+- `2400-2999`: 新业务模块，按模块每 100 个 code 分配
+- `3000-3999`: 参数和校验错误
+- `4000-4999`: 全局安全、网关、限流、跨服务鉴权
+
+新增 `XxxErrorCode` 前先确认分段，不要复用已有 code。
 
 ### 分页响应
 ```java
-PageResponse.of(page);               // 从 Spring Data Page 创建
-PageResponse.of(list, total, size);  // 手动创建
+APIResponse.success(PageResult.of(page));                  // 从 Spring Data Page 创建
+APIResponse.success(PageResult.of(list, total, current, size)); // 手动创建
 ```
+
+分页 payload 字段固定为 `records`、`current`、`size`、`total`。`BaseResponse`、`MultiResponse`、`PageResponse` 是旧远程响应兼容类，新业务接口不要使用。
 
 ## 版本管理
 
@@ -86,5 +119,6 @@ PageResponse.of(list, total, size);  // 手动创建
 ## 时间与全球化
 
 - 服务端默认按 UTC 处理存储和接口时间，避免依赖部署机器本地时区。
-- 需要当前时间时优先使用 `DateUtils.nowInstant()` / `DateUtils.nowUtc()`，不要直接使用 `LocalDateTime.now()`。
+- 需要当前时间时优先使用 `DateUtils.nowInstant()` / `DateUtils.nowUtc()` / `DateUtils.nowIso()`，不要直接使用 `Instant.now()` 或 `LocalDateTime.now()`。
+- 需要自定义 UTC 格式时使用 `DateUtils.now(pattern)`，需要 epoch milliseconds 时使用 `DateUtils.nowEpochMilli()`。
 - 需要用户展示时区时，从 `GlobalRequestContextHolder.current().getTimeZone()` 获取客户端透传的时区，再显式转换。

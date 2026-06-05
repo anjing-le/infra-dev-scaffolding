@@ -23,9 +23,17 @@ require_file project_document/RELEASE_CHECKLIST.md
 require_file project_document/COPY_GUIDE.md
 require_file project_document/TEMPLATE_BOUNDARIES.md
 require_file project_document/AI_ASSETS.md
+require_file project_document/ENVIRONMENT_PROFILE_GUIDE.md
+require_file project_document/LOCAL_STARTUP_GUIDE.md
 require_file docs/teaching/04-notice-module-demo.md
+require_file scripts/check-api-path-parity.js
+require_file scripts/check-contracts.sh
+require_file scripts/probe-backend-dev.sh
 require_file backend/.env.example
 require_file backend/src/main/resources/application.yml
+require_file backend/src/main/resources/application-dev.yml
+require_file backend/src/main/resources/application-test.yml
+require_file backend/src/main/resources/application-prod.yml
 require_file frontend/package.json
 require_file frontend/LICENSE
 require_file frontend/.env
@@ -195,5 +203,7 @@ if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   tracked_build_outputs="$(git ls-files frontend/dist backend/target backend/logs)"
   [[ -z "$tracked_build_outputs" ]] || fail "build outputs are tracked by git"
 fi
+
+./scripts/check-contracts.sh
 
 echo "check-template: ok"

@@ -23,6 +23,7 @@
    - 使用 `request.get` / `request.post` / `request.put` / `request.del` 方法
    - API 路径必须写入并引用 `src/api/paths.ts` 的 `ApiPaths`
    - 不要在 API 函数里直接手写 `url: '/api/...'`
+   - 路径参数必须封装在 `ApiPaths` 函数中，并使用 `encodeURIComponent`
    - 正确使用泛型指定返回类型
    - 从对应的 Model 文件导入类型定义
 
@@ -31,6 +32,7 @@
    - 使用 export interface 或 export type 导出类型
    - 定义接口类型（如 UserListItem）
    - 定义列表响应类型（如 UserList = PaginatedResponse<UserListItem>）
+   - 列表响应字段固定为 `records`、`current`、`size`、`total`
    - 定义搜索参数类型（如 UserSearchParams）
    - 定义创建参数类型（如 CreateUserParams）
    - 定义更新参数类型（如 UpdateUserParams）
@@ -41,6 +43,11 @@
 
 ### 接口规范：
 - 新业务优先使用 RESTful 路径，并统一带 `/api` 前缀
+- 新增接口要同步对齐后端 `ApiConstants` 与前端 `ApiPaths`
+- 新增稳定运行接口要同步扩展 `scripts/check-api-path-parity.js` 的映射表
+- 后端响应 envelope 使用 `code`、`message`、`data`、`timestamp`、`requestId`
+- API 函数返回 `data` 内部类型，不在页面解析 envelope
+- 新类型不要新增 `msg` 字段，旧接口消息兼容由 `utils/http/response.ts` 处理
 - 查询列表：GET /api/[resource]
 - 查询详情：GET /api/[resource]/{id}
 - 创建：POST /api/[resource]

@@ -124,7 +124,7 @@ public class ValidationExampleService {
     )
     public APIResponse<String> batchOperateUsers(BatchUserRequest request) {
         // 模拟批量业务逻辑
-        return APIResponse.success("批量操作成功，处理了" + request.getUserIds().size() + "个用户");
+        return APIResponse.successData("批量操作成功，处理了" + request.getUserIds().size() + "个用户");
     }
 
     /**

@@ -9,7 +9,7 @@ Anjing 开源项目的全栈工程母版。
 ## 技术栈
 
 - Vue 3.5 + TypeScript + Vite 7（前端）
-- Spring Boot 3.4.5 + MySQL（后端）
+- Spring Boot 3.4.5 + MySQL（后端，dev/test 内置 H2 轻启动）
 
 ## 项目目标
 
@@ -53,12 +53,20 @@ cd backend
 mvn spring-boot:run
 ```
 
-后端默认连接 `anjing` 数据库。复制或参考 `backend/.env.example` 配置本地数据库、Druid 和 Redis 参数。
+默认 `dev` profile 使用内存 H2，无需本地 MySQL/Redis 即可启动。需要连接 MySQL 时，复制或参考 `backend/.env.example` 配置 `DB_URL`、`DB_USERNAME`、`DB_PASSWORD`。
 
 ## 验证
 
 ```bash
 ./scripts/check-template.sh
+```
+
+```bash
+./scripts/check-contracts.sh
+```
+
+```bash
+node scripts/check-api-path-parity.js
 ```
 
 ```bash
@@ -75,10 +83,21 @@ cd backend
 mvn -q -DskipTests package
 ```
 
+```bash
+./scripts/probe-backend-dev.sh
+```
+
 ## 项目文档
 
 - [项目路线图](./project_document/ROADMAP.md)
 - [架构演进蓝图](./project_document/ARCHITECTURE_EVOLUTION.md)
+- [API 契约指南](./project_document/API_CONTRACT_GUIDE.md)
+- [API 路径指南](./project_document/API_PATH_GUIDE.md)
+- [环境 Profile 指南](./project_document/ENVIRONMENT_PROFILE_GUIDE.md)
+- [本地启动指南](./project_document/LOCAL_STARTUP_GUIDE.md)
+- [可选能力状态指南](./project_document/FEATURE_STATUS_GUIDE.md)
+- [远程调用指南](./project_document/REMOTE_CALL_GUIDE.md)
+- [错误码分段指南](./project_document/ERROR_CODE_GUIDE.md)
 - [当前状态](./project_document/STATUS.md)
 - [发布检查清单](./project_document/RELEASE_CHECKLIST.md)
 - [复制为新项目指南](./project_document/COPY_GUIDE.md)

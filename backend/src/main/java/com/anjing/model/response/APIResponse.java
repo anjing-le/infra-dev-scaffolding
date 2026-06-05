@@ -1,6 +1,7 @@
 package com.anjing.model.response;
 
 import com.anjing.context.GlobalRequestContextHolder;
+import com.anjing.model.errorcode.ErrorCode;
 import lombok.Data;
 
 /**
@@ -14,6 +15,11 @@ public class APIResponse<T>
      * 成功状态码
      */
     public static final String SUCCESS_CODE = "0";
+
+    /**
+     * 默认成功消息
+     */
+    public static final String SUCCESS_MESSAGE = "操作成功";
 
     /**
      * 失败状态码
@@ -82,7 +88,18 @@ public class APIResponse<T>
      * @return 响应结果
      */
     public static <T> APIResponse<T> success(T data) {
-        return new APIResponse<>(SUCCESS_CODE, "操作成功", data);
+        return new APIResponse<>(SUCCESS_CODE, SUCCESS_MESSAGE, data);
+    }
+
+    /**
+     * 成功响应，明确表示参数是数据。用于 String 等容易和消息重载混淆的场景。
+     *
+     * @param data 数据
+     * @param <T>  数据类型
+     * @return 响应结果
+     */
+    public static <T> APIResponse<T> successData(T data) {
+        return success(data);
     }
 
     /**
@@ -103,7 +120,7 @@ public class APIResponse<T>
      * @return 响应结果
      */
     public static <T> APIResponse<T> success() {
-        return new APIResponse<>(SUCCESS_CODE, "操作成功", null);
+        return new APIResponse<>(SUCCESS_CODE, SUCCESS_MESSAGE, null);
     }
 
     /**
@@ -112,8 +129,20 @@ public class APIResponse<T>
      * @param message 消息
      * @return 响应结果
      */
-    public static <T> APIResponse<T> success(String message) {
+    public static <T> APIResponse<T> successMessage(String message) {
         return new APIResponse<>(SUCCESS_CODE, message, null);
+    }
+
+    /**
+     * 成功响应（无数据）
+     *
+     * @param message 消息
+     * @return 响应结果
+     * @deprecated 使用 {@link #successMessage(String)}，避免和 {@link #success(Object)} 的 String 数据场景混淆。
+     */
+    @Deprecated(since = "1.1.0", forRemoval = false)
+    public static <T> APIResponse<T> success(String message) {
+        return successMessage(message);
     }
 
     /**
@@ -125,6 +154,29 @@ public class APIResponse<T>
      */
     public static <T> APIResponse<T> error(String message) {
         return new APIResponse<>(ERROR_CODE, message);
+    }
+
+    /**
+     * 错误响应
+     *
+     * @param errorCode 错误码
+     * @param <T>       数据类型
+     * @return 响应结果
+     */
+    public static <T> APIResponse<T> error(ErrorCode errorCode) {
+        return new APIResponse<>(errorCode.getCode(), errorCode.getMessage());
+    }
+
+    /**
+     * 错误响应
+     *
+     * @param errorCode 错误码
+     * @param data      附加数据
+     * @param <T>       数据类型
+     * @return 响应结果
+     */
+    public static <T> APIResponse<T> error(ErrorCode errorCode, T data) {
+        return new APIResponse<>(errorCode.getCode(), errorCode.getMessage(), data);
     }
 
     /**
