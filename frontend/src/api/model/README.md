@@ -118,7 +118,7 @@ export type UpdateUserParams = Partial<Omit<CreateUserParams, 'password'>>
 ```typescript
 // src/api/user.ts
 import request from '@/utils/http'
-import { ApiPaths } from '@/api/paths'
+import { ApiLegacyPaths } from '@/api/paths'
 import type {
   UserList,
   UserListItem,
@@ -129,7 +129,7 @@ import type {
 
 export function fetchGetUserList(params: UserSearchParams) {
   return request.get<UserList>({
-    url: ApiPaths.system.users,
+    url: ApiLegacyPaths.system.users,
     params
   })
 }

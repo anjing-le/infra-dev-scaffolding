@@ -41,6 +41,8 @@ export const ApiPaths = {
 约定：
 
 - API 模块只引用 `ApiPaths`，不要直接写 `url: '/api/...'`。
+- `ApiPaths` 只放 `contracts/service-boundaries.json` 中声明的运行或预留运行路径。
+- 旧模板、mock 或尚未由后端运行面承载的路径放入 `ApiLegacyPaths`，并在后续真实实现时迁回 `ApiPaths`。
 - 路径参数使用函数，并通过 `encodeURIComponent` 处理。
 - 页面组件不直接拼接口路径。
 - 非 Axios 场景需要完整上传地址时，使用 `resolveApiPath(ApiPaths.xxx.yyy)`，不要手动拼 `VITE_API_URL + '/api/...'`。
@@ -86,7 +88,11 @@ node scripts/check-api-path-parity.js
 ```
 
 ```bash
+node scripts/check-frontend-api-boundaries.js
+```
+
+```bash
 node scripts/check-service-boundaries.js
 ```
 
-`check-api-constants.js` 会阻止 `ApiConstants` 内部重新散落 `"/api/..."` 字面量。`check-api-path-parity.js` 会读取 `contracts/service-boundaries.json`，比对 manifest 中声明的稳定运行接口和 `ApiConstants` / `ApiPaths`。后续新增模块进入运行面时，应同步扩展 `service-boundaries.json` 的 route 表。
+`check-api-constants.js` 会阻止 `ApiConstants` 内部重新散落 `"/api/..."` 字面量。`check-api-path-parity.js` 会读取 `contracts/service-boundaries.json`，比对 manifest 中声明的稳定运行接口和 `ApiConstants` / `ApiPaths`。`check-frontend-api-boundaries.js` 会阻止旧模板路径混入 `ApiPaths`。后续新增模块进入运行面时，应同步扩展 `service-boundaries.json` 的 route 表。

@@ -36,6 +36,7 @@
 - 新增运行模块时，先在 `contracts/service-boundaries.json` 增加 boundary。
 - 后端同步新增 `ApiConstants.Xxx.BASE` 和 `*_FULL` 路径。
 - 前端同步新增 `ApiPaths.xxx`，只把真实运行路径加入 manifest route。
+- 旧模板或 mock 路径留在 `ApiLegacyPaths`，不要加入 `ApiPaths` 或 manifest route。
 - Controller 使用 `@RequestMapping(ApiConstants.Xxx.BASE)`。
 - 当前运行接口需要出现在 `/v3/api-docs` 时，Controller 补 `@Tag`，DTO/VO 补必要 `@Schema`。
 - 复制项目删除示例接口时，可以删除 `test` boundary 或改成自己的 health/sample 边界。
@@ -58,4 +59,5 @@ node scripts/check-service-boundaries.js
 - basePath 使用 `contracts/platform-contract.json` 的 API 前缀。
 - manifest 中的 basePath 与 `ApiConstants` 一致。
 - manifest 中的 route 与 `ApiConstants.*_FULL`、`ApiPaths` 一致。
+- `ApiPaths` 不混入旧模板路径；旧路径集中在 `ApiLegacyPaths`。
 - 当前 OpenAPI 运行 Controller 使用 `ApiConstants.Xxx.BASE` 并带有 `@Tag`。

@@ -5,7 +5,7 @@
  */
 
 import request from '@/utils/http'
-import { ApiPaths } from './paths'
+import { ApiLegacyPaths, ApiPaths } from './paths'
 import type { BaseResult } from '@/types/common/response'
 import type { UserInfo } from './model/authModel'
 import type {
@@ -56,7 +56,7 @@ export class UserService {
    */
   static verify2FA(data: Verify2FAParams): Promise<BaseResult<LoginResponse>> {
     return request.post<BaseResult<LoginResponse>>({
-      url: ApiPaths.auth.verify2FA,
+      url: ApiLegacyPaths.auth.verify2FA,
       data
     })
   }
@@ -68,7 +68,7 @@ export class UserService {
    */
   static sendOtp(data: SendOtpParams): Promise<BaseResult<null>> {
     return request.post<BaseResult<null>>({
-      url: ApiPaths.auth.sendOtp,
+      url: ApiLegacyPaths.auth.sendOtp,
       data
     })
   }
@@ -80,7 +80,7 @@ export class UserService {
    */
   static smsLogin(data: SmsLoginParams): Promise<BaseResult<LoginResponse>> {
     return request.post<BaseResult<LoginResponse>>({
-      url: ApiPaths.auth.verify2FA,
+      url: ApiLegacyPaths.auth.verify2FA,
       data
     })
   }
@@ -91,7 +91,7 @@ export class UserService {
    */
   static unbindStore(): Promise<BaseResult<null>> {
     return request.del<BaseResult<null>>({
-      url: ApiPaths.auth.binding
+      url: ApiLegacyPaths.auth.binding
     })
   }
 
@@ -102,7 +102,7 @@ export class UserService {
    */
   static bindStore(storeNo: string): Promise<BaseResult<BindStoreResponse>> {
     return request.put<BaseResult<BindStoreResponse>>({
-      url: ApiPaths.auth.bindStore(storeNo)
+      url: ApiLegacyPaths.auth.bindStore(storeNo)
     })
   }
 
@@ -112,7 +112,7 @@ export class UserService {
    */
   static getTenantMemberList(): Promise<BaseResult<TenantMember[]>> {
     return request.get<BaseResult<TenantMember[]>>({
-      url: ApiPaths.auth.tenantMembers
+      url: ApiLegacyPaths.auth.tenantMembers
     })
   }
 
@@ -122,7 +122,7 @@ export class UserService {
    */
   static getUserInfo(): Promise<BaseResult<UserInfo>> {
     return request.get<BaseResult<UserInfo>>({
-      url: ApiPaths.auth.userInfo
+      url: ApiLegacyPaths.auth.userInfo
     })
   }
 
@@ -134,7 +134,7 @@ export class UserService {
     BaseResult<{ isLogin: boolean; userId?: string; tokenTimeout?: number }>
   > {
     return request.get<BaseResult<{ isLogin: boolean; userId?: string; tokenTimeout?: number }>>({
-      url: ApiPaths.auth.verify
+      url: ApiLegacyPaths.auth.verify
     })
   }
 
@@ -144,7 +144,7 @@ export class UserService {
    */
   static getCurrentUser(): Promise<BaseResult<UserInfo>> {
     return request.get<BaseResult<UserInfo>>({
-      url: ApiPaths.auth.currentUser
+      url: ApiPaths.auth.me
     })
   }
   /**
@@ -154,7 +154,7 @@ export class UserService {
    */
   static register(params: UserRegisterParams): Promise<BaseResult<string>> {
     return request.post<BaseResult<string>>({
-      url: ApiPaths.auth.register,
+      url: ApiLegacyPaths.auth.register,
       data: params
     })
   }
@@ -166,7 +166,7 @@ export class UserService {
    */
   static updatePassword(data: UpdatePasswordParams): Promise<BaseResult<null>> {
     return request.put<BaseResult<null>>({
-      url: ApiPaths.auth.updatePassword,
+      url: ApiLegacyPaths.auth.updatePassword,
       data
     })
   }
@@ -176,7 +176,7 @@ export class UserService {
    */
   static getUserBasic(): Promise<BaseResult<UserBasic>> {
     return request.get<BaseResult<UserBasic>>({
-      url: ApiPaths.auth.userBasic
+      url: ApiLegacyPaths.auth.userBasic
     })
   }
 
@@ -187,7 +187,7 @@ export class UserService {
    */
   static updateUserBasic(params: UserBasicUpdateParams): Promise<BaseResult<string>> {
     return request.put<BaseResult<string>>({
-      url: ApiPaths.auth.userBasic,
+      url: ApiLegacyPaths.auth.userBasic,
       data: params
     })
   }
@@ -199,7 +199,7 @@ export class UserService {
    */
   static getAvatarUploadSign(params: AvatarUploadParams): Promise<BaseResult<string>> {
     return request.post<BaseResult<string>>({
-      url: ApiPaths.auth.avatarUpload,
+      url: ApiLegacyPaths.auth.avatarUpload,
       data: params
     })
   }

@@ -25,6 +25,7 @@
 ./scripts/check-contracts.sh
 node scripts/check-api-constants.js
 node scripts/check-api-path-parity.js
+node scripts/check-frontend-api-boundaries.js
 node scripts/generate-platform-contract-backend.js --check
 node scripts/generate-platform-contract-frontend.js --check
 node scripts/check-platform-contract.js
@@ -49,6 +50,7 @@ AI 协作验证：
   - `node scripts/check-api-constants.js` 已校验 `ApiConstants` 内部只保留 `API_PREFIX = "/api"` 一个 API 前缀字面量，模块路径使用 `BASE + 相对路径 + *_FULL`。
   - `contracts/service-boundaries.json` 已记录 auth、test、common 当前运行/预留边界，以及 user、admin、integration 未来服务边界；`node scripts/check-service-boundaries.js` 已校验边界 basePath、route、`ApiConstants`、`ApiPaths`、Controller 和 OpenAPI `@Tag` 一致。
   - `node scripts/check-api-path-parity.js` 已改为读取 `contracts/service-boundaries.json`，校验 manifest 中声明的稳定运行路径和 `ApiConstants` / `ApiPaths` 一致。
+  - `ApiPaths` 已只保留 service boundary 声明的运行/预留运行路径；旧模板 auth/system 路径集中到 `ApiLegacyPaths`，并由 `node scripts/check-frontend-api-boundaries.js` 防止回流到运行路径。
   - 非 Axios 上传地址通过 `resolveApiPath(ApiPaths.common.uploadWangEditor)` 生成，避免组件手动拼 `VITE_API_URL + '/api/...'`。
   - 前端删除请求使用项目 HTTP 工具的 `request.del`。
   - 前端标准响应消息使用 `message`，`msg` 兼容集中在 `utils/http/response.ts`。

@@ -74,6 +74,10 @@ node scripts/check-api-path-parity.js
 ```
 
 ```bash
+node scripts/check-frontend-api-boundaries.js
+```
+
+```bash
 node scripts/generate-platform-contract-backend.js --check
 ```
 

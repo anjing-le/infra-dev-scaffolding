@@ -34,6 +34,7 @@ require_file contracts/service-boundaries.json
 require_file docs/teaching/04-notice-module-demo.md
 require_file scripts/check-api-constants.js
 require_file scripts/check-api-path-parity.js
+require_file scripts/check-frontend-api-boundaries.js
 require_file scripts/generate-platform-contract-backend.js
 require_file scripts/generate-platform-contract-frontend.js
 require_file scripts/check-platform-contract.js

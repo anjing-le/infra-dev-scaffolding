@@ -56,6 +56,7 @@ require_file project_document/LOCAL_STARTUP_GUIDE.md
 require_file project_document/SHARED_KERNEL_GUIDE.md
 require_file scripts/check-api-constants.js
 require_file scripts/check-api-path-parity.js
+require_file scripts/check-frontend-api-boundaries.js
 require_file scripts/generate-platform-contract-backend.js
 require_file scripts/generate-platform-contract-frontend.js
 require_file scripts/check-platform-contract.js
@@ -155,6 +156,7 @@ require_absent '\b(Instant|LocalDateTime|OffsetDateTime|ZonedDateTime)\.now\(' \
 
 node scripts/check-api-constants.js
 node scripts/check-api-path-parity.js
+node scripts/check-frontend-api-boundaries.js
 node scripts/generate-platform-contract-backend.js --check
 node scripts/generate-platform-contract-frontend.js --check
 node scripts/check-platform-contract.js
