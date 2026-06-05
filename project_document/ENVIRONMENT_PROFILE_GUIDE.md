@@ -63,6 +63,7 @@ GET /api/test/features
 - 默认时区为 UTC：`APP_TIME_ZONE=UTC`。
 - 前端展示时区由用户偏好或浏览器决定，接口层继续透传 `X-Time-Zone`。
 - 服务间调用方默认值：`APP_REMOTE_CALLER_ID=infra-dev-scaffolding`。
+- 异步执行器默认传播请求上下文和 MDC，可通过 `APP_ASYNC_CORE_POOL_SIZE`、`APP_ASYNC_MAX_POOL_SIZE`、`APP_ASYNC_QUEUE_CAPACITY` 和 `APP_ASYNC_THREAD_NAME_PREFIX` 调整线程池。
 - 后端健康检查通过 `/api/test/health` 返回真实 active profiles。
 
 ## Frontend Modes

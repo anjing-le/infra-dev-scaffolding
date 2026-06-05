@@ -61,6 +61,7 @@ require_file scripts/check-api-path-parity.js
 require_file scripts/check-frontend-api-boundaries.js
 require_file scripts/check-frontend-context-contract.js
 require_file scripts/check-backend-context-contract.js
+require_file scripts/check-async-context-contract.js
 require_file scripts/check-frontend-time-contract.js
 require_file scripts/generate-platform-contract-backend.js
 require_file scripts/generate-platform-contract-frontend.js
@@ -144,6 +145,8 @@ require_token backend/src/main/java/com/anjing/config/http/RequestContextFilter.
 require_token backend/src/main/java/com/anjing/aspect/ControllerLogAspect.java 'API_REQUEST_END'
 require_token backend/src/main/java/com/anjing/aspect/ControllerLogAspect.java 'durationMs={}'
 require_token backend/src/main/java/com/anjing/aspect/ControllerLogAspect.java 'errorCode={}'
+require_token backend/src/main/java/com/anjing/config/async/AsyncConfig.java 'setTaskDecorator(requestContextTaskDecorator)'
+require_token backend/src/main/java/com/anjing/config/async/RequestContextTaskDecorator.java 'MDC.getCopyOfContextMap()'
 require_token frontend/src/contracts/platform-contract.ts '"timeZone": "X-Time-Zone"'
 require_token frontend/src/contracts/platform-contract.ts '"acceptLanguage": "Accept-Language"'
 require_token frontend/src/contracts/platform-contract.ts 'FRONTEND_PROPAGATED_HEADER_KEYS = PLATFORM_CONTRACT.frontendPropagatedHeaders'
@@ -178,6 +181,7 @@ node scripts/check-api-path-parity.js
 node scripts/check-frontend-api-boundaries.js
 node scripts/check-frontend-context-contract.js
 node scripts/check-backend-context-contract.js
+node scripts/check-async-context-contract.js
 node scripts/check-frontend-time-contract.js
 node scripts/generate-platform-contract-backend.js --check
 node scripts/generate-platform-contract-frontend.js --check

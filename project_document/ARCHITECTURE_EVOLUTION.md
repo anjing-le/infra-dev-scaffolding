@@ -37,7 +37,7 @@
 - OpenAPI 运行接口契约已开始落地，`/v3/api-docs` 由 `springdoc-openapi-starter-webmvc-api` 暴露，dev/test 默认开启、prod 默认关闭；`project_document/OPENAPI_CONTRACT_GUIDE.md` 和 `scripts/check-openapi-contract.js` 已守护后续前端类型生成入口。
 - 平台级契约已沉淀为 `contracts/platform-contract.json`，覆盖 API 前缀、响应 envelope、分页字段、请求头、时间策略、错误码分段和可重试范围；后端生成 `PlatformContractConstants.java`，前端生成 `frontend/src/contracts/platform-contract.ts`，供路径、请求头、响应解析、时间工具和远程重试判断复用，并由 `scripts/generate-platform-contract-backend.js --check`、`scripts/generate-platform-contract-frontend.js --check`、`scripts/check-platform-contract.js` 校验生成产物、前后端与文档一致性。
 - 时间策略已开始转向 UTC 默认和客户端时区展示；前端展示时间、导出文件名时间戳、错误时间戳和日期 key 已收口到 `frontend/src/utils/time`，并由 `scripts/check-frontend-time-contract.js` 阻止新的散落格式化。
-- 请求上下文已开始具备 `requestId`、会话级 `traceId`、语言和时区透传，并已接入日志格式、Controller 访问日志字段、远程调用请求头生成、前端 `HttpError` 链路上下文和统一 HTTP client adapter；前端上下文头已由 `scripts/check-frontend-context-contract.js` 守护，后端入站上下文和访问日志已由 `scripts/check-backend-context-contract.js` 守护，后续需要继续接入权限上下文和真实 RPC client adapter。
+- 请求上下文已开始具备 `requestId`、会话级 `traceId`、语言和时区透传，并已接入日志格式、Controller 访问日志字段、异步线程池传播、远程调用请求头生成、前端 `HttpError` 链路上下文和统一 HTTP client adapter；前端上下文头已由 `scripts/check-frontend-context-contract.js` 守护，后端入站上下文和访问日志已由 `scripts/check-backend-context-contract.js` 守护，异步上下文传播已由 `scripts/check-async-context-contract.js` 守护，后续需要继续接入权限上下文和真实 RPC client adapter。
 - 错误码已补充分段指南和 `scripts/check-error-codes.js`，后续新模块应按 `project_document/ERROR_CODE_GUIDE.md` 分配 code，并通过唯一性、4 位数字和 manifest 分段校验。
 - 共享内核边界已开始收口，`project_document/SHARED_KERNEL_GUIDE.md` 和 `scripts/check-shared-kernel.js` 已约束未来可抽 `anjing-common` 的契约/工具类不依赖 Spring Web、Servlet、JPA 或运行时层。
 - 前端已有统一时间工具层，后续需要让日期控件、文件名、通知时间等存量逻辑逐步迁移。
@@ -112,6 +112,7 @@
 
 - `logback-spring.xml` 已输出 MDC 中的 `requestId`、`traceId`、`tenantId`、`userId`。
 - `ControllerLogAspect` 已复用 `RequestContextFilter` 生成的 requestId，并固定输出接口路径、耗时和错误码。
+- `GlobalRequestContextHolder.capture()` / `setOrClear()` / `runWith()` / `callWith()` 已提供纯 Java 上下文快照能力，`RequestContextTaskDecorator` 和统一 `applicationTaskExecutor` 已支持 `@Async` 线程传播请求上下文与 MDC。
 - `RemoteCallWrapper.serviceCallHeaders(callerId)` 已提供服务间调用的上下文请求头生成。
 - `RemoteHttpClient` / `RemoteHttpRequest` 已提供 HTTP 服务间调用适配层。
 - `RemoteHttpRequest` 已支持 `serviceId + path`，`RemoteHttpClient` 通过 `app.remote-http.service-base-urls` 解析内部服务地址，`scripts/check-remote-http-contract.js` 已防止示例重新回到手写本地绝对 URL。
@@ -126,6 +127,7 @@
 - `scripts/check-frontend-api-boundaries.js` 已把前端运行路径和旧模板兼容路径分开校验，避免历史 mock/system API 混入服务边界运行面。
 - `scripts/check-frontend-context-contract.js` 已把前端 `requestId`、`traceId`、语言和时区请求头的生成入口，以及 `HttpError` 链路上下文保留逻辑纳入自动校验，避免页面或 API 模块直接手写平台上下文头。
 - `scripts/check-backend-context-contract.js` 已把后端入站上下文、MDC、响应头、Controller 访问日志字段和远程调用透传纳入自动校验。
+- `scripts/check-async-context-contract.js` 已把 `@Async`、统一线程池、TaskDecorator、MDC 复制和共享内核上下文快照方法纳入自动校验。
 - `scripts/check-service-boundaries.js` 已把服务边界 manifest、`ApiConstants`、`ApiPaths`、Controller base path 和 OpenAPI `@Tag` 一致性纳入自动校验。
 - `scripts/generate-service-boundaries-backend.js --check` 已确保后端服务边界常量与 manifest 一致。
 - `scripts/generate-service-boundaries-frontend.js --check` 已确保前端服务边界常量与 manifest 一致，`ApiPaths` 已引用生成的 `SERVICE_BOUNDARY_ROUTE_PATHS`。

@@ -118,6 +118,7 @@
 - `ApiPaths` 已和旧模板路径分离，`ApiLegacyPaths` 承载历史兼容路径，`scripts/check-frontend-api-boundaries.js` 已防止旧路径回流到运行路径。
 - `frontend/src/utils/http/context.ts` 已统一生成前端 `requestId`、会话级 `traceId`、语言和时区请求头，`HttpError` 已统一保留 `requestId` / `traceId`，`scripts/check-frontend-context-contract.js` 已防止平台上下文头和错误上下文逻辑散落到页面或 API 模块。
 - 后端 `RequestContextFilter`、MDC、`ControllerLogAspect` 访问日志和远程调用上下文透传已由 `scripts/check-backend-context-contract.js` 守住，日志统一输出 requestId、traceId、用户、租户、路径、耗时和错误码。
+- 后端 `GlobalRequestContextHolder` 已提供上下文快照能力，`RequestContextTaskDecorator` 和统一 `applicationTaskExecutor` 已支持 `@Async` 场景传播请求上下文与 MDC，`scripts/check-async-context-contract.js` 已纳入守卫。
 - `frontend/src/utils/time` 已承载前端展示时间、日期 key、文件名时间戳和错误时间戳，`scripts/check-frontend-time-contract.js` 已防止时间格式化逻辑散落到页面组件。
 - `RemoteHttpClient` 已支持通过 `serviceId + path` 调用内部服务，服务 base URL 统一配置在 `app.remote-http.service-base-urls`，`scripts/check-remote-http-contract.js` 已纳入守卫。
 - `project_document/SHARED_KERNEL_GUIDE.md` 已定义共享内核边界。

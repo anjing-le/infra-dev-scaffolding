@@ -13,8 +13,8 @@
 | S2 AI 协作资产收口 | Ready | Notice prompt smoke 已在临时复制项目验证，母版只保留演示文档和 Prompt 契约 |
 | S3 后续项目复用验证 | In progress | `infra-skill-hub` 已从本母版接入骨架，完成 H0 / H1 / H2 验证，并推进 H3 HTTP/MCP/INTERNAL 调度层、全局与注册级协议配置、凭据托管与选择体验、权限身份头联动、策略批量管理、默认策略模板、调用治理、审计查询、治理指标与前端治理面 |
 | S4 契约与全球化基线 | In progress | 已落地前端 `ApiPaths`、请求上下文头、统一时间工具、响应解析 helper；后端已落地 `ApiConstants` 运行路径引用、`RequestContextFilter`、UTC 默认时间策略、响应 `requestId`、`PageResult`、API 契约指南、`contracts/service-boundaries.json` 和 `/v3/api-docs` OpenAPI JSON |
-| S5 分布式可观测基线 | In progress | 已落地 MDC 日志字段、Controller 路径/耗时/错误码访问日志、`RemoteCallWrapper.serviceCallHeaders(callerId)`、`RemoteHttpClient`、错误码分段指南、`scripts/check-backend-context-contract.js`、`scripts/check-error-codes.js`、`/api/test/features` 可选能力状态接口和 dev/test/prod profile 矩阵 |
-| S7 契约生成与共享包 | In progress | 已落地 `project_document/SHARED_KERNEL_GUIDE.md`、`project_document/OPENAPI_CONTRACT_GUIDE.md`、`project_document/SERVICE_BOUNDARY_GUIDE.md`、`scripts/check-openapi-contract.js`、`scripts/check-service-boundaries.js` 和 `scripts/check-shared-kernel.js`，先守住未来可抽 `anjing-common`、服务边界与前端类型生成的契约边界 |
+| S5 分布式可观测基线 | In progress | 已落地 MDC 日志字段、Controller 路径/耗时/错误码访问日志、异步上下文传播、`RemoteCallWrapper.serviceCallHeaders(callerId)`、`RemoteHttpClient`、错误码分段指南、`scripts/check-backend-context-contract.js`、`scripts/check-async-context-contract.js`、`scripts/check-error-codes.js`、`/api/test/features` 可选能力状态接口和 dev/test/prod profile 矩阵 |
+| S7 契约生成与共享包 | In progress | 已落地 `project_document/SHARED_KERNEL_GUIDE.md`、`project_document/OPENAPI_CONTRACT_GUIDE.md`、`project_document/SERVICE_BOUNDARY_GUIDE.md`、`scripts/check-openapi-contract.js`、`scripts/check-service-boundaries.js`、`scripts/check-shared-kernel.js` 和 `scripts/check-async-context-contract.js`，先守住未来可抽 `anjing-common`、服务边界、异步上下文传播与前端类型生成的契约边界 |
 
 ## 当前证据链
 
@@ -28,6 +28,7 @@ node scripts/check-api-path-parity.js
 node scripts/check-frontend-api-boundaries.js
 node scripts/check-frontend-context-contract.js
 node scripts/check-backend-context-contract.js
+node scripts/check-async-context-contract.js
 node scripts/check-frontend-time-contract.js
 node scripts/generate-platform-contract-backend.js --check
 node scripts/generate-platform-contract-frontend.js --check
@@ -41,6 +42,7 @@ node scripts/check-shared-kernel.js
 node scripts/check-remote-http-contract.js
 ./scripts/smoke-copy.sh
 ./scripts/probe-backend-dev.sh
+(cd backend && mvn -q -Dtest=RequestContextTaskDecoratorTest test)
 (cd backend && mvn -q -DskipTests package)
 (cd frontend && pnpm build)
 (cd frontend && pnpm -s clean:dev)
@@ -67,6 +69,7 @@ AI 协作验证：
   - `contracts/platform-contract.json` 已记录 API 前缀、响应 envelope、分页字段、请求上下文头、UTC 时间策略和错误码分段，并生成 `backend/src/main/java/com/anjing/model/constants/PlatformContractConstants.java` 与 `frontend/src/contracts/platform-contract.ts` 供前后端基础工具复用；`node scripts/generate-platform-contract-backend.js --check`、`node scripts/generate-platform-contract-frontend.js --check` 和 `node scripts/check-platform-contract.js` 已校验生成产物、Java/TypeScript/文档一致。
   - 前端 `requestId` 每次请求生成、`traceId` 在浏览器会话内复用；`HttpError` 已从响应体、响应头或请求头提取 `requestId` / `traceId`，业务错误码、HTTP 状态错误、网络错误和 401 分支都保留链路上下文；`node scripts/check-frontend-context-contract.js` 已禁止前端源码直接手写平台上下文请求头并校验错误上下文。
   - 后端 `RequestContextFilter` 已统一生成/透传 requestId、traceId、租户、用户、语言和时区上下文，`ControllerLogAspect` 访问日志已固定输出接口路径、耗时和错误码；`node scripts/check-backend-context-contract.js` 已校验后端入站上下文、MDC、响应头、访问日志字段和远程调用透传。
+  - `GlobalRequestContextHolder` 已提供纯 Java 上下文快照和 `runWith/callWith` 辅助方法；`RequestContextTaskDecorator` 与统一 `applicationTaskExecutor` 已让 `@Async` 线程传播 requestId、traceId、租户、用户、语言、时区和 MDC；`node scripts/check-async-context-contract.js` 已纳入守护。
   - `PageResult` 已去除 Spring Data Page 依赖，作为纯分页 payload；Spring Page 需要在业务层展开为 records/total/current/size。
   - 共享内核边界记录在 `project_document/SHARED_KERNEL_GUIDE.md`，`node scripts/check-shared-kernel.js` 已校验候选共享类不依赖 Spring Web、Servlet、JPA 或运行时层。
   - 业务当前时间统一通过 `DateUtils.nowIso()`、`DateUtils.now(pattern)`、`DateUtils.nowEpochMilli()` 等 UTC 出口获取，自检脚本已禁止业务源码直接调用 `Instant.now()` / `LocalDateTime.now()`。

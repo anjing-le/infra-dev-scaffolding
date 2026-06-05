@@ -188,6 +188,16 @@ springdoc:
 
 # 🎛️ 功能特性配置 - 条件化启用各种功能
 app:
+  # 异步执行器：@Async、后台任务和未来 adapter 统一走这里，自动传播请求上下文和 MDC
+  async:
+    core-pool-size: ${APP_ASYNC_CORE_POOL_SIZE:4}
+    max-pool-size: ${APP_ASYNC_MAX_POOL_SIZE:16}
+    queue-capacity: ${APP_ASYNC_QUEUE_CAPACITY:200}
+    keep-alive-seconds: ${APP_ASYNC_KEEP_ALIVE_SECONDS:60}
+    thread-name-prefix: ${APP_ASYNC_THREAD_NAME_PREFIX:anjing-async-}
+    wait-for-tasks-to-complete-on-shutdown: ${APP_ASYNC_WAIT_FOR_TASKS_ON_SHUTDOWN:true}
+    await-termination-seconds: ${APP_ASYNC_AWAIT_TERMINATION_SECONDS:30}
+
   # 远程 HTTP 调用默认配置：用于未来服务间调用或外部 API 适配
   remote-http:
     default-caller-id: ${APP_REMOTE_CALLER_ID:infra-dev-scaffolding}

@@ -10,7 +10,7 @@
 - 机器生成平台契约：`PlatformContractConstants`
 - 错误码与异常：`ErrorCode`、各类 `XxxErrorCode`、`BizException`、`SystemException`
 - 请求/响应契约：`BaseRequest`、`GlobalRequestContext`、`PageRequest`、`APIResponse`、`PageResult`
-- 上下文持有：`GlobalRequestContextHolder`
+- 上下文持有：`GlobalRequestContextHolder`，包含纯 Java 的 `capture/restore` 辅助方法，供异步和定时任务 adapter 复用
 - 纯工具：`DateUtils`、`IdUtils`、`StringUtils`、`ValidationUtils`
 
 这些类未来可以优先抽到共享 jar。为了保持可抽取，它们不能反向依赖 Controller、Config、Aspect、Client、Example 等运行时层，也不能依赖 Spring Web、Servlet、JPA。
@@ -20,6 +20,7 @@
 以下能力目前属于运行时适配层，不进入共享内核：
 
 - `RequestContextFilter`：Web 请求入口适配。
+- `RequestContextTaskDecorator`、`AsyncConfig`：异步线程池上下文和 MDC 传播适配。
 - `RemoteHttpClient`、`RemoteCallWrapper`：远程调用与重试适配。
 - `JsonUtils`：当前通过 Spring 注入 `ObjectMapper`，未来可拆成纯 JSON helper 与 Spring adapter 两层。
 - `ExceptionUtils`、`SqlLogUtils`：依赖 Servlet 或 Web 上下文。
@@ -31,6 +32,7 @@
 - 共享内核类禁止使用 `@Component`、`@Service`、`@Configuration`、`@Autowired` 等运行时注解。
 - 标准分页响应 `PageResult` 不依赖 Spring Data `Page`；使用 Spring Page 时在业务层展开字段。
 - 时间、ID、字符串、校验这类工具优先保持纯 Java；需要框架能力时拆 adapter。
+- 异步上下文传播时，共享内核只保留 `GlobalRequestContextHolder.capture()` / `setOrClear()` 等纯 Java 方法；MDC、线程池和 Spring `TaskDecorator` 留在运行时适配层。
 - 新增共享候选类时，同步加入 `scripts/check-shared-kernel.js` 的文件清单。
 
 ## Verification
