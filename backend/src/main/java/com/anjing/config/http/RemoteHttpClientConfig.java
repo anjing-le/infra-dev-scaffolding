@@ -1,6 +1,8 @@
 package com.anjing.config.http;
 
 import com.anjing.client.NoopRemoteCallPolicy;
+import com.anjing.client.NoopRemoteCallObserver;
+import com.anjing.client.RemoteCallObserver;
 import com.anjing.client.RemoteCallPolicy;
 import com.anjing.config.properties.RemoteHttpClientProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -32,5 +34,11 @@ public class RemoteHttpClientConfig {
     @ConditionalOnMissingBean(RemoteCallPolicy.class)
     public RemoteCallPolicy remoteCallPolicy() {
         return new NoopRemoteCallPolicy();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(RemoteCallObserver.class)
+    public RemoteCallObserver remoteCallObserver() {
+        return new NoopRemoteCallObserver();
     }
 }

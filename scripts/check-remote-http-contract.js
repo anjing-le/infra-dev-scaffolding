@@ -16,6 +16,9 @@ const files = {
   callPolicy: 'backend/src/main/java/com/anjing/client/RemoteCallPolicy.java',
   callPolicyContext: 'backend/src/main/java/com/anjing/client/RemoteCallPolicyContext.java',
   noopCallPolicy: 'backend/src/main/java/com/anjing/client/NoopRemoteCallPolicy.java',
+  callObserver: 'backend/src/main/java/com/anjing/client/RemoteCallObserver.java',
+  callObservation: 'backend/src/main/java/com/anjing/client/RemoteCallObservation.java',
+  noopCallObserver: 'backend/src/main/java/com/anjing/client/NoopRemoteCallObserver.java',
   httpClientConfig: 'backend/src/main/java/com/anjing/config/http/RemoteHttpClientConfig.java',
   remoteWrapper: 'backend/src/main/java/com/anjing/util/RemoteCallWrapper.java',
   application: 'backend/src/main/resources/application.yml',
@@ -61,6 +64,11 @@ requireToken(files.client, 'remoteCallPolicy.beforeCall')
 requireToken(files.client, 'remoteCallPolicy.afterSuccess')
 requireToken(files.client, 'remoteCallPolicy.afterFailure')
 requireToken(files.client, 'buildPolicyContext')
+requireToken(files.client, 'RemoteCallObserver')
+requireToken(files.client, 'remoteCallObserver.onComplete')
+requireToken(files.client, 'observeRemoteCall')
+requireToken(files.client, 'RemoteCallObservation')
+requireToken(files.client, 'durationMs')
 requireToken(files.endpointResolver, 'interface ServiceEndpointResolver')
 requireToken(files.endpointResolver, 'resolveUrl(String serviceId, String path)')
 requireToken(files.configuredEndpointResolver, 'implements ServiceEndpointResolver')
@@ -72,8 +80,18 @@ requireToken(files.callPolicy, 'afterSuccess(RemoteCallPolicyContext context)')
 requireToken(files.callPolicy, 'afterFailure(RemoteCallPolicyContext context, RuntimeException exception)')
 requireToken(files.callPolicyContext, 'record RemoteCallPolicyContext')
 requireToken(files.noopCallPolicy, 'implements RemoteCallPolicy')
+requireToken(files.callObserver, 'interface RemoteCallObserver')
+requireToken(files.callObserver, 'onComplete(RemoteCallObservation observation)')
+requireToken(files.callObservation, 'record RemoteCallObservation')
+requireToken(files.callObservation, 'String requestId')
+requireToken(files.callObservation, 'String traceId')
+requireToken(files.callObservation, 'long durationMs')
+requireToken(files.callObservation, 'String errorCode')
+requireToken(files.noopCallObserver, 'implements RemoteCallObserver')
 requireToken(files.httpClientConfig, '@ConditionalOnMissingBean(RemoteCallPolicy.class)')
 requireToken(files.httpClientConfig, 'new NoopRemoteCallPolicy()')
+requireToken(files.httpClientConfig, '@ConditionalOnMissingBean(RemoteCallObserver.class)')
+requireToken(files.httpClientConfig, 'new NoopRemoteCallObserver()')
 requireToken(files.application, 'service-base-urls:')
 requireToken(files.platform, 'BACKEND_PROPAGATED_HEADER_KEYS')
 requireToken(files.remoteWrapper, 'PlatformContractConstants.BACKEND_PROPAGATED_HEADER_KEYS')
@@ -90,6 +108,8 @@ requireToken(files.test, 'configuredEndpointResolverShouldResolveServiceIdAndPat
 requireToken(files.test, 'exchangeShouldApplyRemoteCallPolicyBeforeRequest')
 requireToken(files.test, 'REMOTE_CALL_CIRCUIT_BREAKER_OPEN')
 requireToken(files.test, 'RecordingRemoteCallPolicy')
+requireToken(files.test, 'RecordingRemoteCallObserver')
+requireToken(files.test, 'observer.observation.durationMs()')
 requireToken(files.guide, 'ServiceBoundaryConstants.Auth.OWNER')
 requireToken(files.guide, '.path(ApiConstants.Auth.ME_FULL)')
 requireToken(files.guide, 'ServiceBoundaryConstants.APPLICATION_ID')

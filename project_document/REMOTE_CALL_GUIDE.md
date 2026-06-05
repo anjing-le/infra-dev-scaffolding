@@ -77,6 +77,12 @@ app:
 
 策略拒绝调用时，建议抛出 `SystemException(RemoteErrorCode.REMOTE_CALL_CIRCUIT_BREAKER_OPEN)` 或下游项目自己的治理错误码。`RemoteCallPolicyContext` 只包含 method、targetService、serviceId、path、脱敏 URL 和 callerId，不包含请求体或请求头。
 
+## 调用审计扩展点
+
+`RemoteCallObserver` 是远程调用完成后的审计与指标扩展点。母版默认提供 `NoopRemoteCallObserver`，不会写库或引入 metrics 依赖；下游项目可以定义自己的 `RemoteCallObserver` bean，替换默认实现。
+
+`RemoteCallObservation` 会在调用成功、失败或被策略拒绝后生成，包含 method、targetService、serviceId、path、脱敏 URL、callerId、requestId、traceId、tenantId、userId、timeZone、locale、success、durationMs、errorCode、errorMessage 和 exceptionType。它不包含请求体、响应体和 headers，可安全转发到审计表、指标系统或 tracing adapter。
+
 ## 日志与安全
 
 `RemoteHttpClient` 交给 `RemoteCallWrapper` 的日志对象只包含 method、targetService、url 和 callerId，不输出请求体和 headers，避免 Authorization、Cookie、Token 或业务敏感参数进入日志。

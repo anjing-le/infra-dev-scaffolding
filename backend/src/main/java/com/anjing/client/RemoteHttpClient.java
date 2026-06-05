@@ -1,10 +1,13 @@
 package com.anjing.client;
 
 import com.anjing.config.properties.RemoteHttpClientProperties;
+import com.anjing.context.GlobalRequestContextHolder;
 import com.anjing.model.errorcode.RemoteErrorCode;
 import com.anjing.model.exception.SystemException;
+import com.anjing.model.request.GlobalRequestContext;
 import com.anjing.util.RemoteCallWrapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
@@ -28,12 +31,14 @@ import java.util.function.Function;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class RemoteHttpClient {
 
     private final RestClient remoteRestClient;
     private final RemoteHttpClientProperties properties;
     private final ServiceEndpointResolver serviceEndpointResolver;
     private final RemoteCallPolicy remoteCallPolicy;
+    private final RemoteCallObserver remoteCallObserver;
 
     public <R> R get(String url, Class<R> responseType) {
         return exchange(RemoteHttpRequest.builder()
@@ -107,33 +112,49 @@ public class RemoteHttpClient {
     public <R> R exchange(RemoteHttpRequest request, Class<R> responseType) {
         validateRequest(request, responseType);
         RemoteCallPolicyContext policyContext = buildPolicyContext(request);
-        remoteCallPolicy.beforeCall(policyContext);
+        long startedAtNanos = System.nanoTime();
 
-        Map<String, Object> descriptor = describeRequest(request);
-        return RemoteCallWrapper.callWithRetry(
-                ignored -> doExchange(request, responseType, policyContext),
-                descriptor,
-                remoteCallName(request),
-                resolveRetryCount(request),
-                request.isCheckResponse(),
-                resolveRetryInterval(request)
-        );
+        try {
+            remoteCallPolicy.beforeCall(policyContext);
+            Map<String, Object> descriptor = describeRequest(request);
+            R response = RemoteCallWrapper.callWithRetry(
+                    ignored -> doExchange(request, responseType, policyContext),
+                    descriptor,
+                    remoteCallName(request),
+                    resolveRetryCount(request),
+                    request.isCheckResponse(),
+                    resolveRetryInterval(request)
+            );
+            observeRemoteCall(policyContext, true, startedAtNanos, null);
+            return response;
+        } catch (RuntimeException e) {
+            observeRemoteCall(policyContext, false, startedAtNanos, e);
+            throw e;
+        }
     }
 
     public <R> R exchange(RemoteHttpRequest request, ParameterizedTypeReference<R> responseType) {
         validateRequest(request, responseType);
         RemoteCallPolicyContext policyContext = buildPolicyContext(request);
-        remoteCallPolicy.beforeCall(policyContext);
+        long startedAtNanos = System.nanoTime();
 
-        Map<String, Object> descriptor = describeRequest(request);
-        return RemoteCallWrapper.callWithRetry(
-                ignored -> doExchange(request, responseType, policyContext),
-                descriptor,
-                remoteCallName(request),
-                resolveRetryCount(request),
-                request.isCheckResponse(),
-                resolveRetryInterval(request)
-        );
+        try {
+            remoteCallPolicy.beforeCall(policyContext);
+            Map<String, Object> descriptor = describeRequest(request);
+            R response = RemoteCallWrapper.callWithRetry(
+                    ignored -> doExchange(request, responseType, policyContext),
+                    descriptor,
+                    remoteCallName(request),
+                    resolveRetryCount(request),
+                    request.isCheckResponse(),
+                    resolveRetryInterval(request)
+            );
+            observeRemoteCall(policyContext, true, startedAtNanos, null);
+            return response;
+        } catch (RuntimeException e) {
+            observeRemoteCall(policyContext, false, startedAtNanos, e);
+            throw e;
+        }
     }
 
     private <R> R doExchange(
@@ -245,6 +266,60 @@ public class RemoteHttpClient {
     private <E extends RuntimeException> E recordFailure(RemoteCallPolicyContext context, E exception) {
         remoteCallPolicy.afterFailure(context, exception);
         return exception;
+    }
+
+    private void observeRemoteCall(
+            RemoteCallPolicyContext context,
+            boolean success,
+            long startedAtNanos,
+            RuntimeException exception
+    ) {
+        safeObserve(new RemoteCallObservation(
+                context.method(),
+                context.targetService(),
+                context.serviceId(),
+                context.path(),
+                context.url(),
+                context.callerId(),
+                contextValue(GlobalRequestContext::getRequestId),
+                contextValue(GlobalRequestContext::getTraceId),
+                contextValue(GlobalRequestContext::getTenantId),
+                contextValue(GlobalRequestContext::getUserId),
+                contextValue(GlobalRequestContext::getTimeZone),
+                contextValue(GlobalRequestContext::getLocale),
+                success,
+                durationMs(startedAtNanos),
+                errorCode(exception),
+                exception == null ? null : exception.getMessage(),
+                exception == null ? null : exception.getClass().getSimpleName()
+        ));
+    }
+
+    private void safeObserve(RemoteCallObservation observation) {
+        try {
+            remoteCallObserver.onComplete(observation);
+        } catch (RuntimeException e) {
+            log.warn("Remote call observer failed: {}", e.getMessage(), e);
+        }
+    }
+
+    private long durationMs(long startedAtNanos) {
+        return Math.max(0L, (System.nanoTime() - startedAtNanos) / 1_000_000L);
+    }
+
+    private String errorCode(RuntimeException exception) {
+        if (exception instanceof SystemException systemException && systemException.getErrorCode() != null) {
+            return systemException.getErrorCode().getCode();
+        }
+        if (exception != null && exception.getCause() instanceof SystemException cause
+                && cause.getErrorCode() != null) {
+            return cause.getErrorCode().getCode();
+        }
+        return null;
+    }
+
+    private String contextValue(Function<GlobalRequestContext, String> getter) {
+        return GlobalRequestContextHolder.current().map(getter).orElse(null);
     }
 
     private void validateRequest(RemoteHttpRequest request, Object responseType) {

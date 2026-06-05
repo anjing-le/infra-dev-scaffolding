@@ -17,8 +17,11 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestClient;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -40,7 +43,8 @@ class RemoteHttpClientTest {
                 builder.build(),
                 properties,
                 new ConfiguredServiceEndpointResolver(properties),
-                new NoopRemoteCallPolicy()
+                new NoopRemoteCallPolicy(),
+                new NoopRemoteCallObserver()
         );
 
         GlobalRequestContextHolder.set(GlobalRequestContext.builder()
@@ -93,6 +97,7 @@ class RemoteHttpClientTest {
         RestClient.Builder builder = RestClient.builder();
         MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
         RemoteHttpClientProperties properties = properties();
+        RecordingRemoteCallObserver observer = new RecordingRemoteCallObserver();
         RemoteHttpClient client = new RemoteHttpClient(
                 builder.build(),
                 properties,
@@ -105,7 +110,8 @@ class RemoteHttpClientTest {
                                 RemoteErrorCode.REMOTE_CALL_CIRCUIT_BREAKER_OPEN
                         );
                     }
-                }
+                },
+                observer
         );
 
         SystemException error = assertThrows(
@@ -120,6 +126,12 @@ class RemoteHttpClientTest {
         );
 
         assertEquals(RemoteErrorCode.REMOTE_CALL_CIRCUIT_BREAKER_OPEN, error.getErrorCode());
+        assertEquals(1, observer.completeCount);
+        assertFalse(observer.observation.success());
+        assertEquals("inventory", observer.observation.targetService());
+        assertEquals("/api/items", observer.observation.path());
+        assertEquals(RemoteErrorCode.REMOTE_CALL_CIRCUIT_BREAKER_OPEN.getCode(), observer.observation.errorCode());
+        assertEquals("SystemException", observer.observation.exceptionType());
         server.verify();
     }
 
@@ -129,12 +141,23 @@ class RemoteHttpClientTest {
         MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
         RemoteHttpClientProperties properties = properties();
         RecordingRemoteCallPolicy policy = new RecordingRemoteCallPolicy();
+        RecordingRemoteCallObserver observer = new RecordingRemoteCallObserver();
         RemoteHttpClient client = new RemoteHttpClient(
                 builder.build(),
                 properties,
                 new ConfiguredServiceEndpointResolver(properties),
-                policy
+                policy,
+                observer
         );
+
+        GlobalRequestContextHolder.set(GlobalRequestContext.builder()
+                .requestId("rid-observe")
+                .traceId("tid-observe")
+                .tenantId("tenant-observe")
+                .userId("user-observe")
+                .locale("zh-CN")
+                .timeZone("UTC")
+                .build());
 
         server.expect(requestTo("http://inventory.local/api/items"))
                 .andExpect(method(HttpMethod.GET))
@@ -156,6 +179,22 @@ class RemoteHttpClientTest {
         assertEquals("inventory", policy.context.targetService());
         assertEquals("/api/items", policy.context.path());
         assertEquals("http://inventory.local/api/items", policy.context.url());
+        assertEquals(1, observer.completeCount);
+        assertTrue(observer.observation.success());
+        assertEquals("GET", observer.observation.method());
+        assertEquals("inventory", observer.observation.targetService());
+        assertEquals("/api/items", observer.observation.path());
+        assertEquals("http://inventory.local/api/items", observer.observation.url());
+        assertEquals("infra-dev-scaffolding-test", observer.observation.callerId());
+        assertEquals("rid-observe", observer.observation.requestId());
+        assertEquals("tid-observe", observer.observation.traceId());
+        assertEquals("tenant-observe", observer.observation.tenantId());
+        assertEquals("user-observe", observer.observation.userId());
+        assertEquals("UTC", observer.observation.timeZone());
+        assertEquals("zh-CN", observer.observation.locale());
+        assertTrue(observer.observation.durationMs() >= 0);
+        assertNull(observer.observation.errorCode());
+        assertNull(observer.observation.exceptionType());
         server.verify();
     }
 
@@ -220,6 +259,17 @@ class RemoteHttpClientTest {
         public void afterFailure(RemoteCallPolicyContext context, RuntimeException exception) {
             this.failureCount++;
             this.context = context;
+        }
+    }
+
+    static class RecordingRemoteCallObserver implements RemoteCallObserver {
+        private int completeCount;
+        private RemoteCallObservation observation;
+
+        @Override
+        public void onComplete(RemoteCallObservation observation) {
+            this.completeCount++;
+            this.observation = observation;
         }
     }
 }
