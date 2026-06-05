@@ -116,6 +116,7 @@
 - `springdoc-openapi-starter-webmvc-api` 已提供 `/v3/api-docs`，`scripts/check-openapi-contract.js` 与 `./scripts/probe-backend-dev.sh` 已校验 OpenAPI 配置、平台请求头和 auth DTO/VO 契约。
 - `contracts/service-boundaries.json` 已记录当前运行、示例、预留和未来服务边界，`scripts/check-service-boundaries.js` 已校验 route、basePath 和前后端路径一致。
 - `ApiPaths` 已和旧模板路径分离，`ApiLegacyPaths` 承载历史兼容路径，`scripts/check-frontend-api-boundaries.js` 已防止旧路径回流到运行路径。
+- `frontend/src/utils/time` 已承载前端展示时间、日期 key、文件名时间戳和错误时间戳，`scripts/check-frontend-time-contract.js` 已防止时间格式化逻辑散落到页面组件。
 - `project_document/SHARED_KERNEL_GUIDE.md` 已定义共享内核边界。
 - `scripts/check-shared-kernel.js` 已守护可抽取契约/工具类不能依赖 Spring Web、Servlet、JPA 或运行时层。
 

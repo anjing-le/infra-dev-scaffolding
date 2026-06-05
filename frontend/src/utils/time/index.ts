@@ -28,6 +28,49 @@ export const toIsoString = (value: DateInput): string | null => {
   return date ? date.toISOString() : null
 }
 
+export const nowDate = (): Date => new Date()
+
+export const nowIsoString = (): string => nowDate().toISOString()
+
+const twoDigits = (value: number): string => String(value).padStart(2, '0')
+
+const getDateParts = (
+  value: DateInput,
+  options: FormatDateTimeOptions = {}
+): { year: string; month: string; day: string } | null => {
+  const date = toDate(value)
+  if (!date) return null
+
+  const { locale = 'en-CA', timeZone = getClientTimeZone() } = options
+  const parts = new Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    timeZone
+  }).formatToParts(date)
+
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]))
+  if (!values.year || !values.month || !values.day) return null
+
+  return {
+    year: values.year,
+    month: twoDigits(Number(values.month)),
+    day: twoDigits(Number(values.day))
+  }
+}
+
+export const formatDateKey = (
+  value: DateInput = nowDate(),
+  options: FormatDateTimeOptions = {}
+): string => {
+  const parts = getDateParts(value, options)
+  return parts ? `${parts.year}-${parts.month}-${parts.day}` : ''
+}
+
+export const formatFilenameTimestamp = (value: DateInput = nowDate()): string => {
+  return (toIsoString(value) || nowIsoString()).replace(/[:.]/g, '-')
+}
+
 export const formatDateTime = (
   value: DateInput,
   options: FormatDateTimeOptions = {}
@@ -64,6 +107,21 @@ export const formatDate = (
     day: '2-digit',
     hour: undefined,
     minute: undefined,
+    second: undefined,
+    ...options
+  })
+}
+
+export const formatTime = (
+  value: DateInput,
+  options: FormatDateTimeOptions = {}
+): string => {
+  return formatDateTime(value, {
+    year: undefined,
+    month: undefined,
+    day: undefined,
+    hour: '2-digit',
+    minute: '2-digit',
     second: undefined,
     ...options
   })

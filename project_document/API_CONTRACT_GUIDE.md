@@ -69,6 +69,7 @@ PageResult.of(page.getContent(), page.getTotalElements(), page.getNumber() + 1, 
 - 业务代码需要当前时间时使用 `DateUtils`：接口时间字符串使用 `DateUtils.nowIso()`，自定义 UTC 格式使用 `DateUtils.now(pattern)`，毫秒时间戳使用 `DateUtils.nowEpochMilli()`。
 - Controller、Service、工具扩展代码不要直接调用 `Instant.now()`、`LocalDateTime.now()`、`OffsetDateTime.now()` 或 `ZonedDateTime.now()`；统一入口方便未来接入租户时区、审计时间源或测试固定时钟。
 - 前端展示使用 `frontend/src/utils/time`，请求头透传 `X-Time-Zone` 和 `Accept-Language`。
+- 页面、组件和 API 模块不要直接使用浏览器本地化时间格式化 API 或 VueUse 日期格式化 helper；展示时间、文件名时间戳和日期 key 统一走 `formatDateTime`、`formatDate`、`formatTime`、`formatDateKey`、`formatFilenameTimestamp`。
 
 ## Migration Notes
 
@@ -94,6 +95,10 @@ node scripts/check-platform-contract.js
 
 ```bash
 node scripts/check-openapi-contract.js
+```
+
+```bash
+node scripts/check-frontend-time-contract.js
 ```
 
 该脚本会检查 API path、response envelope、分页字段、请求上下文、远程调用、时间工具和 OpenAPI 的关键契约是否仍然集中管理。

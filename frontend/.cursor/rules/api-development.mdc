@@ -347,7 +347,8 @@ export function fetchGetUserWithTimeout(id: number) {
 
 - 后端默认按 UTC/ISO 输出时间，页面展示时使用 `@/utils/time` 的 `formatDateTime` / `formatDate`。
 - API 类型中的时间字段优先声明为 ISO 字符串，例如 `createdAt: string`。
-- 不要在组件中散落 `new Date(...).toLocaleString()`，统一通过时间工具处理时区和语言。
+- 不要在组件中散落浏览器本地化时间格式化，统一通过时间工具处理时区和语言。
+- 当前日期 key、文件名时间戳、聊天/表格展示时间也使用 `@/utils/time`，不要直接调用浏览器时间格式化 API 或 VueUse 日期格式化 helper。
 
 ## 组件中使用 API
 

@@ -25,6 +25,7 @@ import { AxiosError } from 'axios'
 import { ApiStatus } from './status'
 import { $t } from '@/locales'
 import { extractResponseMessage } from './response'
+import { nowIsoString } from '@/utils/time'
 
 // 错误响应接口
 export interface ErrorResponse {
@@ -83,7 +84,7 @@ export class HttpError extends Error {
     this.name = 'HttpError'
     this.code = code
     this.data = options?.data
-    this.timestamp = new Date().toISOString()
+    this.timestamp = nowIsoString()
     this.url = options?.url
     this.method = options?.method
     this.requestId = options?.requestId
