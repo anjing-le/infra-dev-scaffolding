@@ -3,6 +3,7 @@ package com.anjing.context;
 import com.anjing.model.request.GlobalRequestContext;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Thread-local request context for controllers, services, logs, and remote calls.
@@ -23,14 +24,51 @@ public final class GlobalRequestContextHolder {
     }
 
     public static String requestIdOrEmpty() {
-        return current().map(GlobalRequestContext::getRequestId).orElse("");
+        return valueOrEmpty(GlobalRequestContext::getRequestId);
     }
 
     public static String requestIdOrNull() {
-        return current().map(GlobalRequestContext::getRequestId).orElse(null);
+        return valueOrNull(GlobalRequestContext::getRequestId);
+    }
+
+    public static String traceIdOrEmpty() {
+        return valueOrEmpty(GlobalRequestContext::getTraceId);
+    }
+
+    public static String traceIdOrNull() {
+        return valueOrNull(GlobalRequestContext::getTraceId);
+    }
+
+    public static String tenantIdOrEmpty() {
+        return valueOrEmpty(GlobalRequestContext::getTenantId);
+    }
+
+    public static String userIdOrEmpty() {
+        return valueOrEmpty(GlobalRequestContext::getUserId);
+    }
+
+    public static String callerIdOrEmpty() {
+        return valueOrEmpty(GlobalRequestContext::getCallerId);
+    }
+
+    public static String localeOrEmpty() {
+        return valueOrEmpty(GlobalRequestContext::getLocale);
+    }
+
+    public static String timeZoneOrEmpty() {
+        return valueOrEmpty(GlobalRequestContext::getTimeZone);
     }
 
     public static void clear() {
         HOLDER.remove();
+    }
+
+    private static String valueOrEmpty(Function<GlobalRequestContext, String> getter) {
+        String value = valueOrNull(getter);
+        return value == null ? "" : value;
+    }
+
+    private static String valueOrNull(Function<GlobalRequestContext, String> getter) {
+        return current().map(getter).orElse(null);
     }
 }

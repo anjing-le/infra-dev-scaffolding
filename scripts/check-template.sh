@@ -36,6 +36,7 @@ require_file scripts/check-api-constants.js
 require_file scripts/check-api-path-parity.js
 require_file scripts/check-frontend-api-boundaries.js
 require_file scripts/check-frontend-context-contract.js
+require_file scripts/check-backend-context-contract.js
 require_file scripts/check-frontend-time-contract.js
 require_file scripts/generate-platform-contract-backend.js
 require_file scripts/generate-platform-contract-frontend.js
