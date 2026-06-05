@@ -114,6 +114,10 @@ node scripts/check-shared-kernel.js
 ```
 
 ```bash
+node scripts/check-remote-http-contract.js
+```
+
+```bash
 ./scripts/smoke-copy.sh
 ```
 

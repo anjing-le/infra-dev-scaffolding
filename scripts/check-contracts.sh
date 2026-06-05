@@ -57,6 +57,7 @@ require_file project_document/SHARED_KERNEL_GUIDE.md
 require_file scripts/check-api-constants.js
 require_file scripts/check-api-path-parity.js
 require_file scripts/check-frontend-api-boundaries.js
+require_file scripts/check-frontend-context-contract.js
 require_file scripts/check-frontend-time-contract.js
 require_file scripts/generate-platform-contract-backend.js
 require_file scripts/generate-platform-contract-frontend.js
@@ -65,6 +66,7 @@ require_file scripts/check-error-codes.js
 require_file scripts/check-openapi-contract.js
 require_file scripts/check-service-boundaries.js
 require_file scripts/check-shared-kernel.js
+require_file scripts/check-remote-http-contract.js
 
 # URL contract: backend Controller mappings use ApiConstants; frontend API modules use ApiPaths.
 require_absent '@(RequestMapping|GetMapping|PostMapping|PutMapping|DeleteMapping|PatchMapping)\(\s*"/api' \
@@ -142,6 +144,9 @@ require_token frontend/src/utils/http/context.ts 'REQUEST_HEADERS[key]'
 require_token backend/src/main/java/com/anjing/util/RemoteCallWrapper.java 'serviceCallHeaders'
 require_token backend/src/main/java/com/anjing/util/RemoteCallWrapper.java 'RequestHeaderConstants.CALLER_ID'
 require_token backend/src/main/java/com/anjing/client/RemoteHttpClient.java 'RemoteCallWrapper.callWithRetry'
+require_token backend/src/main/java/com/anjing/client/RemoteHttpClient.java 'resolveUrl'
+require_token backend/src/main/java/com/anjing/client/RemoteHttpRequest.java 'private String serviceId'
+require_token backend/src/main/java/com/anjing/config/properties/RemoteHttpClientProperties.java 'serviceBaseUrls'
 
 # Time contract: shared utilities exist; avoid system default timezone in backend business code.
 require_token frontend/src/utils/time/index.ts 'getClientTimeZone'
@@ -170,5 +175,6 @@ node scripts/check-error-codes.js
 node scripts/check-openapi-contract.js
 node scripts/check-service-boundaries.js
 node scripts/check-shared-kernel.js
+node scripts/check-remote-http-contract.js
 
 echo "check-contracts: ok"

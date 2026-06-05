@@ -35,6 +35,7 @@ node scripts/check-error-codes.js
 node scripts/check-openapi-contract.js
 node scripts/check-service-boundaries.js
 node scripts/check-shared-kernel.js
+node scripts/check-remote-http-contract.js
 ./scripts/smoke-copy.sh
 ./scripts/probe-backend-dev.sh
 (cd backend && mvn -q -DskipTests package)
@@ -66,7 +67,8 @@ AI 协作验证：
   - 共享内核边界记录在 `project_document/SHARED_KERNEL_GUIDE.md`，`node scripts/check-shared-kernel.js` 已校验候选共享类不依赖 Spring Web、Servlet、JPA 或运行时层。
   - 业务当前时间统一通过 `DateUtils.nowIso()`、`DateUtils.now(pattern)`、`DateUtils.nowEpochMilli()` 等 UTC 出口获取，自检脚本已禁止业务源码直接调用 `Instant.now()` / `LocalDateTime.now()`。
   - 前端展示时间、导出文件名时间戳、错误时间戳和日期 key 已收口到 `frontend/src/utils/time`；`node scripts/check-frontend-time-contract.js` 已禁止页面/组件直接散落 `toLocale*`、`Intl.DateTimeFormat` 和 `useDateFormat`。
-  - HTTP 服务间调用使用 `RemoteHttpClient`，自定义 adapter 使用 `RemoteCallWrapper.serviceCallHeaders(callerId)` 透传 requestId、traceId、租户、用户、语言和时区。
+  - HTTP 服务间调用使用 `RemoteHttpClient`，内部服务地址通过 `app.remote-http.service-base-urls` 统一配置，调用侧优先使用 `serviceId + path`；自定义 adapter 使用 `RemoteCallWrapper.serviceCallHeaders(callerId)` 透传 requestId、traceId、租户、用户、语言和时区。
+  - `node scripts/check-remote-http-contract.js` 已校验后端远程 HTTP 调用具备 service registry、示例不再拼接本地绝对 URL、文档使用 `serviceId + path`。
   - 错误码按 `project_document/ERROR_CODE_GUIDE.md` 分段，`node scripts/check-error-codes.js` 已校验 Java 错误码枚举必须实现 `ErrorCode`、4 位数字、全局唯一并落在 `contracts/platform-contract.json` 分段内。
   - 远程调用默认只重试 `1800-1899`，`RemoteCallWrapper` 已读取 `PlatformContractConstants.ErrorCodes.RETRYABLE_RANGES`，避免在业务代码里硬编码重试范围。
   - `node scripts/check-openapi-contract.js` 已校验 springdoc 依赖、OpenAPI 配置、平台请求头、Auth 明确 DTO/VO 和前端 auth 类型一致性。

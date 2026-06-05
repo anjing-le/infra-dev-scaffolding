@@ -42,7 +42,7 @@
 - 共享内核边界已开始收口，`project_document/SHARED_KERNEL_GUIDE.md` 和 `scripts/check-shared-kernel.js` 已约束未来可抽 `anjing-common` 的契约/工具类不依赖 Spring Web、Servlet、JPA 或运行时层。
 - 前端已有统一时间工具层，后续需要让日期控件、文件名、通知时间等存量逻辑逐步迁移。
 - 中间件状态已能区分 `disabled/configured/ready/degraded`，并通过 `/api/test/features` 输出；dev/test/prod profile 矩阵已落地，后续仍需补真实探测开关。
-- 微服务远程调用已有包装工具，但还不是接口驱动的 client contract，没有统一超时、重试、熔断、调用方身份和审计契约。
+- 微服务远程调用已有包装工具和 service id 到 base URL 的配置入口，但还不是接口驱动的 client contract，后续仍需补熔断、真实服务发现、调用方身份治理和审计契约。
 
 ## 母版应该内置
 
@@ -114,6 +114,7 @@
 - `ControllerLogAspect` 已复用 `RequestContextFilter` 生成的 requestId。
 - `RemoteCallWrapper.serviceCallHeaders(callerId)` 已提供服务间调用的上下文请求头生成。
 - `RemoteHttpClient` / `RemoteHttpRequest` 已提供 HTTP 服务间调用适配层。
+- `RemoteHttpRequest` 已支持 `serviceId + path`，`RemoteHttpClient` 通过 `app.remote-http.service-base-urls` 解析内部服务地址，`scripts/check-remote-http-contract.js` 已防止示例重新回到手写本地绝对 URL。
 - `project_document/ERROR_CODE_GUIDE.md` 已记录错误码分段和远程调用重试策略。
 - `scripts/check-error-codes.js` 已把 Java 错误码枚举实现、格式、全局唯一性、manifest 分段和远程可重试范围纳入自动校验。
 - `MiddlewareManager.statusReport()` 和 `/api/test/features` 已提供可选能力状态基线，状态词典记录在 `project_document/FEATURE_STATUS_GUIDE.md`。

@@ -11,7 +11,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
@@ -41,9 +40,6 @@ import java.util.Map;
 public class RemoteCallExampleService {
 
     private final RemoteHttpClient remoteHttpClient;
-
-    @Value("${server.port:18080}")
-    private int serverPort;
 
     // ==================== 模拟的远程服务接口 ====================
     
@@ -190,8 +186,8 @@ public class RemoteCallExampleService {
 
         RemoteHttpRequest request = RemoteHttpRequest.builder()
                 .method(HttpMethod.GET)
-                .url("http://localhost:" + serverPort + ApiConstants.Test.PING_FULL)
-                .targetService("infra-dev-scaffolding")
+                .serviceId("infra-dev-scaffolding")
+                .path(ApiConstants.Test.PING_FULL)
                 .callerId("infra-dev-scaffolding")
                 .checkResponse(true)
                 .build();

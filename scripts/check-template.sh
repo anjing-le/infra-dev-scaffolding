@@ -44,6 +44,7 @@ require_file scripts/check-error-codes.js
 require_file scripts/check-openapi-contract.js
 require_file scripts/check-service-boundaries.js
 require_file scripts/check-shared-kernel.js
+require_file scripts/check-remote-http-contract.js
 require_file scripts/check-contracts.sh
 require_file scripts/probe-backend-dev.sh
 require_file backend/.env.example

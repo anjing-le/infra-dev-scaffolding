@@ -23,8 +23,21 @@ public class RemoteHttpRequest {
 
     /**
      * Absolute URL for the downstream service.
+     *
+     * <p>Prefer serviceId + path for internal services. Keep url for third-party APIs
+     * or compatibility with legacy call sites.</p>
      */
     private String url;
+
+    /**
+     * Logical service id resolved by app.remote-http.service-base-urls.
+     */
+    private String serviceId;
+
+    /**
+     * Service-relative path, for example /api/auth/me.
+     */
+    private String path;
 
     /**
      * Logical service name used for logs and audit.

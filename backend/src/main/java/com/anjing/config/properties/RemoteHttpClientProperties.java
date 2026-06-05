@@ -4,6 +4,9 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * Defaults for outbound HTTP calls to future internal services or third-party APIs.
  */
@@ -36,4 +39,12 @@ public class RemoteHttpClientProperties {
      * Default retry interval in milliseconds.
      */
     private long defaultRetryIntervalMs = 1000L;
+
+    /**
+     * Logical service id to base URL mapping.
+     *
+     * <p>Keep service addresses in configuration so business code can call
+     * RemoteHttpRequest with serviceId + path instead of scattering absolute URLs.</p>
+     */
+    private Map<String, String> serviceBaseUrls = new LinkedHashMap<>();
 }

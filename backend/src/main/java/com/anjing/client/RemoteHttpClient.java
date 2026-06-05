@@ -46,6 +46,23 @@ public class RemoteHttpClient {
                 .build(), responseType);
     }
 
+    public <R> R getFromService(String serviceId, String path, Class<R> responseType) {
+        return exchange(RemoteHttpRequest.builder()
+                .method(HttpMethod.GET)
+                .serviceId(serviceId)
+                .path(path)
+                .build(), responseType);
+    }
+
+    public <T, R> R postToService(String serviceId, String path, T body, Class<R> responseType) {
+        return exchange(RemoteHttpRequest.builder()
+                .method(HttpMethod.POST)
+                .serviceId(serviceId)
+                .path(path)
+                .body(body)
+                .build(), responseType);
+    }
+
     public <R> R exchange(RemoteHttpRequest request, Class<R> responseType) {
         validateRequest(request, responseType);
 
@@ -62,9 +79,10 @@ public class RemoteHttpClient {
 
     private <R> R doExchange(RemoteHttpRequest request, Class<R> responseType) {
         try {
+            String url = resolveUrl(request);
             RestClient.RequestBodySpec spec = remoteRestClient
                     .method(resolveMethod(request))
-                    .uri(request.getUrl());
+                    .uri(url);
 
             buildHeaders(request).forEach((name, value) -> spec.header(name, value));
 
@@ -112,7 +130,7 @@ public class RemoteHttpClient {
         Map<String, Object> descriptor = new LinkedHashMap<>();
         descriptor.put("method", resolveMethod(request).name());
         descriptor.put("targetService", resolveTargetService(request));
-        descriptor.put("url", sanitizedUrl(request.getUrl()));
+        descriptor.put("url", sanitizedUrl(resolveUrl(request)));
         descriptor.put("callerId", resolveCallerId(request));
         return descriptor;
     }
@@ -121,10 +139,7 @@ public class RemoteHttpClient {
         if (request == null) {
             throw new SystemException("远程 HTTP 请求不能为空", RemoteErrorCode.REMOTE_CALL_PARAM_ERROR);
         }
-        if (!StringUtils.hasText(request.getUrl())) {
-            throw new SystemException("远程 HTTP URL 不能为空", RemoteErrorCode.REMOTE_CALL_PARAM_ERROR);
-        }
-        validateAbsoluteUrl(request.getUrl());
+        validateAbsoluteUrl(resolveUrl(request));
         if (responseType == null) {
             throw new SystemException("远程 HTTP 响应类型不能为空", RemoteErrorCode.REMOTE_CALL_PARAM_ERROR);
         }
@@ -176,13 +191,46 @@ public class RemoteHttpClient {
         if (StringUtils.hasText(request.getTargetService())) {
             return request.getTargetService();
         }
+        if (StringUtils.hasText(request.getServiceId())) {
+            return request.getServiceId();
+        }
 
         try {
-            URI uri = URI.create(request.getUrl());
+            URI uri = URI.create(resolveUrl(request));
             return StringUtils.hasText(uri.getHost()) ? uri.getHost() : "unknown-service";
         } catch (Exception ignored) {
             return "unknown-service";
         }
+    }
+
+    private String resolveUrl(RemoteHttpRequest request) {
+        if (StringUtils.hasText(request.getUrl())) {
+            return request.getUrl();
+        }
+        if (!StringUtils.hasText(request.getServiceId())) {
+            throw new SystemException("远程 HTTP URL 或 serviceId 不能为空", RemoteErrorCode.REMOTE_CALL_PARAM_ERROR);
+        }
+
+        Map<String, String> serviceBaseUrls = properties.getServiceBaseUrls();
+        String baseUrl = serviceBaseUrls == null ? null : serviceBaseUrls.get(request.getServiceId());
+        if (!StringUtils.hasText(baseUrl)) {
+            throw new SystemException(
+                    "远程 HTTP 服务未配置 base URL: " + request.getServiceId(),
+                    RemoteErrorCode.REMOTE_CALL_PARAM_ERROR
+            );
+        }
+
+        return joinUrl(baseUrl, request.getPath());
+    }
+
+    private String joinUrl(String baseUrl, String path) {
+        String normalizedBase = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
+        if (!StringUtils.hasText(path)) {
+            return normalizedBase;
+        }
+
+        String normalizedPath = path.startsWith("/") ? path : "/" + path;
+        return normalizedBase + normalizedPath;
     }
 
     private String sanitizedUrl(String url) {

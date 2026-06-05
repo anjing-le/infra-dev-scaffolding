@@ -195,6 +195,11 @@ app:
     read-timeout-ms: ${REMOTE_HTTP_READ_TIMEOUT_MS:5000}
     default-retry-count: ${REMOTE_HTTP_DEFAULT_RETRY_COUNT:0}
     default-retry-interval-ms: ${REMOTE_HTTP_DEFAULT_RETRY_INTERVAL_MS:1000}
+    service-base-urls:
+      infra-dev-scaffolding: ${APP_SELF_BASE_URL:http://localhost:18080}
+      infra-auth: ${INFRA_AUTH_BASE_URL:}
+      infra-api-gateway: ${INFRA_API_GATEWAY_BASE_URL:}
+      infra-skill-hub: ${INFRA_SKILL_HUB_BASE_URL:}
 
   features:
     # Redis功能配置
