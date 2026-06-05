@@ -32,6 +32,7 @@ public class RemoteHttpClient {
 
     private final RestClient remoteRestClient;
     private final RemoteHttpClientProperties properties;
+    private final ServiceEndpointResolver serviceEndpointResolver;
 
     public <R> R get(String url, Class<R> responseType) {
         return exchange(RemoteHttpRequest.builder()
@@ -272,26 +273,7 @@ public class RemoteHttpClient {
             throw new SystemException("远程 HTTP URL 或 serviceId 不能为空", RemoteErrorCode.REMOTE_CALL_PARAM_ERROR);
         }
 
-        Map<String, String> serviceBaseUrls = properties.getServiceBaseUrls();
-        String baseUrl = serviceBaseUrls == null ? null : serviceBaseUrls.get(request.getServiceId());
-        if (!StringUtils.hasText(baseUrl)) {
-            throw new SystemException(
-                    "远程 HTTP 服务未配置 base URL: " + request.getServiceId(),
-                    RemoteErrorCode.REMOTE_CALL_PARAM_ERROR
-            );
-        }
-
-        return joinUrl(baseUrl, request.getPath());
-    }
-
-    private String joinUrl(String baseUrl, String path) {
-        String normalizedBase = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
-        if (!StringUtils.hasText(path)) {
-            return normalizedBase;
-        }
-
-        String normalizedPath = path.startsWith("/") ? path : "/" + path;
-        return normalizedBase + normalizedPath;
+        return serviceEndpointResolver.resolveUrl(request.getServiceId(), request.getPath());
     }
 
     private String sanitizedUrl(String url) {

@@ -54,6 +54,8 @@ require_file scripts/check-remote-http-contract.js
 require_file scripts/check-contracts.sh
 require_file scripts/quality-gate.sh
 require_file scripts/probe-backend-dev.sh
+require_file backend/src/main/java/com/anjing/client/ServiceEndpointResolver.java
+require_file backend/src/main/java/com/anjing/client/ConfiguredServiceEndpointResolver.java
 require_file backend/.env.example
 require_file backend/src/main/resources/application.yml
 require_file backend/src/main/resources/application-dev.yml

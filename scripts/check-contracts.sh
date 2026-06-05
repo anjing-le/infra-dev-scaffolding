@@ -43,6 +43,8 @@ require_file backend/src/main/java/com/anjing/util/TimeZoneUtils.java
 require_file frontend/src/utils/http/context.ts
 require_file frontend/src/utils/locale/index.ts
 require_file backend/src/main/java/com/anjing/client/RemoteHttpClient.java
+require_file backend/src/main/java/com/anjing/client/ServiceEndpointResolver.java
+require_file backend/src/main/java/com/anjing/client/ConfiguredServiceEndpointResolver.java
 require_file backend/src/main/java/com/anjing/util/RemoteCallWrapper.java
 require_file frontend/src/contracts/platform-contract.ts
 require_file frontend/src/contracts/service-boundaries.ts

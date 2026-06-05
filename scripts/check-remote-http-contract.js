@@ -11,6 +11,8 @@ const files = {
   properties: 'backend/src/main/java/com/anjing/config/properties/RemoteHttpClientProperties.java',
   request: 'backend/src/main/java/com/anjing/client/RemoteHttpRequest.java',
   client: 'backend/src/main/java/com/anjing/client/RemoteHttpClient.java',
+  endpointResolver: 'backend/src/main/java/com/anjing/client/ServiceEndpointResolver.java',
+  configuredEndpointResolver: 'backend/src/main/java/com/anjing/client/ConfiguredServiceEndpointResolver.java',
   remoteWrapper: 'backend/src/main/java/com/anjing/util/RemoteCallWrapper.java',
   application: 'backend/src/main/resources/application.yml',
   example: 'backend/src/main/java/com/anjing/example/RemoteCallExampleService.java',
@@ -48,8 +50,13 @@ requireToken(files.client, 'ParameterizedTypeReference')
 requireToken(files.client, 'exchange(RemoteHttpRequest request, ParameterizedTypeReference<R> responseType)')
 requireToken(files.client, 'responseSpec.body(responseType)')
 requireToken(files.client, 'resolveUrl')
-requireToken(files.client, 'joinUrl')
-requireToken(files.client, 'properties.getServiceBaseUrls()')
+requireToken(files.client, 'ServiceEndpointResolver')
+requireToken(files.client, 'serviceEndpointResolver.resolveUrl')
+requireToken(files.endpointResolver, 'interface ServiceEndpointResolver')
+requireToken(files.endpointResolver, 'resolveUrl(String serviceId, String path)')
+requireToken(files.configuredEndpointResolver, 'implements ServiceEndpointResolver')
+requireToken(files.configuredEndpointResolver, 'properties.getServiceBaseUrls()')
+requireToken(files.configuredEndpointResolver, 'joinUrl')
 requireToken(files.application, 'service-base-urls:')
 requireToken(files.platform, 'BACKEND_PROPAGATED_HEADER_KEYS')
 requireToken(files.remoteWrapper, 'PlatformContractConstants.BACKEND_PROPAGATED_HEADER_KEYS')
@@ -61,6 +68,8 @@ requireToken(files.example, 'new ParameterizedTypeReference<APIResponse<String>>
 requireToken(files.test, 'APIResponse<PageResult<ItemView>>')
 requireToken(files.test, 'MockRestServiceServer')
 requireToken(files.test, 'ParameterizedTypeReference<APIResponse<PageResult<ItemView>>>')
+requireToken(files.test, 'ConfiguredServiceEndpointResolver')
+requireToken(files.test, 'configuredEndpointResolverShouldResolveServiceIdAndPath')
 requireToken(files.guide, 'ServiceBoundaryConstants.Auth.OWNER')
 requireToken(files.guide, '.path(ApiConstants.Auth.ME_FULL)')
 requireToken(files.guide, 'ServiceBoundaryConstants.APPLICATION_ID')

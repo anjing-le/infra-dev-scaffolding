@@ -3,6 +3,8 @@ package com.anjing.client;
 import com.anjing.config.properties.RemoteHttpClientProperties;
 import com.anjing.context.GlobalRequestContextHolder;
 import com.anjing.model.constants.RequestHeaderConstants;
+import com.anjing.model.errorcode.RemoteErrorCode;
+import com.anjing.model.exception.SystemException;
 import com.anjing.model.request.GlobalRequestContext;
 import com.anjing.model.response.APIResponse;
 import com.anjing.model.response.PageResult;
@@ -16,6 +18,7 @@ import org.springframework.web.client.RestClient;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -32,7 +35,12 @@ class RemoteHttpClientTest {
     void exchangeShouldPreserveNestedGenericResponseType() {
         RestClient.Builder builder = RestClient.builder();
         MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
-        RemoteHttpClient client = new RemoteHttpClient(builder.build(), properties());
+        RemoteHttpClientProperties properties = properties();
+        RemoteHttpClient client = new RemoteHttpClient(
+                builder.build(),
+                properties,
+                new ConfiguredServiceEndpointResolver(properties)
+        );
 
         GlobalRequestContextHolder.set(GlobalRequestContext.builder()
                 .requestId("rid-1")
@@ -77,6 +85,26 @@ class RemoteHttpClientTest {
         assertInstanceOf(ItemView.class, response.getData().getRecords().get(0));
         assertEquals("alpha", response.getData().getRecords().get(0).getName());
         server.verify();
+    }
+
+    @Test
+    void configuredEndpointResolverShouldResolveServiceIdAndPath() {
+        ConfiguredServiceEndpointResolver resolver = new ConfiguredServiceEndpointResolver(properties());
+
+        assertEquals("http://inventory.local/api/items", resolver.resolveUrl("inventory", "/api/items"));
+        assertEquals("http://inventory.local/api/items", resolver.resolveUrl("inventory", "api/items"));
+        assertEquals("http://inventory.local", resolver.resolveUrl("inventory", null));
+    }
+
+    @Test
+    void configuredEndpointResolverShouldRejectUnknownService() {
+        ConfiguredServiceEndpointResolver resolver = new ConfiguredServiceEndpointResolver(properties());
+
+        SystemException error = assertThrows(
+                SystemException.class,
+                () -> resolver.resolveUrl("missing-service", "/api/items")
+        );
+        assertEquals(RemoteErrorCode.REMOTE_CALL_PARAM_ERROR, error.getErrorCode());
     }
 
     private RemoteHttpClientProperties properties() {

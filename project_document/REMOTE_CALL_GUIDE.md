@@ -5,7 +5,7 @@
 ## 默认选择
 
 - HTTP 服务间调用：优先使用 `RemoteHttpClient` / `RemoteHttpRequest`。
-- 内部服务调用：优先传 `serviceId + path`，服务 base URL 在 `app.remote-http.service-base-urls` 中统一配置。
+- 内部服务调用：优先传 `serviceId + path`，服务地址由 `ServiceEndpointResolver` 解析；默认实现从 `app.remote-http.service-base-urls` 读取。
 - 第三方外部 API：可以继续传绝对 `url`，但不要在业务代码里拼接内部服务地址。
 - Feign / Dubbo / WebClient 自定义适配器：使用 `RemoteCallWrapper.serviceCallHeaders(callerId)` 生成透传头。
 - 只需要包装已有 Java 方法调用：使用 `RemoteCallWrapper.call(...)` 或 `callWithRetry(...)`。
@@ -65,7 +65,7 @@ app:
       infra-auth: ${INFRA_AUTH_BASE_URL:}
 ```
 
-`service-base-urls` 是未来 API Gateway、Service Discovery 或部署环境注入服务地址前的最小配置入口。母版不默认引入注册中心；下游项目可以先用环境变量切换服务地址，再在真实微服务项目中替换成网关或发现客户端。
+`ConfiguredServiceEndpointResolver` 是默认的服务解析实现，读取 `service-base-urls` 并拼接 service-relative path。母版不默认引入注册中心；下游项目可以先用环境变量切换服务地址，再在真实微服务项目中替换 `ServiceEndpointResolver`，接入 API Gateway、Service Discovery、区域路由或灰度路由。
 
 ## 日志与安全
 
