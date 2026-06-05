@@ -3,9 +3,11 @@ package com.anjing.config.http;
 import com.anjing.client.NoopRemoteCallPolicy;
 import com.anjing.client.NoopRemoteCallObserver;
 import com.anjing.client.DefaultRemoteCallerResolver;
+import com.anjing.client.ConfiguredServiceEndpointRegistry;
 import com.anjing.client.RemoteCallObserver;
 import com.anjing.client.RemoteCallPolicy;
 import com.anjing.client.RemoteCallerResolver;
+import com.anjing.client.ServiceEndpointRegistry;
 import com.anjing.config.properties.RemoteHttpClientProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -48,5 +50,11 @@ public class RemoteHttpClientConfig {
     @ConditionalOnMissingBean(RemoteCallerResolver.class)
     public RemoteCallerResolver remoteCallerResolver(RemoteHttpClientProperties properties) {
         return new DefaultRemoteCallerResolver(properties);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ServiceEndpointRegistry.class)
+    public ServiceEndpointRegistry serviceEndpointRegistry(RemoteHttpClientProperties properties) {
+        return new ConfiguredServiceEndpointRegistry(properties);
     }
 }

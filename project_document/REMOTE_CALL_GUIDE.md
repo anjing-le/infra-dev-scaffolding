@@ -65,7 +65,9 @@ app:
       infra-auth: ${INFRA_AUTH_BASE_URL:}
 ```
 
-`ConfiguredServiceEndpointResolver` 是默认的服务解析实现，读取 `service-base-urls` 并拼接 service-relative path。母版不默认引入注册中心；下游项目可以先用环境变量切换服务地址，再在真实微服务项目中替换 `ServiceEndpointResolver`，接入 API Gateway、Service Discovery、区域路由或灰度路由。
+`ConfiguredServiceEndpointResolver` 是默认的服务解析实现，负责校验 serviceId 并拼接 service-relative path。它通过 `ServiceEndpointRegistry` 查询服务 base URL；默认 `ConfiguredServiceEndpointRegistry` 读取 `service-base-urls`。
+
+母版不默认引入注册中心；下游项目可以先用环境变量切换服务地址，再在真实微服务项目中替换 `ServiceEndpointRegistry`，接入 API Gateway、Service Discovery、区域路由或灰度路由。`ServiceEndpoint` 的 `source` 字段用于标记 endpoint 来源，例如 configuration、gateway、discovery、region 或 gray。
 
 ## 调用方身份扩展点
 

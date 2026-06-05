@@ -55,6 +55,9 @@ require_file scripts/check-contracts.sh
 require_file scripts/quality-gate.sh
 require_file scripts/probe-backend-dev.sh
 require_file backend/src/main/java/com/anjing/client/ServiceEndpointResolver.java
+require_file backend/src/main/java/com/anjing/client/ServiceEndpoint.java
+require_file backend/src/main/java/com/anjing/client/ServiceEndpointRegistry.java
+require_file backend/src/main/java/com/anjing/client/ConfiguredServiceEndpointRegistry.java
 require_file backend/src/main/java/com/anjing/client/ConfiguredServiceEndpointResolver.java
 require_file backend/src/main/java/com/anjing/client/RemoteCallerResolver.java
 require_file backend/src/main/java/com/anjing/client/DefaultRemoteCallerResolver.java

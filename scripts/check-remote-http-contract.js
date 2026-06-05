@@ -14,6 +14,9 @@ const files = {
   callerResolver: 'backend/src/main/java/com/anjing/client/RemoteCallerResolver.java',
   defaultCallerResolver: 'backend/src/main/java/com/anjing/client/DefaultRemoteCallerResolver.java',
   endpointResolver: 'backend/src/main/java/com/anjing/client/ServiceEndpointResolver.java',
+  serviceEndpoint: 'backend/src/main/java/com/anjing/client/ServiceEndpoint.java',
+  endpointRegistry: 'backend/src/main/java/com/anjing/client/ServiceEndpointRegistry.java',
+  configuredEndpointRegistry: 'backend/src/main/java/com/anjing/client/ConfiguredServiceEndpointRegistry.java',
   configuredEndpointResolver: 'backend/src/main/java/com/anjing/client/ConfiguredServiceEndpointResolver.java',
   callPolicy: 'backend/src/main/java/com/anjing/client/RemoteCallPolicy.java',
   callPolicyContext: 'backend/src/main/java/com/anjing/client/RemoteCallPolicyContext.java',
@@ -81,8 +84,17 @@ requireToken(files.client, 'RemoteCallObservation')
 requireToken(files.client, 'durationMs')
 requireToken(files.endpointResolver, 'interface ServiceEndpointResolver')
 requireToken(files.endpointResolver, 'resolveUrl(String serviceId, String path)')
+requireToken(files.serviceEndpoint, 'record ServiceEndpoint')
+requireToken(files.serviceEndpoint, 'String baseUrl')
+requireToken(files.serviceEndpoint, 'String source')
+requireToken(files.endpointRegistry, 'interface ServiceEndpointRegistry')
+requireToken(files.endpointRegistry, 'Optional<ServiceEndpoint> findEndpoint(String serviceId)')
+requireToken(files.configuredEndpointRegistry, 'implements ServiceEndpointRegistry')
+requireToken(files.configuredEndpointRegistry, 'properties.getServiceBaseUrls()')
+requireToken(files.configuredEndpointRegistry, 'new ServiceEndpoint(serviceId, baseUrl, SOURCE)')
 requireToken(files.configuredEndpointResolver, 'implements ServiceEndpointResolver')
-requireToken(files.configuredEndpointResolver, 'properties.getServiceBaseUrls()')
+requireToken(files.configuredEndpointResolver, 'ServiceEndpointRegistry')
+requireToken(files.configuredEndpointResolver, 'serviceEndpointRegistry.findEndpoint(serviceId)')
 requireToken(files.configuredEndpointResolver, 'joinUrl')
 requireToken(files.callPolicy, 'interface RemoteCallPolicy')
 requireToken(files.callPolicy, 'beforeCall(RemoteCallPolicyContext context)')
@@ -104,6 +116,8 @@ requireToken(files.httpClientConfig, '@ConditionalOnMissingBean(RemoteCallObserv
 requireToken(files.httpClientConfig, 'new NoopRemoteCallObserver()')
 requireToken(files.httpClientConfig, '@ConditionalOnMissingBean(RemoteCallerResolver.class)')
 requireToken(files.httpClientConfig, 'new DefaultRemoteCallerResolver(properties)')
+requireToken(files.httpClientConfig, '@ConditionalOnMissingBean(ServiceEndpointRegistry.class)')
+requireToken(files.httpClientConfig, 'new ConfiguredServiceEndpointRegistry(properties)')
 requireToken(files.application, 'service-base-urls:')
 requireToken(files.platform, 'BACKEND_PROPAGATED_HEADER_KEYS')
 requireToken(files.remoteWrapper, 'PlatformContractConstants.BACKEND_PROPAGATED_HEADER_KEYS')
@@ -124,12 +138,15 @@ requireToken(files.test, 'RecordingRemoteCallObserver')
 requireToken(files.test, 'observer.observation.durationMs()')
 requireToken(files.test, 'exchangeShouldUseRemoteCallerResolver')
 requireToken(files.test, 'defaultRemoteCallerResolverShouldSupportRequestOverrideAndFallback')
+requireToken(files.test, 'configuredEndpointResolverShouldUseServiceEndpointRegistry')
+requireToken(files.test, 'configuredServiceEndpointRegistryShouldReadConfiguredBaseUrls')
 requireToken(files.guide, 'ServiceBoundaryConstants.Auth.OWNER')
 requireToken(files.guide, '.path(ApiConstants.Auth.ME_FULL)')
 requireToken(files.guide, 'ServiceBoundaryConstants.APPLICATION_ID')
 requireToken(files.guide, 'new ParameterizedTypeReference<APIResponse<CurrentUserResponse>>()')
 requireToken(files.guide, 'service-base-urls:')
 requireToken(files.guide, 'RemoteCallerResolver')
+requireToken(files.guide, 'ServiceEndpointRegistry')
 
 let serviceBoundaries
 try {

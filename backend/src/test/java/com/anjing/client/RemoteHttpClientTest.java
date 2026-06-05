@@ -16,6 +16,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestClient;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -42,7 +44,7 @@ class RemoteHttpClientTest {
         RemoteHttpClient client = new RemoteHttpClient(
                 builder.build(),
                 properties,
-                new ConfiguredServiceEndpointResolver(properties),
+                endpointResolver(properties),
                 new DefaultRemoteCallerResolver(properties),
                 new NoopRemoteCallPolicy(),
                 new NoopRemoteCallObserver()
@@ -102,7 +104,7 @@ class RemoteHttpClientTest {
         RemoteHttpClient client = new RemoteHttpClient(
                 builder.build(),
                 properties,
-                new ConfiguredServiceEndpointResolver(properties),
+                endpointResolver(properties),
                 new DefaultRemoteCallerResolver(properties),
                 new RemoteCallPolicy() {
                     @Override
@@ -147,7 +149,7 @@ class RemoteHttpClientTest {
         RemoteHttpClient client = new RemoteHttpClient(
                 builder.build(),
                 properties,
-                new ConfiguredServiceEndpointResolver(properties),
+                endpointResolver(properties),
                 new DefaultRemoteCallerResolver(properties),
                 policy,
                 observer
@@ -211,7 +213,7 @@ class RemoteHttpClientTest {
         RemoteHttpClient client = new RemoteHttpClient(
                 builder.build(),
                 properties,
-                new ConfiguredServiceEndpointResolver(properties),
+                endpointResolver(properties),
                 request -> "gateway-caller",
                 policy,
                 observer
@@ -252,7 +254,7 @@ class RemoteHttpClientTest {
 
     @Test
     void configuredEndpointResolverShouldResolveServiceIdAndPath() {
-        ConfiguredServiceEndpointResolver resolver = new ConfiguredServiceEndpointResolver(properties());
+        ConfiguredServiceEndpointResolver resolver = endpointResolver(properties());
 
         assertEquals("http://inventory.local/api/items", resolver.resolveUrl("inventory", "/api/items"));
         assertEquals("http://inventory.local/api/items", resolver.resolveUrl("inventory", "api/items"));
@@ -261,13 +263,38 @@ class RemoteHttpClientTest {
 
     @Test
     void configuredEndpointResolverShouldRejectUnknownService() {
-        ConfiguredServiceEndpointResolver resolver = new ConfiguredServiceEndpointResolver(properties());
+        ConfiguredServiceEndpointResolver resolver = endpointResolver(properties());
 
         SystemException error = assertThrows(
                 SystemException.class,
                 () -> resolver.resolveUrl("missing-service", "/api/items")
         );
         assertEquals(RemoteErrorCode.REMOTE_CALL_PARAM_ERROR, error.getErrorCode());
+    }
+
+    @Test
+    void configuredEndpointResolverShouldUseServiceEndpointRegistry() {
+        ConfiguredServiceEndpointResolver resolver = new ConfiguredServiceEndpointResolver(
+                serviceId -> Optional.of(new ServiceEndpoint(serviceId, "http://gateway.local/" + serviceId, "gateway"))
+        );
+
+        assertEquals("http://gateway.local/inventory/api/items", resolver.resolveUrl("inventory", "/api/items"));
+    }
+
+    @Test
+    void configuredServiceEndpointRegistryShouldReadConfiguredBaseUrls() {
+        ConfiguredServiceEndpointRegistry registry = new ConfiguredServiceEndpointRegistry(properties());
+
+        ServiceEndpoint endpoint = registry.findEndpoint("inventory").orElseThrow();
+
+        assertEquals("inventory", endpoint.serviceId());
+        assertEquals("http://inventory.local", endpoint.baseUrl());
+        assertEquals("configuration", endpoint.source());
+        assertTrue(registry.findEndpoint("missing-service").isEmpty());
+    }
+
+    private ConfiguredServiceEndpointResolver endpointResolver(RemoteHttpClientProperties properties) {
+        return new ConfiguredServiceEndpointResolver(new ConfiguredServiceEndpointRegistry(properties));
     }
 
     private RemoteHttpClientProperties properties() {

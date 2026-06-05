@@ -43,7 +43,7 @@
 - 共享内核边界已开始收口，`project_document/SHARED_KERNEL_GUIDE.md` 和 `scripts/check-shared-kernel.js` 已约束未来可抽 `anjing-common` 的契约/工具类不依赖 Spring Web、Servlet、JPA 或运行时层。
 - 前端已有统一时间工具层，后续需要让日期控件、文件名、通知时间等存量逻辑逐步迁移。
 - 中间件状态已能区分 `disabled/configured/ready/degraded`，并通过 `/api/test/features` 输出；dev/test/prod profile 矩阵已落地，后续仍需补真实探测开关。
-- 微服务远程调用已有包装工具、`ServiceEndpointResolver` 服务解析扩展点、配置型默认 resolver、`RemoteCallerResolver` 调用方身份解析扩展点、`RemoteCallPolicy` 调用治理扩展点、`RemoteCallObserver` 调用审计/指标扩展点和 `ParameterizedTypeReference<T>` 泛型响应入口，可支撑标准响应、分页响应和列表响应；后续仍需补真实服务发现和调用方身份治理策略。
+- 微服务远程调用已有包装工具、`ServiceEndpointResolver` 服务解析扩展点、`ServiceEndpointRegistry` 服务发现/地址注册表扩展点、配置型默认 registry、`RemoteCallerResolver` 调用方身份解析扩展点、`RemoteCallPolicy` 调用治理扩展点、`RemoteCallObserver` 调用审计/指标扩展点和 `ParameterizedTypeReference<T>` 泛型响应入口，可支撑标准响应、分页响应和列表响应；后续仍需补真实调用方身份治理策略。
 
 ## 母版应该内置
 
@@ -67,7 +67,7 @@
 
 - API Gateway：母版定义服务前缀、认证头和转发约定，下游 `infra-api-gateway` 负责具体网关。
 - Auth Center：母版保留 mock auth 和 token/header 契约，下游 `infra-auth` 负责真实账号、租户、权限。
-- Service Discovery：母版保留服务名、调用方身份、远程调用 wrapper 和 `ServiceEndpointResolver` 扩展点，不默认引入注册中心。
+- Service Discovery：母版保留服务名、调用方身份、远程调用 wrapper、`ServiceEndpointResolver` 和 `ServiceEndpointRegistry` 扩展点，不默认引入注册中心。
 - Distributed Tracing：母版保留 trace/request id 字段，不默认绑定某个 tracing 平台。
 - MQ / Event Bus：母版保留事件命名和幂等建议，不默认要求 Kafka/RabbitMQ 启动。
 - Object Storage：母版保留上传接口契约和配置样例，不默认绑定 MinIO/OSS 业务实现。
@@ -116,7 +116,7 @@
 - `GlobalRequestContextHolder.capture()` / `setOrClear()` / `runWith()` / `callWith()` 已提供纯 Java 上下文快照能力，`RequestContextTaskDecorator` 和统一 `applicationTaskExecutor` 已支持 `@Async` 线程传播请求上下文与 MDC。
 - `RemoteCallWrapper.serviceCallHeaders(callerId)` 已按 platform contract 的 `backendPropagatedHeaders` 生成服务间调用上下文请求头。
 - `RemoteHttpClient` / `RemoteHttpRequest` 已提供 HTTP 服务间调用适配层。
-- `RemoteHttpRequest` 已支持 `serviceId + path`，`RemoteHttpClient` 通过 `ServiceEndpointResolver` 解析内部服务地址，默认 `ConfiguredServiceEndpointResolver` 读取 `app.remote-http.service-base-urls`；`RemoteCallerResolver` 已把 `X-Caller-Id` 调用方身份解析从 client 私有逻辑中抽出，默认 `DefaultRemoteCallerResolver` 支持请求级覆盖、配置默认值和应用 id 回退；`RemoteCallPolicy` 已提供调用前检查和调用后成功/失败记录挂点，默认 `NoopRemoteCallPolicy` 不引入治理依赖；`RemoteCallObserver` 已提供调用完成后的审计、指标和 tracing 挂点，默认 `NoopRemoteCallObserver` 不引入存储或 metrics 依赖；`RemoteHttpClient` 已通过 `Class<T>` 与 `ParameterizedTypeReference<T>` 两类重载支持简单和嵌套泛型响应，`scripts/check-remote-http-contract.js` 已防止示例重新回到手写本地绝对 URL、裸响应类型或直接在 client 内部硬查配置。
+- `RemoteHttpRequest` 已支持 `serviceId + path`，`RemoteHttpClient` 通过 `ServiceEndpointResolver` 解析内部服务地址，默认 `ConfiguredServiceEndpointResolver` 负责校验和拼接 path，`ServiceEndpointRegistry` 负责查询 endpoint，默认 `ConfiguredServiceEndpointRegistry` 读取 `app.remote-http.service-base-urls`；`RemoteCallerResolver` 已把 `X-Caller-Id` 调用方身份解析从 client 私有逻辑中抽出，默认 `DefaultRemoteCallerResolver` 支持请求级覆盖、配置默认值和应用 id 回退；`RemoteCallPolicy` 已提供调用前检查和调用后成功/失败记录挂点，默认 `NoopRemoteCallPolicy` 不引入治理依赖；`RemoteCallObserver` 已提供调用完成后的审计、指标和 tracing 挂点，默认 `NoopRemoteCallObserver` 不引入存储或 metrics 依赖；`RemoteHttpClient` 已通过 `Class<T>` 与 `ParameterizedTypeReference<T>` 两类重载支持简单和嵌套泛型响应，`scripts/check-remote-http-contract.js` 已防止示例重新回到手写本地绝对 URL、裸响应类型或直接在 client 内部硬查配置。
 - `project_document/ERROR_CODE_GUIDE.md` 已记录错误码分段和远程调用重试策略。
 - `scripts/check-error-codes.js` 已把 Java 错误码枚举实现、格式、全局唯一性、manifest 分段和远程可重试范围纳入自动校验。
 - `MiddlewareManager.statusReport()` 和 `/api/test/features` 已提供可选能力状态基线，状态词典记录在 `project_document/FEATURE_STATUS_GUIDE.md`。

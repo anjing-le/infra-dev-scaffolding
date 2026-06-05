@@ -1,22 +1,19 @@
 package com.anjing.client;
 
-import com.anjing.config.properties.RemoteHttpClientProperties;
 import com.anjing.model.errorcode.RemoteErrorCode;
 import com.anjing.model.exception.SystemException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.util.Map;
-
 /**
- * Configuration-backed service endpoint resolver.
+ * Registry-backed service endpoint resolver.
  */
 @Component
 @RequiredArgsConstructor
 public class ConfiguredServiceEndpointResolver implements ServiceEndpointResolver {
 
-    private final RemoteHttpClientProperties properties;
+    private final ServiceEndpointRegistry serviceEndpointRegistry;
 
     @Override
     public String resolveUrl(String serviceId, String path) {
@@ -24,16 +21,15 @@ public class ConfiguredServiceEndpointResolver implements ServiceEndpointResolve
             throw new SystemException("远程 HTTP serviceId 不能为空", RemoteErrorCode.REMOTE_CALL_PARAM_ERROR);
         }
 
-        Map<String, String> serviceBaseUrls = properties.getServiceBaseUrls();
-        String baseUrl = serviceBaseUrls == null ? null : serviceBaseUrls.get(serviceId);
-        if (!StringUtils.hasText(baseUrl)) {
+        ServiceEndpoint endpoint = serviceEndpointRegistry.findEndpoint(serviceId).orElse(null);
+        if (endpoint == null || !StringUtils.hasText(endpoint.baseUrl())) {
             throw new SystemException(
-                    "远程 HTTP 服务未配置 base URL: " + serviceId,
+                    "远程 HTTP 服务未发现 endpoint: " + serviceId,
                     RemoteErrorCode.REMOTE_CALL_PARAM_ERROR
             );
         }
 
-        return joinUrl(baseUrl, path);
+        return joinUrl(endpoint.baseUrl(), path);
     }
 
     private String joinUrl(String baseUrl, String path) {
