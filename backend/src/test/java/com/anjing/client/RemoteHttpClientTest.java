@@ -18,6 +18,7 @@ import org.springframework.web.client.RestClient;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -291,6 +292,76 @@ class RemoteHttpClientTest {
         assertEquals("http://inventory.local", endpoint.baseUrl());
         assertEquals("configuration", endpoint.source());
         assertTrue(registry.findEndpoint("missing-service").isEmpty());
+    }
+
+    @Test
+    void configuredRemoteCallPolicyShouldStayNoopWhenDisabled() {
+        RemoteHttpClientProperties properties = properties();
+        properties.getPolicy().getBlockedServiceIds().add("inventory");
+        ConfiguredRemoteCallPolicy policy = new ConfiguredRemoteCallPolicy(properties);
+
+        assertDoesNotThrow(() -> policy.beforeCall(policyContext("inventory", "infra-dev-scaffolding-test")));
+    }
+
+    @Test
+    void configuredRemoteCallPolicyShouldRejectBlockedService() {
+        RemoteHttpClientProperties properties = properties();
+        properties.getPolicy().setEnabled(true);
+        properties.getPolicy().getBlockedServiceIds().add("inventory");
+        ConfiguredRemoteCallPolicy policy = new ConfiguredRemoteCallPolicy(properties);
+
+        SystemException error = assertThrows(
+                SystemException.class,
+                () -> policy.beforeCall(policyContext("inventory", "infra-dev-scaffolding-test"))
+        );
+
+        assertEquals(RemoteErrorCode.REMOTE_CALL_PERMISSION_DENIED, error.getErrorCode());
+    }
+
+    @Test
+    void configuredRemoteCallPolicyShouldEnforceGlobalCallerAllowList() {
+        RemoteHttpClientProperties properties = properties();
+        properties.getPolicy().setEnabled(true);
+        properties.getPolicy().getAllowedCallerIds().add("gateway-caller");
+        ConfiguredRemoteCallPolicy policy = new ConfiguredRemoteCallPolicy(properties);
+
+        assertDoesNotThrow(() -> policy.beforeCall(policyContext("inventory", "gateway-caller")));
+
+        SystemException error = assertThrows(
+                SystemException.class,
+                () -> policy.beforeCall(policyContext("inventory", "infra-dev-scaffolding-test"))
+        );
+        assertEquals(RemoteErrorCode.REMOTE_CALL_PERMISSION_DENIED, error.getErrorCode());
+    }
+
+    @Test
+    void configuredRemoteCallPolicyShouldEnforceServiceCallerAllowList() {
+        RemoteHttpClientProperties properties = properties();
+        properties.getPolicy().setEnabled(true);
+        properties.getPolicy().getAllowedCallerIdsByService().put(
+                "inventory",
+                java.util.List.of("gateway-caller")
+        );
+        ConfiguredRemoteCallPolicy policy = new ConfiguredRemoteCallPolicy(properties);
+
+        assertDoesNotThrow(() -> policy.beforeCall(policyContext("inventory", "gateway-caller")));
+
+        SystemException error = assertThrows(
+                SystemException.class,
+                () -> policy.beforeCall(policyContext("inventory", "infra-dev-scaffolding-test"))
+        );
+        assertEquals(RemoteErrorCode.REMOTE_CALL_PERMISSION_DENIED, error.getErrorCode());
+    }
+
+    private RemoteCallPolicyContext policyContext(String serviceId, String callerId) {
+        return new RemoteCallPolicyContext(
+                "GET",
+                serviceId,
+                serviceId,
+                "/api/items",
+                "http://inventory.local/api/items",
+                callerId
+        );
     }
 
     private ConfiguredServiceEndpointResolver endpointResolver(RemoteHttpClientProperties properties) {

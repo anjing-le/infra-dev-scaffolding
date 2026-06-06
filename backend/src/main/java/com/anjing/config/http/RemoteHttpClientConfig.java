@@ -1,6 +1,6 @@
 package com.anjing.config.http;
 
-import com.anjing.client.NoopRemoteCallPolicy;
+import com.anjing.client.ConfiguredRemoteCallPolicy;
 import com.anjing.client.NoopRemoteCallObserver;
 import com.anjing.client.DefaultRemoteCallerResolver;
 import com.anjing.client.ConfiguredServiceEndpointRegistry;
@@ -36,8 +36,8 @@ public class RemoteHttpClientConfig {
 
     @Bean
     @ConditionalOnMissingBean(RemoteCallPolicy.class)
-    public RemoteCallPolicy remoteCallPolicy() {
-        return new NoopRemoteCallPolicy();
+    public RemoteCallPolicy remoteCallPolicy(RemoteHttpClientProperties properties) {
+        return new ConfiguredRemoteCallPolicy(properties);
     }
 
     @Bean

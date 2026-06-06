@@ -63,6 +63,7 @@ require_file backend/src/main/java/com/anjing/client/RemoteCallerResolver.java
 require_file backend/src/main/java/com/anjing/client/DefaultRemoteCallerResolver.java
 require_file backend/src/main/java/com/anjing/client/RemoteCallPolicy.java
 require_file backend/src/main/java/com/anjing/client/RemoteCallPolicyContext.java
+require_file backend/src/main/java/com/anjing/client/ConfiguredRemoteCallPolicy.java
 require_file backend/src/main/java/com/anjing/client/NoopRemoteCallPolicy.java
 require_file backend/src/main/java/com/anjing/client/RemoteCallObserver.java
 require_file backend/src/main/java/com/anjing/client/RemoteCallObservation.java

@@ -20,6 +20,7 @@ const files = {
   configuredEndpointResolver: 'backend/src/main/java/com/anjing/client/ConfiguredServiceEndpointResolver.java',
   callPolicy: 'backend/src/main/java/com/anjing/client/RemoteCallPolicy.java',
   callPolicyContext: 'backend/src/main/java/com/anjing/client/RemoteCallPolicyContext.java',
+  configuredCallPolicy: 'backend/src/main/java/com/anjing/client/ConfiguredRemoteCallPolicy.java',
   noopCallPolicy: 'backend/src/main/java/com/anjing/client/NoopRemoteCallPolicy.java',
   callObserver: 'backend/src/main/java/com/anjing/client/RemoteCallObserver.java',
   callObservation: 'backend/src/main/java/com/anjing/client/RemoteCallObservation.java',
@@ -54,6 +55,11 @@ function requireToken(relativeFile, token) {
 
 requireToken(files.properties, 'private Map<String, String> serviceBaseUrls')
 requireToken(files.properties, 'ServiceBoundaryConstants.APPLICATION_ID')
+requireToken(files.properties, 'private Policy policy')
+requireToken(files.properties, 'private boolean enabled')
+requireToken(files.properties, 'private List<String> blockedServiceIds')
+requireToken(files.properties, 'private List<String> allowedCallerIds')
+requireToken(files.properties, 'private Map<String, List<String>> allowedCallerIdsByService')
 requireToken(files.request, 'private String serviceId')
 requireToken(files.request, 'private String path')
 requireToken(files.client, 'getFromService')
@@ -101,6 +107,11 @@ requireToken(files.callPolicy, 'beforeCall(RemoteCallPolicyContext context)')
 requireToken(files.callPolicy, 'afterSuccess(RemoteCallPolicyContext context)')
 requireToken(files.callPolicy, 'afterFailure(RemoteCallPolicyContext context, RuntimeException exception)')
 requireToken(files.callPolicyContext, 'record RemoteCallPolicyContext')
+requireToken(files.configuredCallPolicy, 'implements RemoteCallPolicy')
+requireToken(files.configuredCallPolicy, 'properties.getPolicy()')
+requireToken(files.configuredCallPolicy, 'REMOTE_CALL_PERMISSION_DENIED')
+requireToken(files.configuredCallPolicy, 'getBlockedServiceIds()')
+requireToken(files.configuredCallPolicy, 'getAllowedCallerIdsByService()')
 requireToken(files.noopCallPolicy, 'implements RemoteCallPolicy')
 requireToken(files.callObserver, 'interface RemoteCallObserver')
 requireToken(files.callObserver, 'onComplete(RemoteCallObservation observation)')
@@ -111,7 +122,7 @@ requireToken(files.callObservation, 'long durationMs')
 requireToken(files.callObservation, 'String errorCode')
 requireToken(files.noopCallObserver, 'implements RemoteCallObserver')
 requireToken(files.httpClientConfig, '@ConditionalOnMissingBean(RemoteCallPolicy.class)')
-requireToken(files.httpClientConfig, 'new NoopRemoteCallPolicy()')
+requireToken(files.httpClientConfig, 'new ConfiguredRemoteCallPolicy(properties)')
 requireToken(files.httpClientConfig, '@ConditionalOnMissingBean(RemoteCallObserver.class)')
 requireToken(files.httpClientConfig, 'new NoopRemoteCallObserver()')
 requireToken(files.httpClientConfig, '@ConditionalOnMissingBean(RemoteCallerResolver.class)')
@@ -119,6 +130,9 @@ requireToken(files.httpClientConfig, 'new DefaultRemoteCallerResolver(properties
 requireToken(files.httpClientConfig, '@ConditionalOnMissingBean(ServiceEndpointRegistry.class)')
 requireToken(files.httpClientConfig, 'new ConfiguredServiceEndpointRegistry(properties)')
 requireToken(files.application, 'service-base-urls:')
+requireToken(files.application, 'REMOTE_HTTP_POLICY_ENABLED')
+requireToken(files.application, 'blocked-service-ids:')
+requireToken(files.application, 'allowed-caller-ids:')
 requireToken(files.platform, 'BACKEND_PROPAGATED_HEADER_KEYS')
 requireToken(files.remoteWrapper, 'PlatformContractConstants.BACKEND_PROPAGATED_HEADER_KEYS')
 requireToken(files.remoteWrapper, 'appendContextHeader')
@@ -133,6 +147,10 @@ requireToken(files.test, 'ConfiguredServiceEndpointResolver')
 requireToken(files.test, 'configuredEndpointResolverShouldResolveServiceIdAndPath')
 requireToken(files.test, 'exchangeShouldApplyRemoteCallPolicyBeforeRequest')
 requireToken(files.test, 'REMOTE_CALL_CIRCUIT_BREAKER_OPEN')
+requireToken(files.test, 'configuredRemoteCallPolicyShouldRejectBlockedService')
+requireToken(files.test, 'configuredRemoteCallPolicyShouldEnforceGlobalCallerAllowList')
+requireToken(files.test, 'configuredRemoteCallPolicyShouldEnforceServiceCallerAllowList')
+requireToken(files.test, 'REMOTE_CALL_PERMISSION_DENIED')
 requireToken(files.test, 'RecordingRemoteCallPolicy')
 requireToken(files.test, 'RecordingRemoteCallObserver')
 requireToken(files.test, 'observer.observation.durationMs()')
@@ -147,6 +165,9 @@ requireToken(files.guide, 'new ParameterizedTypeReference<APIResponse<CurrentUse
 requireToken(files.guide, 'service-base-urls:')
 requireToken(files.guide, 'RemoteCallerResolver')
 requireToken(files.guide, 'ServiceEndpointRegistry')
+requireToken(files.guide, 'ConfiguredRemoteCallPolicy')
+requireToken(files.guide, 'REMOTE_HTTP_POLICY_ENABLED')
+requireToken(files.guide, 'allowed-caller-ids-by-service')
 
 let serviceBoundaries
 try {

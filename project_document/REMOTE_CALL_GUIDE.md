@@ -60,6 +60,13 @@ app:
     read-timeout-ms: 5000
     default-retry-count: 0
     default-retry-interval-ms: 1000
+    policy:
+      enabled: ${REMOTE_HTTP_POLICY_ENABLED:false}
+      blocked-service-ids: ${REMOTE_HTTP_POLICY_BLOCKED_SERVICE_IDS:}
+      allowed-caller-ids: ${REMOTE_HTTP_POLICY_ALLOWED_CALLER_IDS:}
+      allowed-caller-ids-by-service:
+        infra-auth:
+          - infra-api-gateway
     service-base-urls:
       infra-dev-scaffolding: http://localhost:18080
       infra-auth: ${INFRA_AUTH_BASE_URL:}
@@ -77,13 +84,19 @@ app:
 
 ## 调用策略扩展点
 
-`RemoteCallPolicy` 是远程调用治理扩展点。母版默认提供 `NoopRemoteCallPolicy`，不会限流或熔断；下游项目可以定义自己的 `RemoteCallPolicy` bean，替换默认实现：
+`RemoteCallPolicy` 是远程调用治理扩展点。母版默认注册 `ConfiguredRemoteCallPolicy`，但 `app.remote-http.policy.enabled=false` 时行为等同 Noop，不会限流或熔断；下游项目可以通过配置先启用轻量治理，也可以定义自己的 `RemoteCallPolicy` bean，替换默认实现：
 
 - `beforeCall(context)`: 调用前检查，可用于熔断、限流、白名单、灰度策略。
 - `afterSuccess(context)`: 传输成功后记录指标。
 - `afterFailure(context, exception)`: 传输失败后记录指标或推进熔断状态。
 
-策略拒绝调用时，建议抛出 `SystemException(RemoteErrorCode.REMOTE_CALL_CIRCUIT_BREAKER_OPEN)` 或下游项目自己的治理错误码。`RemoteCallPolicyContext` 只包含 method、targetService、serviceId、path、脱敏 URL 和 callerId，不包含请求体或请求头。
+配置型策略支持：
+
+- `blocked-service-ids`: 调用前阻断指定 serviceId / targetService。
+- `allowed-caller-ids`: 全局调用方白名单，空值表示不限制。
+- `allowed-caller-ids-by-service`: 服务级调用方白名单，适合先表达“只有网关能调 auth”这类边界。
+
+配置型策略拒绝调用时抛出 `SystemException(RemoteErrorCode.REMOTE_CALL_PERMISSION_DENIED)`。自定义熔断器或限流器拒绝调用时，可以抛出 `SystemException(RemoteErrorCode.REMOTE_CALL_CIRCUIT_BREAKER_OPEN)` 或下游项目自己的治理错误码。`RemoteCallPolicyContext` 只包含 method、targetService、serviceId、path、脱敏 URL 和 callerId，不包含请求体或请求头。
 
 ## 调用审计扩展点
 

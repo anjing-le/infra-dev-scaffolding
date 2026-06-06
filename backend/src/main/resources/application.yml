@@ -205,6 +205,11 @@ app:
     read-timeout-ms: ${REMOTE_HTTP_READ_TIMEOUT_MS:5000}
     default-retry-count: ${REMOTE_HTTP_DEFAULT_RETRY_COUNT:0}
     default-retry-interval-ms: ${REMOTE_HTTP_DEFAULT_RETRY_INTERVAL_MS:1000}
+    policy:
+      enabled: ${REMOTE_HTTP_POLICY_ENABLED:false}
+      blocked-service-ids: ${REMOTE_HTTP_POLICY_BLOCKED_SERVICE_IDS:}
+      allowed-caller-ids: ${REMOTE_HTTP_POLICY_ALLOWED_CALLER_IDS:}
+      allowed-caller-ids-by-service: {}
     service-base-urls:
       infra-dev-scaffolding: ${APP_SELF_BASE_URL:http://localhost:18080}
       infra-auth: ${INFRA_AUTH_BASE_URL:}
