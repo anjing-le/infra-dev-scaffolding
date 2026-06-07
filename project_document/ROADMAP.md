@@ -46,6 +46,7 @@
 - 前端环境变量模板、后端 `.env.example`、数据库名、端口说明一致。
 - 示例代码和模板代码边界清楚，示例可以删除或替换。
 - 项目级约束文档清楚记录母版长期边界，并有脚本守护核心规则。
+- 新增模块、UI 设计、演示证据和 GitHub CI 都有清晰入口，并由脚本守护。
 
 ### S2: AI 协作资产收口
 
@@ -125,14 +126,14 @@
 - `RemoteHttpClient` 已支持通过 `serviceId + path` 调用内部服务，服务地址由 `ServiceEndpointResolver` 解析，endpoint 来源由 `ServiceEndpointRegistry` 查询，默认配置型 registry 读取 `app.remote-http.service-base-urls`；调用方身份由 `RemoteCallerResolver` 解析，默认实现支持请求级覆盖、配置默认值和应用 id 回退；并通过 `RemoteCallPolicy` 提供熔断、限流和治理策略挂点，通过 `RemoteCallObserver` 提供调用审计、指标和 tracing 挂点，通过 `ParameterizedTypeReference<T>` 保留嵌套泛型响应；`RemoteCallWrapper` 已按 `backendPropagatedHeaders` 透传服务间上下文，`scripts/check-remote-http-contract.js` 已纳入守卫。
 - `project_document/SHARED_KERNEL_GUIDE.md` 已定义共享内核边界。
 - `scripts/check-shared-kernel.js` 已守护可抽取契约/工具类不能依赖 Spring Web、Servlet、JPA 或运行时层。
-- `project_document/PROJECT_CONSTRAINTS.md`、`scripts/check-backend-controller-contracts.js` 和 `scripts/check-frontend-openapi-boundaries.js` 已把防破窗约束沉淀为文档和可执行门禁。
+- `project_document/PROJECT_CONSTRAINTS.md`、`project_document/NEW_MODULE_GUIDE.md`、`project_document/UI_DESIGN_GUIDE.md`、`project_document/DEMO_EVIDENCE.md`、`project_document/ci/quality-gate.yml`、`scripts/check-backend-controller-contracts.js`、`scripts/check-scaffold-governance.js` 和 `scripts/check-frontend-openapi-boundaries.js` 已把防破窗约束沉淀为文档、CI 模板和可执行门禁。
 
 ## 当前优先级
 
 当前阶段状态见 `project_document/STATUS.md`。
 
 1. 保持 S0 / S1 / S2 的验证链路稳定：自检、复制烟测、前端构建、后端打包。
-2. 推进 S4 契约与全球化基线：统一 URL、请求上下文、时间策略和 AI 生成约束。
+2. 推进 S4 契约与全球化基线：统一 URL、请求上下文、时间策略、OpenAPI 类型生成和 AI 生成约束。
 3. 用下游 Infra 项目验证 S5 / S6 的分布式、治理和服务边界设计。
 4. 将复用过程中发现的共性类型、路由、环境变量和 Prompt 契约问题回流到底座。
 

@@ -79,6 +79,7 @@ require_file project_document/SHARED_KERNEL_GUIDE.md
 require_file scripts/check-api-constants.js
 require_file scripts/check-api-path-parity.js
 require_file scripts/check-backend-controller-contracts.js
+require_file scripts/check-scaffold-governance.js
 require_file scripts/check-frontend-api-boundaries.js
 require_file scripts/check-frontend-openapi-boundaries.js
 require_file scripts/check-frontend-context-contract.js
@@ -222,6 +223,7 @@ require_absent '\b(Instant|LocalDateTime|OffsetDateTime|ZonedDateTime)\.now\(' \
 node scripts/check-api-constants.js
 node scripts/check-api-path-parity.js
 node scripts/check-backend-controller-contracts.js
+node scripts/check-scaffold-governance.js
 node scripts/check-frontend-api-boundaries.js
 node scripts/check-frontend-openapi-boundaries.js
 node scripts/check-frontend-context-contract.js

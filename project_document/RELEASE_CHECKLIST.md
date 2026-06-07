@@ -15,6 +15,7 @@
 ```bash
 ./scripts/check-template.sh
 ./scripts/check-contracts.sh
+node scripts/check-scaffold-governance.js
 ./scripts/smoke-copy.sh
 ./scripts/probe-backend-dev.sh
 ```
@@ -36,6 +37,7 @@ mvn -q -DskipTests package
 ## 前端检查
 
 - 登录页能正常打开。
+- 登录页符合 `project_document/UI_DESIGN_GUIDE.md` 的轻玻璃、虚线和少文字基线。
 - “游客访问”能进入 `/dashboard/console`。
 - 游客菜单只展示允许游客访问的页面。
 - 主题切换、语言切换、响应式布局不出现明显破版。
@@ -55,6 +57,7 @@ mvn -q -DskipTests package
 - README 的技术栈、端口、启动命令和验证命令准确。
 - `project_document/ROADMAP.md` 的阶段状态和当前优先级没有过期。
 - `project_document/STATUS.md` 的验证证据与最近一次命令结果一致。
+- `project_document/NEW_MODULE_GUIDE.md`、`project_document/UI_DESIGN_GUIDE.md` 和 `project_document/DEMO_EVIDENCE.md` 没有过期。
 - `project_document/TEMPLATE_BOUNDARIES.md` 中的保留/删除边界与当前目录一致。
 - `project_document/AI_ASSETS.md` 中的 Rules / Prompts 数量与 `.cursor` 目录一致。
 - `docs/teaching/03-demo-steps.md` 的演示步骤与当前 UI 一致。
@@ -70,3 +73,4 @@ mvn -q -DskipTests package
 - 没有本地日志、上传文件、构建产物进入提交。
 - 没有依赖个人机器路径的说明或配置。
 - README 能让第一次打开项目的人理解它为什么存在。
+- 按 `project_document/DEMO_EVIDENCE.md` 保留必要截图、后端 probe 和质量门禁记录。

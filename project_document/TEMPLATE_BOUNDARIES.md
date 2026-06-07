@@ -20,6 +20,8 @@
 - `.cursor/rules/` 和 `.cursor/prompts/`：AI 协作规范和代码生成入口。
 - `contracts/service-boundaries.json`：服务/模块边界、API 归属和未来拆分计划。
 - `project_document/`：规划、边界、复制、发布检查文档。
+- `project_document/PROJECT_CONSTRAINTS.md`、`NEW_MODULE_GUIDE.md`、`UI_DESIGN_GUIDE.md`、`DEMO_EVIDENCE.md`：长期约束、新模块、UI 和演示证据入口。
+- `project_document/ci/quality-gate.yml`：GitHub 上复用本地 `./scripts/quality-gate.sh` 的自动门禁模板。
 
 ## 示例能力
 

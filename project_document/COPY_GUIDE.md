@@ -33,6 +33,10 @@ cd my-new-project
 
 - `README.md`：替换项目名、定位、端口和快速开始说明。
 - `project_document/ROADMAP.md`：替换路线图和非目标。
+- `project_document/PROJECT_CONSTRAINTS.md`：保留母版约束，按新项目裁剪非目标。
+- `project_document/NEW_MODULE_GUIDE.md`：作为新业务模块的默认生成和验收入口。
+- `project_document/UI_DESIGN_GUIDE.md`：按新项目品牌微调，但保留极简、虚线和可读玻璃基线。
+- `project_document/DEMO_EVIDENCE.md`：记录复制后的本地截图、后端 probe 和质量门禁证据。
 - `docs/teaching/`：按新项目保留或删除教学资料。
 
 ## 3. 调整示例与菜单
@@ -68,6 +72,7 @@ mvn spring-boot:run
 
 ```bash
 ./scripts/check-template.sh
+node scripts/check-scaffold-governance.js
 ```
 
 这条命令会检查前端包名、后端 `artifactId`、`spring.application.name` 是否一致，并确认保留下来的示例代码带有边界标记。

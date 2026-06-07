@@ -19,11 +19,19 @@ Anjing 开源项目的全栈工程母版。
 - 可教学：支撑脚手架课程、项目演示和后续 Agent 项目讲解。
 - 可被 AI 协作：让 Cursor Rules / Prompts 成为生成标准代码的入口。
 
+## 工程约束入口
+
+- [project_document/PROJECT_CONSTRAINTS.md](./project_document/PROJECT_CONSTRAINTS.md)：母版长期边界和防破窗底线。
+- [project_document/NEW_MODULE_GUIDE.md](./project_document/NEW_MODULE_GUIDE.md)：新增模块时的前后端最小交付清单。
+- [project_document/UI_DESIGN_GUIDE.md](./project_document/UI_DESIGN_GUIDE.md)：极简、虚线、轻玻璃 UI 基线。
+- [project_document/DEMO_EVIDENCE.md](./project_document/DEMO_EVIDENCE.md)：发布、录制和复制前的演示证据清单。
+
 ## 核心能力
 
 - 登录 / 工作台 / 系统管理
 - 主题切换、国际化、路由守卫、权限控制
 - 游客模式，无后端可体验完整 UI
+- [GitHub Actions 模板](./project_document/ci/quality-gate.yml) 复用 `./scripts/quality-gate.sh`
 - 前端 11 条 Cursor Rules、后端 4 条 Cursor Rules
 - 前端 4 个 Prompts、后端 2 个 Prompts
 
@@ -79,6 +87,10 @@ node scripts/check-api-constants.js
 
 ```bash
 node scripts/check-api-path-parity.js
+```
+
+```bash
+node scripts/check-scaffold-governance.js
 ```
 
 ```bash
@@ -155,6 +167,11 @@ mvn -q -DskipTests package
 
 - [项目路线图](./project_document/ROADMAP.md)
 - [架构演进蓝图](./project_document/ARCHITECTURE_EVOLUTION.md)
+- [项目长期约束](./project_document/PROJECT_CONSTRAINTS.md)
+- [新增模块指南](./project_document/NEW_MODULE_GUIDE.md)
+- [UI 设计指南](./project_document/UI_DESIGN_GUIDE.md)
+- [演示证据指南](./project_document/DEMO_EVIDENCE.md)
+- [GitHub Actions 质量门禁模板](./project_document/ci/quality-gate.yml)
 - [API 契约指南](./project_document/API_CONTRACT_GUIDE.md)
 - [API 路径指南](./project_document/API_PATH_GUIDE.md)
 - [平台契约 Manifest 指南](./project_document/PLATFORM_CONTRACT_GUIDE.md)

@@ -6,6 +6,10 @@
 
 - [ROADMAP.md](./ROADMAP.md)：项目定位、阶段规划、边界和成功标准。
 - [PROJECT_CONSTRAINTS.md](./PROJECT_CONSTRAINTS.md)：项目长期约束、防破窗规则和脚本门禁清单。
+- [NEW_MODULE_GUIDE.md](./NEW_MODULE_GUIDE.md)：新增业务模块时的前后端契约、交付顺序和 AI Prompt 约束。
+- [UI_DESIGN_GUIDE.md](./UI_DESIGN_GUIDE.md)：极简、虚线、轻玻璃 UI 基线和防破窗规则。
+- [DEMO_EVIDENCE.md](./DEMO_EVIDENCE.md)：发布、录制和复制前应保留的演示证据。
+- [ci/quality-gate.yml](./ci/quality-gate.yml)：GitHub Actions 质量门禁模板，启用时复制到 `.github/workflows/quality-gate.yml`。
 - [../contracts/platform-contract.json](../contracts/platform-contract.json)：机器可读平台契约 manifest。
 - [STATUS.md](./STATUS.md)：当前阶段状态、验证证据和下一步复用方向。
 - [RELEASE_CHECKLIST.md](./RELEASE_CHECKLIST.md)：每轮发布/录制/复制前的检查清单。

@@ -65,7 +65,6 @@ export const ApiPaths = {
 export const ApiLegacyPaths = {
   auth: {
     verify: '/api/auth/verify',
-    currentUser: '/api/auth/current-user',
     verify2FA: '/auth/login/verify-2fa',
     sendOtp: '/auth/otp/send',
     binding: '/auth/binding',

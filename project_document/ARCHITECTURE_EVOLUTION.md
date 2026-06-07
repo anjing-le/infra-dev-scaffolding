@@ -30,6 +30,7 @@
 - 前端已有 `utils/http`、`api/`、`types/`、`locales/`、`config/`、`utils/constants/links`、路由核心和权限守卫。
 - 文档中已有 Roadmap、Status、Template Boundaries、Copy Guide、Release Checklist。
 - `project_document/PROJECT_CONSTRAINTS.md` 已记录项目级防破窗约束，作为每轮迭代前的母版底线。
+- `project_document/NEW_MODULE_GUIDE.md`、`project_document/UI_DESIGN_GUIDE.md` 和 `project_document/DEMO_EVIDENCE.md` 已把新增模块、极简玻璃 UI 和演示证据纳入母版入口。
 
 主要缺口：
 
@@ -39,6 +40,7 @@
 - OpenAPI 运行接口契约已开始落地，`/v3/api-docs` 由 `springdoc-openapi-starter-webmvc-api` 暴露，dev/test 默认开启、prod 默认关闭；`scripts/generate-openapi-frontend-types.js` 已把运行 schema、operation 和 path/query 参数类型生成到 `frontend/src/contracts/openapi/schemas.ts` 与 `frontend/src/contracts/openapi/operations.ts`，`frontend/src/api/openapiClient.ts` 已提供按 `operationId` 调用的 typed helper，`project_document/OPENAPI_CONTRACT_GUIDE.md`、`scripts/check-openapi-contract.js` 和 `scripts/check-openapi-runtime-contract.js` 已守护前端类型生成和调用入口。
 - 前端 OpenAPI 生成物导入边界已由 `scripts/check-frontend-openapi-boundaries.js` 守护，页面和组件不能直接依赖生成目录。
 - `scripts/quality-gate.sh` 已把契约脚本、复制烟测、关键后端单测、后端打包、前端构建和 dev runtime probe 串成可接入 CI 的母版质量门禁。
+- `project_document/ci/quality-gate.yml` 已提供 GitHub Actions 模板，用于在启用后于 push 和 PR 上执行同一套 `./scripts/quality-gate.sh`，避免本地门禁和 GitHub 状态分叉。
 - 平台级契约已沉淀为 `contracts/platform-contract.json`，覆盖 API 前缀、响应 envelope、分页字段、请求头、前端/后端透传头、时间策略、语言策略、错误码分段和可重试范围；后端生成 `PlatformContractConstants.java`，前端生成 `frontend/src/contracts/platform-contract.ts`，供路径、请求头、响应解析、时间工具、语言上下文和远程重试判断复用，并由 `scripts/generate-platform-contract-backend.js --check`、`scripts/generate-platform-contract-frontend.js --check`、`scripts/check-platform-contract.js` 校验生成产物、前后端与文档一致性。
 - 时间策略已开始转向 UTC 默认和客户端时区展示；后端 `TimeZoneUtils` 已把 `X-Time-Zone` 归一化到合法 zone id 或 platform contract 默认 UTC，前端展示时间、导出文件名时间戳、错误时间戳和日期 key 已收口到 `frontend/src/utils/time`，展示语言和请求语言已收口到 `frontend/src/utils/locale`，并由 `scripts/check-frontend-time-contract.js` 阻止新的散落格式化。
 - 请求上下文已开始具备 `requestId`、会话级 `traceId`、语言和时区透传，并已接入日志格式、Controller 访问日志字段、异步线程池传播、远程调用请求头生成、前端 `HttpError` 链路上下文和统一 HTTP client adapter；前端可透传头和后端服务间可透传头已由 platform contract 分开声明，语言上下文已通过前端 `utils/locale` 与后端 `LocaleUtils` 归一化到 platform contract 支持列表，时区上下文已通过 `TimeZoneUtils` 归一化到默认 UTC 或合法 zone id。前端上下文头已由 `scripts/check-frontend-context-contract.js` 守护，后端入站上下文和访问日志已由 `scripts/check-backend-context-contract.js` 守护，异步上下文传播已由 `scripts/check-async-context-contract.js` 守护，后续需要继续接入权限上下文和真实 RPC client adapter。
@@ -126,6 +128,7 @@
 - `application-dev.yml`、`application-test.yml`、`application-prod.yml` 已提供环境矩阵，dev/test 使用 H2 轻启动，生产 MySQL 和外部能力由环境变量显式开启。
 - `project_document/LOCAL_STARTUP_GUIDE.md` 已记录无 MySQL/Redis 的后端本地启动验证方式和当前证据。
 - `scripts/check-contracts.sh` 已把路径、服务边界、响应、分页、上下文、远程调用和时间工具约束变成可执行守护检查。
+- `scripts/check-scaffold-governance.js` 已把 CI、根入口文档、新模块指南、UI 设计基线、演示证据、全局玻璃 token、登录页玻璃/虚线入口和前端 legacy API 使用边界纳入自动校验。
 - `scripts/check-api-constants.js` 已把 `ApiConstants` 内部 API 前缀约束纳入自动校验，避免共享路径常量重新散落 `"/api/..."` 字面量。
 - `scripts/check-api-path-parity.js` 已改为读取 `contracts/service-boundaries.json`，把 manifest 声明的后端 `ApiConstants` 与前端 `ApiPaths` 运行路径一致性纳入自动校验。
 - `scripts/check-frontend-api-boundaries.js` 已把前端运行路径和旧模板兼容路径分开校验，避免历史 mock/system API 混入服务边界运行面。

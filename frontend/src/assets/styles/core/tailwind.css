@@ -221,6 +221,28 @@
     @apply border-r border-dashed border-[var(--default-border-dashed)];
   }
 
+  .line-dashed {
+    border-color: var(--default-border-dashed);
+    border-style: dashed;
+  }
+
+  .glass-panel {
+    background: var(--default-glass-surface);
+    border: 1px dashed var(--default-glass-border);
+    box-shadow:
+      var(--default-glass-shadow),
+      var(--default-glass-edge-shadow);
+    backdrop-filter: var(--default-glass-filter);
+    -webkit-backdrop-filter: var(--default-glass-filter);
+  }
+
+  .glass-control {
+    background: var(--default-glass-control-bg);
+    border: 1px dashed var(--default-glass-border);
+    backdrop-filter: blur(calc(var(--default-glass-blur) / 2)) saturate(175%);
+    -webkit-backdrop-filter: blur(calc(var(--default-glass-blur) / 2)) saturate(175%);
+  }
+
   /* Cursor Utilities */
   .c-p {
     @apply cursor-pointer;

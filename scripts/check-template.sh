@@ -20,6 +20,10 @@ require_file CONTRIBUTING.md
 require_file project_document/ROADMAP.md
 require_file project_document/STATUS.md
 require_file project_document/PROJECT_CONSTRAINTS.md
+require_file project_document/NEW_MODULE_GUIDE.md
+require_file project_document/UI_DESIGN_GUIDE.md
+require_file project_document/DEMO_EVIDENCE.md
+require_file project_document/ci/quality-gate.yml
 require_file project_document/RELEASE_CHECKLIST.md
 require_file project_document/COPY_GUIDE.md
 require_file project_document/TEMPLATE_BOUNDARIES.md
@@ -36,6 +40,7 @@ require_file docs/teaching/04-notice-module-demo.md
 require_file scripts/check-api-constants.js
 require_file scripts/check-api-path-parity.js
 require_file scripts/check-backend-controller-contracts.js
+require_file scripts/check-scaffold-governance.js
 require_file scripts/check-frontend-api-boundaries.js
 require_file scripts/check-frontend-openapi-boundaries.js
 require_file scripts/check-frontend-context-contract.js
@@ -114,6 +119,7 @@ for token in \
   '非示例 Controller 返回值必须使用 `APIResponse<T>`' \
   '页面和组件不要直接依赖 `@/contracts/openapi/**`' \
   'node scripts/check-backend-controller-contracts.js' \
+  'node scripts/check-scaffold-governance.js' \
   'node scripts/check-frontend-openapi-boundaries.js' \
   './scripts/quality-gate.sh'
 do
@@ -130,6 +136,10 @@ do
 done
 
 for token in \
+  'project_document/PROJECT_CONSTRAINTS.md' \
+  'project_document/NEW_MODULE_GUIDE.md' \
+  'project_document/UI_DESIGN_GUIDE.md' \
+  'project_document/DEMO_EVIDENCE.md' \
   './scripts/check-template.sh' \
   './scripts/smoke-copy.sh' \
   'project_document/STATUS.md' \
@@ -139,6 +149,8 @@ do
   rg -q --fixed-strings "$token" CONTRIBUTING.md \
     || fail "CONTRIBUTING.md is missing required token: $token"
 done
+
+node scripts/check-scaffold-governance.js
 
 project_info="$(
   node -e '
