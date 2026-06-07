@@ -1,6 +1,6 @@
 # Status
 
-更新时间：2026-06-06
+更新时间：2026-06-07
 
 本文记录 `infra-dev-scaffolding` 当前作为 Anjing 开源工程母版的阶段状态和可验证证据。
 
@@ -9,7 +9,7 @@
 | 阶段 | 状态 | 证据 |
 |------|------|------|
 | S0 构建与入口收口 | Ready | 前端 `pnpm build`、后端 `mvn -q -DskipTests package` 已通过，`./scripts/quality-gate.sh` 已纳入仓库 |
-| S1 工程母版收口 | Ready | `./scripts/check-template.sh`、`./scripts/smoke-copy.sh` 和 `./scripts/quality-gate.sh` 已纳入门禁 |
+| S1 工程母版收口 | Ready | `project_document/PROJECT_CONSTRAINTS.md`、`./scripts/check-template.sh`、`./scripts/smoke-copy.sh` 和 `./scripts/quality-gate.sh` 已纳入门禁 |
 | S2 AI 协作资产收口 | Ready | Notice prompt smoke 已在临时复制项目验证，母版只保留演示文档和 Prompt 契约 |
 | S3 后续项目复用验证 | In progress | `infra-skill-hub` 已从本母版接入骨架，完成 H0 / H1 / H2 验证，并推进 H3 HTTP/MCP/INTERNAL 调度层、全局与注册级协议配置、凭据托管与选择体验、权限身份头联动、策略批量管理、默认策略模板、调用治理、审计查询、治理指标与前端治理面 |
 | S4 契约与全球化基线 | In progress | 已落地前端 `ApiPaths`、请求上下文头、统一时间工具、`utils/locale`、响应解析 helper、platform locale contract；后端已落地 `ApiConstants` 运行路径引用、`RequestContextFilter`、`LocaleUtils` 语言归一化、`TimeZoneUtils` 时区归一化、UTC 默认时间策略、响应 `requestId`、`PageResult`、API 契约指南、`contracts/service-boundaries.json` 和 `/v3/api-docs` OpenAPI JSON |
@@ -26,7 +26,9 @@
 ./scripts/check-contracts.sh
 node scripts/check-api-constants.js
 node scripts/check-api-path-parity.js
+node scripts/check-backend-controller-contracts.js
 node scripts/check-frontend-api-boundaries.js
+node scripts/check-frontend-openapi-boundaries.js
 node scripts/check-frontend-context-contract.js
 node scripts/check-backend-context-contract.js
 node scripts/check-async-context-contract.js
@@ -60,6 +62,9 @@ AI 协作验证：
 - `docs/teaching/04-notice-module-demo.md` 给出公告管理模块的完整 Prompt 演示流程。
 - Notice prompt smoke 已验证后端 CRUD、前端 API、列表页、搜索组件、弹窗和路由能在复制项目中通过构建。
 - 验证后回补的关键契约：
+  - `project_document/PROJECT_CONSTRAINTS.md` 已记录母版长期约束、防破窗规则和脚本门禁清单；`scripts/check-template.sh` 已要求该文档存在并包含核心约束。
+  - `node scripts/check-backend-controller-contracts.js` 已校验非示例 Controller 必须返回 `APIResponse<T>`，且不能用 `Map` 承载真实请求或响应。
+  - `node scripts/check-frontend-openapi-boundaries.js` 已校验页面和组件不能直接依赖 `@/contracts/openapi/**`，生成物只允许 API model 和 API runtime helper 消费。
   - 后端列表响应字段为 `records`、`current`、`size`、`total`。
   - 后端运行 Controller 路径引用 `ApiConstants`，前端路径收口到 `ApiPaths`，路径契约记录在 `project_document/API_PATH_GUIDE.md`。
   - `node scripts/check-api-constants.js` 已校验 `ApiConstants` 内部只保留 `API_PREFIX = "/api"` 一个 API 前缀字面量，模块路径使用 `BASE + 相对路径 + *_FULL`。
@@ -88,7 +93,7 @@ AI 协作验证：
   - 错误码按 `project_document/ERROR_CODE_GUIDE.md` 分段，`node scripts/check-error-codes.js` 已校验 Java 错误码枚举必须实现 `ErrorCode`、4 位数字、全局唯一并落在 `contracts/platform-contract.json` 分段内。
   - 远程调用默认只重试 `1800-1899`，`RemoteCallWrapper` 已读取 `PlatformContractConstants.ErrorCodes.RETRYABLE_RANGES`，避免在业务代码里硬编码重试范围。
   - `node scripts/check-openapi-contract.js` 已校验 springdoc 依赖、OpenAPI 配置、平台请求头、Auth 明确 DTO/VO、前端生成 schema / operation 类型、typed OpenAPI 调用入口和前端 auth 类型派生关系。
-  - `./scripts/check-contracts.sh` 已将 API 路径、服务边界、响应 envelope、分页字段、请求上下文、远程调用、时间工具、错误码和 OpenAPI 的关键约束纳入可执行检查。
+  - `./scripts/check-contracts.sh` 已将 API 路径、服务边界、响应 envelope、分页字段、请求上下文、远程调用、时间工具、错误码、OpenAPI 和前后端防破窗边界的关键约束纳入可执行检查。
   - 可选中间件状态按 `project_document/FEATURE_STATUS_GUIDE.md` 使用 `disabled/configured/ready/degraded`，并通过 `/api/test/features` 输出。
   - 后端 profile 矩阵按 `project_document/ENVIRONMENT_PROFILE_GUIDE.md` 管理，`dev/test` 使用 H2 轻启动，`prod` 通过环境变量显式开启 MySQL 和外部中间件。
   - 本地轻启动验证记录在 `project_document/LOCAL_STARTUP_GUIDE.md`，已验证 `dev` profile 下 `/api/test/health`、`/api/test/features` 和 `/v3/api-docs` 可返回。

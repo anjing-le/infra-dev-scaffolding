@@ -29,12 +29,15 @@
 - 后端已有 `ApiConstants`、`GlobalRequestContext`、`DateUtils`、`RemoteCallWrapper`、统一响应、异常、分布式锁、Redis/中间件开关。
 - 前端已有 `utils/http`、`api/`、`types/`、`locales/`、`config/`、`utils/constants/links`、路由核心和权限守卫。
 - 文档中已有 Roadmap、Status、Template Boundaries、Copy Guide、Release Checklist。
+- `project_document/PROJECT_CONSTRAINTS.md` 已记录项目级防破窗约束，作为每轮迭代前的母版底线。
 
 主要缺口：
 
 - 前端 API URL 已开始收口到 `ApiPaths`，后端运行 Controller 已开始引用 `ApiConstants`；`ApiConstants` 内部也已收口为 `API_PREFIX`、模块 `BASE`、相对子路径和 `*_FULL`，并由 `scripts/check-api-constants.js` 守护。路径规则已记录到 `project_document/API_PATH_GUIDE.md`；`contracts/service-boundaries.json` 已进一步记录 auth、test、common 当前边界和 user、admin、integration 未来服务边界，生成后端 `ServiceBoundaryConstants.java` 与前端 `service-boundaries.ts`，并由 `scripts/check-service-boundaries.js` 校验。旧模板 auth/system 路径已从 `ApiPaths` 拆到 `ApiLegacyPaths`，由 `scripts/check-frontend-api-boundaries.js` 防止回流。
 - 响应契约已开始收敛到 `APIResponse` + `message` + `PageResult(records/current/size/total)`，并已记录到 `project_document/API_CONTRACT_GUIDE.md`；`msg`、`BaseResponse`、`PageResponse` 仅作为旧接口或远程响应兼容入口。
+- 后端非示例 Controller 的响应和 DTO/VO 边界已由 `scripts/check-backend-controller-contracts.js` 守护，避免真实接口退回裸 `Map` 或绕过 `APIResponse<T>`。
 - OpenAPI 运行接口契约已开始落地，`/v3/api-docs` 由 `springdoc-openapi-starter-webmvc-api` 暴露，dev/test 默认开启、prod 默认关闭；`scripts/generate-openapi-frontend-types.js` 已把运行 schema、operation 和 path/query 参数类型生成到 `frontend/src/contracts/openapi/schemas.ts` 与 `frontend/src/contracts/openapi/operations.ts`，`frontend/src/api/openapiClient.ts` 已提供按 `operationId` 调用的 typed helper，`project_document/OPENAPI_CONTRACT_GUIDE.md`、`scripts/check-openapi-contract.js` 和 `scripts/check-openapi-runtime-contract.js` 已守护前端类型生成和调用入口。
+- 前端 OpenAPI 生成物导入边界已由 `scripts/check-frontend-openapi-boundaries.js` 守护，页面和组件不能直接依赖生成目录。
 - `scripts/quality-gate.sh` 已把契约脚本、复制烟测、关键后端单测、后端打包、前端构建和 dev runtime probe 串成可接入 CI 的母版质量门禁。
 - 平台级契约已沉淀为 `contracts/platform-contract.json`，覆盖 API 前缀、响应 envelope、分页字段、请求头、前端/后端透传头、时间策略、语言策略、错误码分段和可重试范围；后端生成 `PlatformContractConstants.java`，前端生成 `frontend/src/contracts/platform-contract.ts`，供路径、请求头、响应解析、时间工具、语言上下文和远程重试判断复用，并由 `scripts/generate-platform-contract-backend.js --check`、`scripts/generate-platform-contract-frontend.js --check`、`scripts/check-platform-contract.js` 校验生成产物、前后端与文档一致性。
 - 时间策略已开始转向 UTC 默认和客户端时区展示；后端 `TimeZoneUtils` 已把 `X-Time-Zone` 归一化到合法 zone id 或 platform contract 默认 UTC，前端展示时间、导出文件名时间戳、错误时间戳和日期 key 已收口到 `frontend/src/utils/time`，展示语言和请求语言已收口到 `frontend/src/utils/locale`，并由 `scripts/check-frontend-time-contract.js` 阻止新的散落格式化。

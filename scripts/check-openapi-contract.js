@@ -26,6 +26,7 @@ const files = {
   frontendOpenApiClient: 'frontend/src/api/openapiClient.ts',
   frontendAuthModel: 'frontend/src/api/model/authModel.ts',
   frontendAuthApi: 'frontend/src/api/auth.ts',
+  frontendUserApi: 'frontend/src/api/user.ts',
   guide: 'project_document/OPENAPI_CONTRACT_GUIDE.md',
   status: 'project_document/STATUS.md'
 }
@@ -207,6 +208,16 @@ for (const token of [
 ]) {
   requireToken(files.frontendAuthApi, token)
 }
+
+for (const token of [
+  "import { openApiRequest } from './openapiClient'",
+  "openApiRequest('login'",
+  "openApiRequest('logout'",
+  "openApiRequest('getCurrentUser'"
+]) {
+  requireToken(files.frontendUserApi, token)
+}
+requireAbsent(files.frontendUserApi, /ApiPaths\.auth\.(login|logout|me)/, 'runtime auth path bypassing openApiRequest')
 
 for (const token of [
   '/v3/api-docs',

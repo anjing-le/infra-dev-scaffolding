@@ -5,9 +5,10 @@
  */
 
 import request from '@/utils/http'
-import { ApiLegacyPaths, ApiPaths } from './paths'
+import { openApiRequest } from './openapiClient'
+import { ApiLegacyPaths } from './paths'
 import type { BaseResult } from '@/types/common/response'
-import type { UserInfo } from './model/authModel'
+import type { LoginResponse as AuthLoginResponse, UserInfo } from './model/authModel'
 import type {
   LoginParams,
   LoginResponse,
@@ -30,23 +31,20 @@ export class UserService {
   /**
    * 用户名密码登录
    * @param {LoginParams} data - 登录请求参数
-   * @returns {Promise<BaseResult<LoginResponse>>} 登录结果
+   * @returns 登录结果
    */
-  static login(data: LoginParams): Promise<BaseResult<LoginResponse>> {
-    return request.post<BaseResult<LoginResponse>>({
-      url: ApiPaths.auth.login,
-      data
+  static login(data: LoginParams): Promise<AuthLoginResponse> {
+    return openApiRequest('login', {
+      body: data
     })
   }
 
   /**
    * 退出登录
-   * @returns {Promise<BaseResult<null>>} 退出结果
+   * @returns 退出结果
    */
-  static logout(): Promise<BaseResult<null>> {
-    return request.post<BaseResult<null>>({
-      url: ApiPaths.auth.logout
-    })
+  static logout(): Promise<unknown> {
+    return openApiRequest('logout')
   }
 
   /**
@@ -140,12 +138,10 @@ export class UserService {
 
   /**
    * 获取当前登录用户信息
-   * @returns {Promise<BaseResult<UserInfo>>} 当前用户信息
+   * @returns 当前用户信息
    */
-  static getCurrentUser(): Promise<BaseResult<UserInfo>> {
-    return request.get<BaseResult<UserInfo>>({
-      url: ApiPaths.auth.me
-    })
+  static getCurrentUser(): Promise<UserInfo> {
+    return openApiRequest('getCurrentUser')
   }
   /**
    * 用户注册

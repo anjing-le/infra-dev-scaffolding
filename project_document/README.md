@@ -5,6 +5,7 @@
 ## 文档
 
 - [ROADMAP.md](./ROADMAP.md)：项目定位、阶段规划、边界和成功标准。
+- [PROJECT_CONSTRAINTS.md](./PROJECT_CONSTRAINTS.md)：项目长期约束、防破窗规则和脚本门禁清单。
 - [../contracts/platform-contract.json](../contracts/platform-contract.json)：机器可读平台契约 manifest。
 - [STATUS.md](./STATUS.md)：当前阶段状态、验证证据和下一步复用方向。
 - [RELEASE_CHECKLIST.md](./RELEASE_CHECKLIST.md)：每轮发布/录制/复制前的检查清单。
@@ -20,5 +21,6 @@
 ## 维护原则
 
 - 所有规划要服务于“开源工程母版”这个目标。
+- 新增能力必须先对齐 [PROJECT_CONSTRAINTS.md](./PROJECT_CONSTRAINTS.md)。
 - 文档里的启动命令、端口、验证命令必须和当前代码一致。
 - 新增功能如果不能被后续 Agent / Infra 项目复用，应放到示例或教学资料中，而不是污染底座。

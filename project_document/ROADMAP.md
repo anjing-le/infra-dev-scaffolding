@@ -45,6 +45,7 @@
 - 提供复制改名 smoke 验证，证明自检脚本适配新项目名。
 - 前端环境变量模板、后端 `.env.example`、数据库名、端口说明一致。
 - 示例代码和模板代码边界清楚，示例可以删除或替换。
+- 项目级约束文档清楚记录母版长期边界，并有脚本守护核心规则。
 
 ### S2: AI 协作资产收口
 
@@ -124,6 +125,7 @@
 - `RemoteHttpClient` 已支持通过 `serviceId + path` 调用内部服务，服务地址由 `ServiceEndpointResolver` 解析，endpoint 来源由 `ServiceEndpointRegistry` 查询，默认配置型 registry 读取 `app.remote-http.service-base-urls`；调用方身份由 `RemoteCallerResolver` 解析，默认实现支持请求级覆盖、配置默认值和应用 id 回退；并通过 `RemoteCallPolicy` 提供熔断、限流和治理策略挂点，通过 `RemoteCallObserver` 提供调用审计、指标和 tracing 挂点，通过 `ParameterizedTypeReference<T>` 保留嵌套泛型响应；`RemoteCallWrapper` 已按 `backendPropagatedHeaders` 透传服务间上下文，`scripts/check-remote-http-contract.js` 已纳入守卫。
 - `project_document/SHARED_KERNEL_GUIDE.md` 已定义共享内核边界。
 - `scripts/check-shared-kernel.js` 已守护可抽取契约/工具类不能依赖 Spring Web、Servlet、JPA 或运行时层。
+- `project_document/PROJECT_CONSTRAINTS.md`、`scripts/check-backend-controller-contracts.js` 和 `scripts/check-frontend-openapi-boundaries.js` 已把防破窗约束沉淀为文档和可执行门禁。
 
 ## 当前优先级
 

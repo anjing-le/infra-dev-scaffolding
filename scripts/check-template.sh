@@ -19,6 +19,7 @@ require_file LICENSE
 require_file CONTRIBUTING.md
 require_file project_document/ROADMAP.md
 require_file project_document/STATUS.md
+require_file project_document/PROJECT_CONSTRAINTS.md
 require_file project_document/RELEASE_CHECKLIST.md
 require_file project_document/COPY_GUIDE.md
 require_file project_document/TEMPLATE_BOUNDARIES.md
@@ -34,7 +35,9 @@ require_file contracts/service-boundaries.json
 require_file docs/teaching/04-notice-module-demo.md
 require_file scripts/check-api-constants.js
 require_file scripts/check-api-path-parity.js
+require_file scripts/check-backend-controller-contracts.js
 require_file scripts/check-frontend-api-boundaries.js
+require_file scripts/check-frontend-openapi-boundaries.js
 require_file scripts/check-frontend-context-contract.js
 require_file scripts/check-backend-context-contract.js
 require_file scripts/check-async-context-contract.js
@@ -85,7 +88,7 @@ require_file frontend/src/contracts/service-boundaries.ts
 
 status_doc='project_document/STATUS.md'
 for token in \
-  '2026-06-06' \
+  '2026-06-07' \
   'S0 构建与入口收口' \
   'S1 工程母版收口' \
   'S2 AI 协作资产收口' \
@@ -103,6 +106,19 @@ for token in \
 do
   rg -q --fixed-strings "$token" "$status_doc" \
     || fail "status document is missing required token: $token"
+done
+
+constraints_doc='project_document/PROJECT_CONSTRAINTS.md'
+for token in \
+  '清晰优先，简单优先，可验证优先' \
+  '非示例 Controller 返回值必须使用 `APIResponse<T>`' \
+  '页面和组件不要直接依赖 `@/contracts/openapi/**`' \
+  'node scripts/check-backend-controller-contracts.js' \
+  'node scripts/check-frontend-openapi-boundaries.js' \
+  './scripts/quality-gate.sh'
+do
+  rg -q --fixed-strings "$token" "$constraints_doc" \
+    || fail "project constraints document is missing required token: $token"
 done
 
 for token in \
