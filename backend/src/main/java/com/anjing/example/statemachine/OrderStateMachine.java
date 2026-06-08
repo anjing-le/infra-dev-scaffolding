@@ -50,7 +50,7 @@ import java.util.Map;
  * @version 1.0
  * @since 1.0.0
  */
-@ScaffoldSample("订单状态机教学示例")
+@ScaffoldSample("订单状态机示例")
 @Slf4j
 public class OrderStateMachine extends BaseStateMachine<OrderState, OrderEvent> {
 

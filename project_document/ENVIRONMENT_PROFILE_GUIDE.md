@@ -14,7 +14,7 @@ spring:
 
 | Profile | 适用场景 | 外部中间件策略 | 典型命令 |
 |---------|----------|----------------|----------|
-| `dev` | 本地开发和教学演示 | 内存 H2；Redis、Kafka、MinIO、OSS 默认关闭；缓存为 memory；锁为 local | `SPRING_PROFILES_ACTIVE=dev mvn spring-boot:run` |
+| `dev` | 本地开发和轻量演示 | 内存 H2；Redis、Kafka、MinIO、OSS 默认关闭；缓存为 memory；锁为 local | `SPRING_PROFILES_ACTIVE=dev mvn spring-boot:run` |
 | `test` | CI、复制烟测、自动化验证 | 内存 H2；尽量本地化和确定性；关闭 SQL 展示和可选中间件 | `SPRING_PROFILES_ACTIVE=test mvn -q -DskipTests package` |
 | `prod` | 生产或预生产部署 | MySQL；外部能力必须通过环境变量显式开启 | `SPRING_PROFILES_ACTIVE=prod java -jar target/*.jar` |
 
@@ -22,7 +22,7 @@ spring:
 
 | Profile | 默认数据库 | 说明 |
 |---------|------------|------|
-| `dev` | H2 in-memory, MySQL compatibility mode | 用于第一次启动、课程演示和无外部依赖本地开发 |
+| `dev` | H2 in-memory, MySQL compatibility mode | 用于第一次启动、轻量演示和无外部依赖本地开发 |
 | `test` | H2 in-memory, MySQL compatibility mode | 用于 CI 和烟测，不依赖本机 MySQL |
 | `prod` | MySQL | 通过 `DB_URL`、`DB_USERNAME`、`DB_PASSWORD` 配置 |
 

@@ -10,7 +10,7 @@
 |------|------|------|
 | S0 构建与入口收口 | Ready | 前端 `pnpm build`、后端 `mvn -q -DskipTests package` 已通过，`./scripts/quality-gate.sh` 已纳入仓库 |
 | S1 工程母版收口 | Ready | `project_document/PROJECT_CONSTRAINTS.md`、`project_document/NEW_MODULE_GUIDE.md`、`project_document/SCAFFOLD_ADOPTION_PROMPT.md`、`project_document/UI_DESIGN_GUIDE.md`、`project_document/DEMO_EVIDENCE.md`、`project_document/ci/quality-gate.yml`、`./scripts/check-template.sh`、`./scripts/smoke-copy.sh` 和 `./scripts/quality-gate.sh` 已纳入门禁 |
-| S2 AI 协作资产收口 | Ready | Notice prompt smoke 已在临时复制项目验证，母版只保留演示文档和 Prompt 契约 |
+| S2 AI 协作资产收口 | Ready | Cursor Rules / Prompts、`project_document/SCAFFOLD_ADOPTION_PROMPT.md` 和 `project_document/NEW_MODULE_GUIDE.md` 已作为通用 AI 协作入口 |
 | S3 后续项目复用验证 | In progress | `infra-skill-hub` 已从本母版接入骨架，完成 H0 / H1 / H2 验证，并推进 H3 HTTP/MCP/INTERNAL 调度层、全局与注册级协议配置、凭据托管与选择体验、权限身份头联动、策略批量管理、默认策略模板、调用治理、审计查询、治理指标与前端治理面 |
 | S4 契约与全球化基线 | In progress | 已落地前端 `ApiPaths`、请求上下文头、统一时间工具、`utils/locale`、响应解析 helper、platform locale contract；后端已落地 `ApiConstants` 运行路径引用、`RequestContextFilter`、`LocaleUtils` 语言归一化、`TimeZoneUtils` 时区归一化、UTC 默认时间策略、响应 `requestId`、`PageResult`、API 契约指南、`contracts/service-boundaries.json` 和 `/v3/api-docs` OpenAPI JSON |
 | S5 分布式可观测基线 | In progress | 已落地 MDC 日志字段、Controller 路径/耗时/错误码访问日志、异步上下文传播、`RemoteCallWrapper.serviceCallHeaders(callerId)`、支持 `ServiceEndpointResolver`、`ServiceEndpointRegistry`、`RemoteCallerResolver`、`ConfiguredRemoteCallPolicy`、`RemoteCallObserver` 和 `ParameterizedTypeReference` 的 `RemoteHttpClient`、错误码分段指南、`scripts/check-backend-context-contract.js`、`scripts/check-async-context-contract.js`、`scripts/check-error-codes.js`、`/api/test/features` 可选能力状态接口和 dev/test/prod profile 矩阵 |
@@ -60,14 +60,14 @@ node scripts/check-remote-http-contract.js
 
 AI 协作验证：
 
-- `docs/teaching/04-notice-module-demo.md` 给出公告管理模块的完整 Prompt 演示流程。
-- Notice prompt smoke 已验证后端 CRUD、前端 API、列表页、搜索组件、弹窗和路由能在复制项目中通过构建。
+- `project_document/SCAFFOLD_ADOPTION_PROMPT.md` 提供可复制给 Codex / Cursor 的接入提示词，用于让旧项目或新项目按本母版文档、契约和质量门禁逐步重构。
+- `project_document/NEW_MODULE_GUIDE.md` 提供新增模块的前后端交付顺序、OpenAPI 类型派生、DTO/VO、`APIResponse<T>`、`PageResult<T>` 和 AI Prompt 约束。
 - 验证后回补的关键契约：
   - `project_document/PROJECT_CONSTRAINTS.md` 已记录母版长期约束、防破窗规则和脚本门禁清单；`scripts/check-template.sh` 已要求该文档存在并包含核心约束。
   - `project_document/NEW_MODULE_GUIDE.md` 已记录新增模块的前后端交付顺序、OpenAPI 类型派生、DTO/VO、`APIResponse<T>`、`PageResult<T>` 和 AI Prompt 约束。
   - `project_document/SCAFFOLD_ADOPTION_PROMPT.md` 已提供可复制给 Codex / Cursor 的接入提示词，用于让旧项目或新项目按本母版文档、契约和质量门禁逐步重构。
   - `project_document/UI_DESIGN_GUIDE.md` 已记录极简、虚线、轻玻璃、少文字和 hover 承载次级信息的 UI 基线；前端已提供 `glass-panel`、`glass-control`、`line-dashed` 等基础 utility。
-  - `project_document/DEMO_EVIDENCE.md` 已记录发布、录制和复制前的截图、后端 probe、质量门禁证据留存方式。
+  - `project_document/DEMO_EVIDENCE.md` 已记录发布和复制前的截图、后端 probe、质量门禁证据留存方式。
   - `project_document/ci/quality-gate.yml` 已提供 GitHub Actions 质量门禁模板，启用时复制到 `.github/workflows/quality-gate.yml` 即可在 push 和 PR 中执行 `./scripts/quality-gate.sh`。
   - `node scripts/check-backend-controller-contracts.js` 已校验非示例 Controller 必须返回 `APIResponse<T>`，且不能用 `Map` 承载真实请求或响应。
   - `node scripts/check-scaffold-governance.js` 已校验 CI 工作流、根入口文档、新模块指南、接入提示词、UI 设计基线、演示证据、全局玻璃 token、登录页玻璃/虚线入口和前端 legacy API 使用边界。
@@ -130,7 +130,7 @@ AI 协作验证：
 
 当前状态适合作为 Anjing 内部后续开源项目的母版起点。
 
-对外发布前按 `project_document/DEMO_EVIDENCE.md` 留存本次实际截图、录制或数据库 profile 演示证据即可；母版侧已经提供证据清单和门禁入口。
+对外发布前按 `project_document/DEMO_EVIDENCE.md` 留存本次实际截图或数据库 profile 演示证据即可；母版侧已经提供证据清单和门禁入口。
 
 ## 下一步
 

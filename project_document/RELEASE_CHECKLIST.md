@@ -1,6 +1,6 @@
 # Release Checklist
 
-用于每次发布、录制课程、复制为新项目之前的检查。
+用于每次发布、复制为新项目之前的检查。
 
 ## 必过命令
 
@@ -60,8 +60,6 @@ mvn -q -DskipTests package
 - `project_document/NEW_MODULE_GUIDE.md`、`project_document/UI_DESIGN_GUIDE.md` 和 `project_document/DEMO_EVIDENCE.md` 没有过期。
 - `project_document/TEMPLATE_BOUNDARIES.md` 中的保留/删除边界与当前目录一致。
 - `project_document/AI_ASSETS.md` 中的 Rules / Prompts 数量与 `.cursor` 目录一致。
-- `docs/teaching/03-demo-steps.md` 的演示步骤与当前 UI 一致。
-- `docs/teaching/04-notice-module-demo.md` 覆盖公告模块的后端 CRUD、前端 API、列表页、弹窗和验收命令。
 - “复制为新项目”的改名点清楚列出。
 
 ## 开源发布检查

@@ -27,9 +27,6 @@ export const WEB_LINKS = {
   // 项目社区
   COMMUNITY: 'https://github.com/anjing-le/infra-dev-scaffolding/issues',
 
-  // 教学资料
-  BILIBILI: 'https://github.com/anjing-le/infra-dev-scaffolding/tree/master/docs/teaching',
-
   // 项目介绍
   INTRODUCE: 'https://github.com/anjing-le/infra-dev-scaffolding/blob/master/README.md'
 }

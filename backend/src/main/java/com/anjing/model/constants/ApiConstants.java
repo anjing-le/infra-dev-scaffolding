@@ -43,7 +43,7 @@ public class ApiConstants {
     }
 
     /**
-     * 🧪 脚手架教学和自检接口
+     * 🧪 脚手架示例和自检接口
      */
     public static class Test {
         public static final String BASE = API_PREFIX + "/test";

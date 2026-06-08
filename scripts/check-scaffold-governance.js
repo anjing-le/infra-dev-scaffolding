@@ -107,7 +107,7 @@ for (const token of [
 }
 
 for (const token of [
-  'https://github.com/anjing-le/infra-dev-scaffolding',
+  'https://github.com/anjing-le/',
   'project_document/PROJECT_CONSTRAINTS.md',
   'project_document/NEW_MODULE_GUIDE.md',
   'project_document/UI_DESIGN_GUIDE.md',

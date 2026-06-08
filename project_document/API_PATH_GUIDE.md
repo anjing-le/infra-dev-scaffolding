@@ -61,7 +61,7 @@ export const ApiPaths = {
 | 健康检查 | `ApiConstants.Test.HEALTH_FULL` | `ApiPaths.test.health` |
 | 可选能力状态 | `ApiConstants.Test.FEATURES_FULL` | `ApiPaths.test.features` |
 | Ping | `ApiConstants.Test.PING_FULL` | `ApiPaths.test.ping` |
-| 教学 items | `ApiConstants.Test.ITEMS_FULL` | `ApiPaths.test.items` |
+| 示例 items | `ApiConstants.Test.ITEMS_FULL` | `ApiPaths.test.items` |
 | 通用上传 | `ApiConstants.Common.UPLOAD_FILE_FULL` | `ApiPaths.common.upload` |
 | 富文本上传 | `ApiConstants.Common.UPLOAD_WANG_EDITOR_FULL` | `ApiPaths.common.uploadWangEditor` |
 

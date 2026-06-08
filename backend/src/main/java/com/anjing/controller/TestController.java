@@ -38,12 +38,12 @@ import java.util.*;
  * @author Backend Template Team
  * @version 1.0
  */
-@ScaffoldSample("教学接口：健康检查、异常处理和内存 CRUD 演示")
+@ScaffoldSample("示例接口：健康检查、异常处理和内存 CRUD 演示")
 @RestController
 @RequestMapping(ApiConstants.Test.BASE)
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "Scaffold Test", description = "Teaching, health-check, and scaffold sample APIs")
+@Tag(name = "Scaffold Test", description = "Health-check and scaffold sample APIs")
 public class TestController {
 
     private final MiddlewareManager middlewareManager;

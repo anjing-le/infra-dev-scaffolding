@@ -37,7 +37,7 @@ import java.util.Set;
  * @version 1.0
  * @since 1.0.0
  */
-@ScaffoldSample("状态机服务教学示例")
+@ScaffoldSample("状态机服务示例")
 @Service
 @Slf4j
 public class StateMachineExampleService {

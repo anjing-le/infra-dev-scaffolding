@@ -34,7 +34,7 @@ import jakarta.validation.constraints.*;
  * @version 1.0
  * @since 1.0.0
  */
-@ScaffoldSample("参数校验与 Facade 切面教学示例")
+@ScaffoldSample("参数校验与 Facade 切面示例")
 @Service
 public class ValidationExampleService {
 

@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 标记脚手架中的教学或演示代码。
+ * 标记脚手架中的示例或自检代码。
  *
  * <p>复制为业务项目时，带有此标记的类型或包需要明确决定保留、删除或替换。</p>
  */

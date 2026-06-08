@@ -36,7 +36,6 @@ require_file project_document/SERVICE_BOUNDARY_GUIDE.md
 require_file project_document/SHARED_KERNEL_GUIDE.md
 require_file contracts/platform-contract.json
 require_file contracts/service-boundaries.json
-require_file docs/teaching/04-notice-module-demo.md
 require_file scripts/check-api-constants.js
 require_file scripts/check-api-path-parity.js
 require_file scripts/check-backend-controller-contracts.js
@@ -98,7 +97,7 @@ for token in \
   'S1 工程母版收口' \
   'S2 AI 协作资产收口' \
   'S3 后续项目复用验证' \
-  'Notice prompt smoke' \
+  'SCAFFOLD_ADOPTION_PROMPT.md' \
   './scripts/quality-gate.sh' \
   './scripts/check-template.sh' \
   './scripts/smoke-copy.sh' \
@@ -189,7 +188,7 @@ count_files() {
   || fail "backend Cursor prompts count must be 2"
 
 stale_pattern='agent-dev-scaffolding|apifoxmock|6400575|6097373|Daymychen/art-design-pro'
-if rg -n "$stale_pattern" README.md CONTRIBUTING.md project_document docs backend frontend \
+if rg -n "$stale_pattern" README.md CONTRIBUTING.md project_document backend frontend \
   --glob '!frontend/node_modules/**' \
   --glob '!frontend/dist/**' \
   --glob '!backend/target/**'
@@ -208,41 +207,6 @@ if rg -n "$prompt_contract_pattern" frontend/.cursor/prompts frontend/.cursor/ru
 then
   fail "Cursor rules or prompts contain deprecated API generation contract"
 fi
-
-teaching_contract_pattern='内存 Map|参考现有的 TestController 写法|routes/modules/|git checkout \.'
-if rg -n "$teaching_contract_pattern" docs/teaching/课程大纲-脚手架.md
-then
-  fail "teaching outline contains deprecated Notice prompt flow"
-fi
-
-notice_demo_doc='docs/teaching/04-notice-module-demo.md'
-for token in \
-  'crud-module.md' \
-  'api-module.md' \
-  'vue-list-page.md' \
-  'vue-modal-form.md' \
-  'Notice' \
-  't_notice' \
-  '/api/notices' \
-  'fetchGetNoticeList' \
-  'NoticeSearchRequest' \
-  'NoticePageVO' \
-  'records' \
-  'current' \
-  'size' \
-  'fetchCreateNotice' \
-  'fetchUpdateNotice' \
-  'fetchDeleteNotice' \
-  'request.del' \
-  'ArtTable' \
-  'useTable' \
-  '@ScaffoldSample' \
-  'mvn -q -DskipTests package' \
-  'pnpm build'
-do
-  rg -q --fixed-strings "$token" "$notice_demo_doc" \
-    || fail "notice module prompt demo is missing required token: $token"
-done
 
 for stale_path in \
   frontend/src/views/auth/login111 \

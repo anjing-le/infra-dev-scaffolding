@@ -72,15 +72,6 @@ const fastEnterConfig: FastEnterConfig = {
       enabled: true,
       order: 7,
       routeName: 'ChangeLog'
-    },
-    {
-      name: '教学资料',
-      description: '课程大纲与演示步骤',
-      icon: 'ri:bilibili-line',
-      iconColor: '#FB7299',
-      enabled: true,
-      order: 8,
-      link: WEB_LINKS.BILIBILI
     }
   ],
   // 快速链接

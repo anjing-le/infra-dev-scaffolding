@@ -52,7 +52,7 @@
 
 - 任何新增母版能力必须更新相关文档和 `project_document/STATUS.md`。
 - 任何新增约束优先进入脚本门禁，不要只写在文档里。
-- 发布、录制或作为新项目母版前必须运行 `./scripts/quality-gate.sh`。
+- 发布或作为新项目母版前必须运行 `./scripts/quality-gate.sh`。
 - 复制项目验证必须保持可用，`./scripts/smoke-copy.sh` 不通过时不能认为母版健康。
 
 ## 当前脚本守护

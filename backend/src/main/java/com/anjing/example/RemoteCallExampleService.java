@@ -35,7 +35,7 @@ import java.util.Map;
  * @version 1.0
  * @since 1.0.0
  */
-@ScaffoldSample("远程调用包装工具教学示例")
+@ScaffoldSample("远程调用包装工具示例")
 @Service
 @RequiredArgsConstructor
 @Slf4j

@@ -2,7 +2,7 @@
 
 感谢你改进 `infra-dev-scaffolding`。
 
-这个仓库是 Anjing 开源项目的工程母版。贡献时请优先保持它可复制、可教学、可被 AI 协作工具理解。
+这个仓库是 Anjing 开源项目的工程母版。贡献时请优先保持它可复制、可验证、可被 AI 协作工具理解。
 
 ## 开始之前
 
@@ -16,8 +16,8 @@
 ## 贡献原则
 
 - 优先修复母版共性问题，而不是加入具体业务功能。
-- 新业务示例应放在教学资料或临时复制项目中，不长期进入母版主工程。
-- 前后端生成契约要同步更新 Cursor Rules / Prompts、教学文档和自检脚本。
+- 新业务示例应放在临时复制项目或独立示例仓库中，不长期进入母版主工程。
+- 前后端生成契约要同步更新 Cursor Rules / Prompts、项目文档和自检脚本。
 - 新增模块先补契约和可验证入口，再写页面和实现。
 - 明显 UI 改动要遵守轻玻璃、虚线边界、少文字和 hover 承载次级信息的基线。
 - 不提交真实密钥、个人机器路径、本地日志、上传文件或构建产物。
@@ -64,7 +64,6 @@ pnpm -s clean:dev
 - `project_document/COPY_GUIDE.md`
 - `project_document/TEMPLATE_BOUNDARIES.md`
 - `project_document/AI_ASSETS.md`
-- `docs/teaching/`
 
 ## 上游说明
 

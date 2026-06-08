@@ -36,7 +36,7 @@ OPENAPI_API_DOCS_ENABLED=true
 - 请求体使用明确 Request 类，并配合 Jakarta Validation。
 - 返回体统一包在 `APIResponse<T>` 中。
 - 分页响应使用 `PageResult<T>` 或字段完全一致的 VO。
-- 教学接口可以保留 Map 演示，但真实业务 Controller 不应复制这种写法。
+- 示例接口可以保留 Map 演示，但真实业务 Controller 不应复制这种写法。
 - 需要让 OpenAPI 更清晰时，可在 Request / Response 模型上补充 `@Schema`。
 
 ## Frontend Types

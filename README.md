@@ -60,7 +60,7 @@ GitHub Actions 模板在 [project_document/ci/quality-gate.yml](./project_docume
 - 先看 [project_document/PROJECT_CONSTRAINTS.md](./project_document/PROJECT_CONSTRAINTS.md)：母版能放什么、不能放什么。
 - 新增模块看 [project_document/NEW_MODULE_GUIDE.md](./project_document/NEW_MODULE_GUIDE.md)：前后端交付顺序和 AI Prompt 约束。
 - 改 UI 看 [project_document/UI_DESIGN_GUIDE.md](./project_document/UI_DESIGN_GUIDE.md)：极简、虚线、轻玻璃、少文字。
-- 发布或录制看 [project_document/DEMO_EVIDENCE.md](./project_document/DEMO_EVIDENCE.md)：截图、probe 和质量门禁证据。
+- 发布看 [project_document/DEMO_EVIDENCE.md](./project_document/DEMO_EVIDENCE.md)：截图、probe 和质量门禁证据。
 - 改造旧项目看 [project_document/SCAFFOLD_ADOPTION_PROMPT.md](./project_document/SCAFFOLD_ADOPTION_PROMPT.md)：可复制给 Codex 的接入提示词。
 
 ## 常用文档

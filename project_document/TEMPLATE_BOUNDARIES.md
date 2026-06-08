@@ -1,6 +1,6 @@
 # Template Boundaries
 
-本文档用于说明哪些内容属于工程母版，哪些内容只是演示或教学示例。复制为新项目时，先按这里判断保留、替换或删除。
+本文档用于说明哪些内容属于工程母版，哪些内容只是演示或示例。复制为新项目时，先按这里判断保留、替换或删除。
 
 ## 母版能力
 
@@ -25,11 +25,10 @@
 
 ## 示例能力
 
-这些内容用于演示和教学，不应直接变成新项目业务代码：
+这些内容用于演示和自检，不应直接变成新项目业务代码：
 
 - `backend/src/main/java/com/anjing/controller/TestController.java`：健康检查、异常处理、内存 CRUD 演示，使用 `@ScaffoldSample` 标记。
 - `backend/src/main/java/com/anjing/example/`：远程调用、校验、状态机使用示例，包上使用 `@ScaffoldSample` 标记。
-- `docs/teaching/`：课程脚本和演示步骤。
 - `frontend/src/views/dashboard/console/modules/`：工作台展示数据和卡片内容。
 - `frontend/src/mock/upgrade/changeLog.ts`：升级提示演示数据。
 
@@ -86,7 +85,7 @@ node scripts/check-service-boundaries.js
 
 `@ScaffoldSample` 是后端示例边界标记，不参与运行时逻辑。
 
-- 母版中出现 `@ScaffoldSample` 是正常的，表示这些代码用于教学或演示。
+- 母版中出现 `@ScaffoldSample` 是正常的，表示这些代码用于示例、自检或演示。
 - 新业务代码不应使用 `@ScaffoldSample`。
 - 如果复制项目删除了 `TestController` 和 `example/`，可以保留或删除 `ScaffoldSample` 注解类。
 - 如果复制项目保留了示例代码，`./scripts/check-template.sh` 会检查这些示例是否仍带有边界标记。

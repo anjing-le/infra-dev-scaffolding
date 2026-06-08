@@ -25,7 +25,7 @@
 | kind | 含义 | 当前示例 |
 |------|------|----------|
 | `runtime` | 当前母版真实运行接口 | `auth` |
-| `sample` | 教学或自检接口，复制后可删除或替换 | `test` |
+| `sample` | 示例或自检接口，复制后可删除或替换 | `test` |
 | `reserved-runtime` | 前后端已预留路径，具体实现可由复制项目决定 | `common` |
 | `reserved` | 未来服务或模块预留边界 | `user`、`admin`、`integration` |
 
@@ -34,7 +34,7 @@
 | boundary | basePath | owner | 当前宿主 | 说明 |
 |----------|----------|-------|----------|------|
 | `auth` | `/api/auth` | `infra-auth` | `infra-dev-scaffolding` | Mock 认证接口，未来可迁到认证中心 |
-| `test` | `/api/test` | `infra-dev-scaffolding` | `infra-dev-scaffolding` | 教学、自检、OpenAPI smoke |
+| `test` | `/api/test` | `infra-dev-scaffolding` | `infra-dev-scaffolding` | 示例、自检、OpenAPI smoke |
 | `common` | `/api/common` | `infra-common` | `infra-dev-scaffolding` | 上传、下载等平台通用路径预留 |
 | `user` | `/api/users` | `infra-auth` | `future-service` | 用户管理预留 |
 | `admin` | `/api/admin` | `infra-admin` | `future-service` | 运维管理预留 |

@@ -129,7 +129,7 @@ NODE
 ./scripts/check-template.sh
 
 if rg -n 'infra-dev-scaffolding|agent-dev-scaffolding|apifoxmock|6400575|6097373|Daymychen/art-design-pro' \
-  README.md CONTRIBUTING.md project_document docs backend frontend \
+  README.md CONTRIBUTING.md project_document backend frontend \
   --glob '!frontend/node_modules/**' \
   --glob '!frontend/dist/**' \
   --glob '!backend/target/**'

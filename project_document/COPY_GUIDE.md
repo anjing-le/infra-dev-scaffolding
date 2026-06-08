@@ -37,7 +37,6 @@ cd my-new-project
 - `project_document/NEW_MODULE_GUIDE.md`：作为新业务模块的默认生成和验收入口。
 - `project_document/UI_DESIGN_GUIDE.md`：按新项目品牌微调，但保留极简、虚线和可读玻璃基线。
 - `project_document/DEMO_EVIDENCE.md`：记录复制后的本地截图、后端 probe 和质量门禁证据。
-- `docs/teaching/`：按新项目保留或删除教学资料。
 
 ## 3. 调整示例与菜单
 

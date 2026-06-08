@@ -11,8 +11,7 @@
 1. 开箱能跑：前端游客模式无后端可体验，后端示例 API 可启动和验证。
 2. 工程规范稳定：统一目录、类型、路由、权限、请求、响应、异常、日志和环境配置。
 3. 可复制：新项目能从本仓库复制并快速改名、换端口、换业务模块。
-4. 可教学：能支撑 90-120 分钟脚手架课程和录制演示。
-5. 可被 AI 协作：Cursor Rules 和 Prompts 让 AI 生成代码时遵循本项目结构。
+4. 可被 AI 协作：Cursor Rules、Prompts 和接入提示词让 AI 生成或迁移代码时遵循本项目结构。
 
 ## 非目标
 
@@ -56,7 +55,7 @@
 - Rules 能覆盖 Vue、TypeScript、路由、API、Spring Boot、分层结构和错误处理。
 - Prompts 覆盖前端 API、列表页、业务组件、弹窗，以及后端 CRUD 和单端点生成。
 - `project_document/AI_ASSETS.md`、`.cursor/**/README` 和 `scripts/check-template.sh` 中的资产数量一致。
-- 教学资料能通过 `docs/teaching/04-notice-module-demo.md` 演示“用 Prompt 生成公告管理模块”的完整流程。
+- `project_document/SCAFFOLD_ADOPTION_PROMPT.md` 能引导 Codex / Cursor 按母版文档、契约和质量门禁迁移旧项目或初始化新项目。
 
 ### S3: 后续项目复用验证
 

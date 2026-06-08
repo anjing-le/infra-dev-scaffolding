@@ -1,12 +1,11 @@
 # Demo Evidence
 
-本文档记录母版发布、录制或复制前需要保留的演示证据。目标不是堆材料，而是让“能跑、好看、可复制”有可追溯凭据。
+本文档记录母版发布或复制前需要保留的演示证据。目标不是堆材料，而是让“能跑、好看、可复制”有可追溯凭据。
 
 ## 当前证据
 
 - `./scripts/quality-gate.sh`：聚合模板、契约、复制烟测、后端测试、前端构建、后端 dev runtime probe。
 - `./scripts/probe-backend-dev.sh`：启动 dev profile，验证 `/api/test/health`、`/api/test/features` 和 `/v3/api-docs`。
-- `docs/teaching/04-notice-module-demo.md`：验证 Prompt 生成模块的教学路径。
 - `project_document/STATUS.md`：记录每个阶段的状态和证据链。
 
 ## 发布前证据清单
