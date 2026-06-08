@@ -1,50 +1,24 @@
 # infra-dev-scaffolding
 
-> 类型：传统 infra | 定位：所有项目的工程起点
-
 Anjing 开源项目的全栈工程母版。
 
-它提供一套可启动、可演示、可复制的前后端基础工程，内置 AI 协作流程（Cursor Rules + Prompts）。后续所有 infra 和 agent 项目都应基于这套结构生长，再按业务场景裁剪和扩展。
+它提供一套可启动、可复制、可被 AI 协作工具理解的前后端基础工程。新项目可以从这里出发，再按业务场景裁剪和扩展。
 
 ## 技术栈
 
-- Vue 3.5 + TypeScript + Vite 7（前端）
-- Spring Boot 3.4.5 + MySQL（后端，dev/test 内置 H2 轻启动）
+- Frontend: Vue 3.5 + TypeScript + Vite 7
+- Backend: Spring Boot 3.4.5 + Java 17
+- Dev/Test: 后端默认 H2 轻启动，生产可接 MySQL
 
-## 项目目标
+## 你可以用它做什么
 
-- 开箱能跑：前端游客模式无需后端即可体验完整 UI。
-- 工程规范稳定：统一目录、类型、路由、权限、请求、响应、异常、日志和环境配置。
-- 可复制：新项目可以从这里复制并快速改名、换端口、换业务模块。
-- 可教学：支撑脚手架课程、项目演示和后续 Agent 项目讲解。
-- 可被 AI 协作：让 Cursor Rules / Prompts 成为生成标准代码的入口。
-
-## 工程约束入口
-
-- [project_document/PROJECT_CONSTRAINTS.md](./project_document/PROJECT_CONSTRAINTS.md)：母版长期边界和防破窗底线。
-- [project_document/NEW_MODULE_GUIDE.md](./project_document/NEW_MODULE_GUIDE.md)：新增模块时的前后端最小交付清单。
-- [project_document/UI_DESIGN_GUIDE.md](./project_document/UI_DESIGN_GUIDE.md)：极简、虚线、轻玻璃 UI 基线。
-- [project_document/DEMO_EVIDENCE.md](./project_document/DEMO_EVIDENCE.md)：发布、录制和复制前的演示证据清单。
-
-## 核心能力
-
-- 登录 / 工作台 / 系统管理
-- 主题切换、国际化、路由守卫、权限控制
-- 游客模式，无后端可体验完整 UI
-- [GitHub Actions 模板](./project_document/ci/quality-gate.yml) 复用 `./scripts/quality-gate.sh`
-- 前端 11 条 Cursor Rules、后端 4 条 Cursor Rules
-- 前端 4 个 Prompts、后端 2 个 Prompts
-
-## 端口
-
-| 模块 | 默认端口 | 说明 |
-|------|----------|------|
-| frontend | `13006` | Vite dev server |
-| backend | `18080` | Spring Boot API |
+- 阅读：快速理解 Anjing 工程母版的结构、边界和约束。
+- 使用：复制为新项目，改名、换端口、换业务模块后直接启动。
+- 迭代：按统一 API、响应、OpenAPI、时间、上下文、UI 和质量门禁继续扩展。
 
 ## 快速开始
 
-### 前端
+前端：
 
 ```bash
 cd frontend
@@ -52,149 +26,61 @@ pnpm install
 pnpm dev
 ```
 
-打开 `http://localhost:13006`，点击“游客访问”进入工作台。
+打开 `http://localhost:13006`，可以用游客模式进入工作台。
 
-### 后端
+后端：
 
 ```bash
 cd backend
 mvn spring-boot:run
 ```
 
-默认 `dev` profile 使用内存 H2，无需本地 MySQL/Redis 即可启动。需要连接 MySQL 时，复制或参考 `backend/.env.example` 配置 `DB_URL`、`DB_USERNAME`、`DB_PASSWORD`。
+后端默认端口是 `18080`。默认 dev profile 使用 H2，不需要本地 MySQL、Redis 或其他中间件。
 
-## 验证
+## 质量门禁
 
-完整质量门禁：
+提交前优先跑完整门禁：
 
 ```bash
 ./scripts/quality-gate.sh
 ```
 
-也可以按模块拆开运行：
+只做文档或轻量调整时，可以先跑：
 
 ```bash
 ./scripts/check-template.sh
-```
-
-```bash
 ./scripts/check-contracts.sh
 ```
 
-```bash
-node scripts/check-api-constants.js
-```
+GitHub Actions 模板在 [project_document/ci/quality-gate.yml](./project_document/ci/quality-gate.yml)，启用后复用同一套 `./scripts/quality-gate.sh`。
 
-```bash
-node scripts/check-api-path-parity.js
-```
+## 迭代入口
 
-```bash
-node scripts/check-scaffold-governance.js
-```
+- 先看 [project_document/PROJECT_CONSTRAINTS.md](./project_document/PROJECT_CONSTRAINTS.md)：母版能放什么、不能放什么。
+- 新增模块看 [project_document/NEW_MODULE_GUIDE.md](./project_document/NEW_MODULE_GUIDE.md)：前后端交付顺序和 AI Prompt 约束。
+- 改 UI 看 [project_document/UI_DESIGN_GUIDE.md](./project_document/UI_DESIGN_GUIDE.md)：极简、虚线、轻玻璃、少文字。
+- 发布或录制看 [project_document/DEMO_EVIDENCE.md](./project_document/DEMO_EVIDENCE.md)：截图、probe 和质量门禁证据。
 
-```bash
-node scripts/check-frontend-api-boundaries.js
-```
+## 常用文档
 
-```bash
-node scripts/check-frontend-context-contract.js
-```
-
-```bash
-node scripts/check-frontend-time-contract.js
-```
-
-```bash
-node scripts/generate-platform-contract-backend.js --check
-```
-
-```bash
-node scripts/generate-platform-contract-frontend.js --check
-```
-
-```bash
-node scripts/check-platform-contract.js
-```
-
-```bash
-node scripts/check-error-codes.js
-```
-
-```bash
-node scripts/check-openapi-contract.js
-```
-
-```bash
-node scripts/check-service-boundaries.js
-```
-
-```bash
-node scripts/generate-service-boundaries-backend.js --check
-```
-
-```bash
-node scripts/generate-service-boundaries-frontend.js --check
-```
-
-```bash
-node scripts/check-shared-kernel.js
-```
-
-```bash
-node scripts/check-remote-http-contract.js
-```
-
-```bash
-./scripts/smoke-copy.sh
-```
-
-```bash
-cd frontend
-pnpm build
-```
-
-```bash
-cd backend
-mvn -q -DskipTests package
-```
-
-```bash
-./scripts/probe-backend-dev.sh
-```
-
-## 项目文档
-
-- [项目路线图](./project_document/ROADMAP.md)
-- [架构演进蓝图](./project_document/ARCHITECTURE_EVOLUTION.md)
-- [项目长期约束](./project_document/PROJECT_CONSTRAINTS.md)
-- [新增模块指南](./project_document/NEW_MODULE_GUIDE.md)
-- [UI 设计指南](./project_document/UI_DESIGN_GUIDE.md)
-- [演示证据指南](./project_document/DEMO_EVIDENCE.md)
-- [GitHub Actions 质量门禁模板](./project_document/ci/quality-gate.yml)
-- [API 契约指南](./project_document/API_CONTRACT_GUIDE.md)
-- [API 路径指南](./project_document/API_PATH_GUIDE.md)
-- [平台契约 Manifest 指南](./project_document/PLATFORM_CONTRACT_GUIDE.md)
-- [共享内核指南](./project_document/SHARED_KERNEL_GUIDE.md)
-- [环境 Profile 指南](./project_document/ENVIRONMENT_PROFILE_GUIDE.md)
-- [本地启动指南](./project_document/LOCAL_STARTUP_GUIDE.md)
-- [可选能力状态指南](./project_document/FEATURE_STATUS_GUIDE.md)
-- [远程调用指南](./project_document/REMOTE_CALL_GUIDE.md)
-- [错误码分段指南](./project_document/ERROR_CODE_GUIDE.md)
 - [当前状态](./project_document/STATUS.md)
-- [发布检查清单](./project_document/RELEASE_CHECKLIST.md)
-- [复制为新项目指南](./project_document/COPY_GUIDE.md)
-- [母版边界说明](./project_document/TEMPLATE_BOUNDARIES.md)
-- [AI 资产清单](./project_document/AI_ASSETS.md)
-- [教学资料](./docs/teaching/README.md)
+- [复制为新项目](./project_document/COPY_GUIDE.md)
+- [发布检查](./project_document/RELEASE_CHECKLIST.md)
+- [API 契约](./project_document/API_CONTRACT_GUIDE.md)
+- [服务边界](./project_document/SERVICE_BOUNDARY_GUIDE.md)
+- [项目文档索引](./project_document/README.md)
 - [贡献说明](./CONTRIBUTING.md)
 
-## 后续复用方向
+## 目录
 
-- `agent-aigc`：复用前端控制台、API 层、权限和环境配置，扩展多模型调度。
-- `agent-customer-service`：复用工程结构和后端基础能力，扩展客服会话与规则兜底。
-- `agent-knowledge`：复用前后端骨架，扩展 RAG、文档解析和引用回传。
-- `infra-auth` / `infra-api-gateway` / `infra-llm-gateway` / `infra-skill-hub`：从本项目抽象出独立基础设施能力。
+```text
+frontend/           Vue 前端工程
+backend/            Spring Boot 后端工程
+contracts/          平台契约和服务边界 manifest
+project_document/   路线图、约束、指南和状态记录
+docs/teaching/      教学和 Prompt 演示资料
+scripts/            自检、生成、复制和质量门禁脚本
+```
 
 ## License
 
