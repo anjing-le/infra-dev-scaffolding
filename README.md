@@ -15,6 +15,7 @@ Anjing 开源项目的全栈工程母版。
 - 阅读：快速理解 Anjing 工程母版的结构、边界和约束。
 - 使用：复制为新项目，改名、换端口、换业务模块后直接启动。
 - 迭代：按统一 API、响应、OpenAPI、时间、上下文、UI 和质量门禁继续扩展。
+- 接入：把 [接入提示词](./project_document/SCAFFOLD_ADOPTION_PROMPT.md) 复制给 Codex，让旧项目按本母版逐步重构。
 
 ## 快速开始
 
@@ -60,12 +61,14 @@ GitHub Actions 模板在 [project_document/ci/quality-gate.yml](./project_docume
 - 新增模块看 [project_document/NEW_MODULE_GUIDE.md](./project_document/NEW_MODULE_GUIDE.md)：前后端交付顺序和 AI Prompt 约束。
 - 改 UI 看 [project_document/UI_DESIGN_GUIDE.md](./project_document/UI_DESIGN_GUIDE.md)：极简、虚线、轻玻璃、少文字。
 - 发布或录制看 [project_document/DEMO_EVIDENCE.md](./project_document/DEMO_EVIDENCE.md)：截图、probe 和质量门禁证据。
+- 改造旧项目看 [project_document/SCAFFOLD_ADOPTION_PROMPT.md](./project_document/SCAFFOLD_ADOPTION_PROMPT.md)：可复制给 Codex 的接入提示词。
 
 ## 常用文档
 
 - [当前状态](./project_document/STATUS.md)
 - [复制为新项目](./project_document/COPY_GUIDE.md)
 - [发布检查](./project_document/RELEASE_CHECKLIST.md)
+- [接入提示词](./project_document/SCAFFOLD_ADOPTION_PROMPT.md)
 - [API 契约](./project_document/API_CONTRACT_GUIDE.md)
 - [服务边界](./project_document/SERVICE_BOUNDARY_GUIDE.md)
 - [项目文档索引](./project_document/README.md)
@@ -78,7 +81,6 @@ frontend/           Vue 前端工程
 backend/            Spring Boot 后端工程
 contracts/          平台契约和服务边界 manifest
 project_document/   路线图、约束、指南和状态记录
-docs/teaching/      教学和 Prompt 演示资料
 scripts/            自检、生成、复制和质量门禁脚本
 ```
 

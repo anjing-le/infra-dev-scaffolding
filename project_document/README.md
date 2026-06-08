@@ -7,6 +7,7 @@
 - [ROADMAP.md](./ROADMAP.md)：项目定位、阶段规划、边界和成功标准。
 - [PROJECT_CONSTRAINTS.md](./PROJECT_CONSTRAINTS.md)：项目长期约束、防破窗规则和脚本门禁清单。
 - [NEW_MODULE_GUIDE.md](./NEW_MODULE_GUIDE.md)：新增业务模块时的前后端契约、交付顺序和 AI Prompt 约束。
+- [SCAFFOLD_ADOPTION_PROMPT.md](./SCAFFOLD_ADOPTION_PROMPT.md)：把旧项目接入本母版时可复制给 Codex 的提示词。
 - [UI_DESIGN_GUIDE.md](./UI_DESIGN_GUIDE.md)：极简、虚线、轻玻璃 UI 基线和防破窗规则。
 - [DEMO_EVIDENCE.md](./DEMO_EVIDENCE.md)：发布、录制和复制前应保留的演示证据。
 - [ci/quality-gate.yml](./ci/quality-gate.yml)：GitHub Actions 质量门禁模板，启用时复制到 `.github/workflows/quality-gate.yml`。
@@ -20,7 +21,7 @@
 - [SERVICE_BOUNDARY_GUIDE.md](./SERVICE_BOUNDARY_GUIDE.md)：服务/模块边界、API 归属和未来微服务拆分方式。
 - [SHARED_KERNEL_GUIDE.md](./SHARED_KERNEL_GUIDE.md)：未来共享包可抽取类和运行时依赖边界。
 - [AI_ASSETS.md](./AI_ASSETS.md)：Cursor Rules / Prompts 的资产清单和维护规则。
-- [../docs/teaching/04-notice-module-demo.md](../docs/teaching/04-notice-module-demo.md)：用 Prompts 生成公告管理模块的完整演示流程。
+- [../docs/teaching/04-notice-module-demo.md](../docs/teaching/04-notice-module-demo.md)：可选教学资料，用 Prompts 生成公告管理模块的完整演示流程。
 
 ## 维护原则
 

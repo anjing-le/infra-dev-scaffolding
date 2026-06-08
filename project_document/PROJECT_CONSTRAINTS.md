@@ -60,6 +60,6 @@
 - `./scripts/check-contracts.sh`: 聚合路径、响应、上下文、时间、远程调用、OpenAPI、共享内核等关键契约。
 - `./scripts/check-template.sh`: 守住母版文档、示例边界、复制资产和项目身份。
 - `node scripts/check-backend-controller-contracts.js`: 守住后端非示例 Controller 的响应和 DTO/VO 边界。
-- `node scripts/check-scaffold-governance.js`: 守住 CI、根入口文档、新模块指南、UI 设计基线、演示证据和前端 legacy API 使用边界。
+- `node scripts/check-scaffold-governance.js`: 守住 CI、根入口文档、新模块指南、接入提示词、UI 设计基线、演示证据和前端 legacy API 使用边界。
 - `node scripts/check-frontend-openapi-boundaries.js`: 守住前端 OpenAPI 生成物的导入边界。
 - `./scripts/quality-gate.sh`: 作为母版提交前的总门禁。

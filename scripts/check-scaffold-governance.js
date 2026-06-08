@@ -47,6 +47,7 @@ function walk(dir, files = []) {
 for (const file of [
   'project_document/ci/quality-gate.yml',
   'project_document/NEW_MODULE_GUIDE.md',
+  'project_document/SCAFFOLD_ADOPTION_PROMPT.md',
   'project_document/UI_DESIGN_GUIDE.md',
   'project_document/DEMO_EVIDENCE.md'
 ]) {
@@ -67,6 +68,7 @@ for (const token of [
 for (const token of [
   'project_document/PROJECT_CONSTRAINTS.md',
   'project_document/NEW_MODULE_GUIDE.md',
+  'project_document/SCAFFOLD_ADOPTION_PROMPT.md',
   'project_document/UI_DESIGN_GUIDE.md',
   'project_document/DEMO_EVIDENCE.md',
   './scripts/quality-gate.sh'
@@ -86,6 +88,7 @@ for (const token of [
 
 for (const token of [
   'NEW_MODULE_GUIDE.md',
+  'SCAFFOLD_ADOPTION_PROMPT.md',
   'UI_DESIGN_GUIDE.md',
   'DEMO_EVIDENCE.md',
   'ci/quality-gate.yml'
@@ -101,6 +104,17 @@ for (const token of [
   './scripts/quality-gate.sh'
 ]) {
   requireToken('project_document/NEW_MODULE_GUIDE.md', token)
+}
+
+for (const token of [
+  'https://github.com/anjing-le/infra-dev-scaffolding',
+  'project_document/PROJECT_CONSTRAINTS.md',
+  'project_document/NEW_MODULE_GUIDE.md',
+  'project_document/UI_DESIGN_GUIDE.md',
+  '先审计当前项目结构',
+  '不要为了套模板而重写业务'
+]) {
+  requireToken('project_document/SCAFFOLD_ADOPTION_PROMPT.md', token)
 }
 
 for (const token of [
